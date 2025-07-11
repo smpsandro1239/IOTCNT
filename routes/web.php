@@ -23,16 +23,12 @@ Route::get('/', function () {
     return view('welcome'); // Página inicial pública
 });
 
-// Dashboard principal para utilizadores logados (Breeze default)
-// A view 'dashboard' é criada pelo Breeze
-Route::get('/dashboard', function () {
-    // Adicionar lógica para diferenciar dashboard de admin e user se necessário,
-    // ou redirecionar admin para /admin/dashboard
-    if (auth()->check() && auth()->user()->hasRole('admin')) {
-        // return redirect()->route('admin.dashboard'); // Descomentar quando a rota admin.dashboard existir
-    }
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Dashboard principal para utilizadores logados
+use App\Http{Controllers\UserDashboardController;
+
+Route::get('/dashboard', [UserDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // Rotas de Profile (Breeze default)
 Route::middleware('auth')->group(function () {

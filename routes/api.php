@@ -2,9 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-// Adicionar aqui os controladores da API quando forem criados
-// Ex: use App\Http\Controllers\Api\ValveStatusController;
-// Ex: use App\Http\Controllers\Api\Esp32LogController;
+use App\Http\Controllers\Api\Esp32Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,49 +22,23 @@ Route::get('/ping', function () {
 
 // Grupo de rotas protegidas pela autenticação Sanctum
 Route::middleware('auth:sanctum')->group(function () {
-    // Rota para o ESP32 obter a sua configuração inicial ou verificar a ligação
-    Route::get('/esp32/config', function (Request $request) {
-        // Retornar configurações relevantes para o ESP32 que fez a requisição
-        // Poderia incluir lista de válvulas, horários, etc.
-        // $user = $request->user(); // O dispositivo autenticado (se o token estiver associado a um user)
-        return response()->json([
-            'message' => 'Configuração para ESP32 (placeholder)',
-            'device_name' => $request->user()->name ?? 'ESP32 Device', // Exemplo se o token tiver um nome
-            // Adicionar dados de configuração aqui
-        ]);
-    })->name('api.esp32.config');
+    // Rotas ESP32
+    Route::prefix('esp32')->name('api.esp32.')->group(function () {
+        Route::get('/config', [Esp32Controller::class, 'getConfig'])->name('config');
+        Route::post('/valve-status', [Esp32Controller::class, 'updateValveStatus'])->name('valve.status');
+        Route::post('/log', [Esp32Controller::class, 'receiveLog'])->name('log');
+        Route::get('/commands', [Esp32Controller::class, 'getCommands'])->name('commands');
 
-    // Rota para o ESP32 reportar o estado de uma válvula
-    Route::post('/esp32/valve-status', function (Request $request) {
-        // Validar os dados recebidos: valve_id, status (on/off), timestamp_esp32
-        // Ex: $validated = $request->validate([
-        // 'valve_number' => 'required|integer|min:1|max:5',
-        // 'state' => 'required|boolean', // true para ligado, false para desligado
-        // 'timestamp' => 'sometimes|integer' // Timestamp Unix do ESP32
-        // ]);
-        // Lógica para atualizar o estado da válvula na BD (ex: tabela `valves`)
-        // Lógica para criar um log em `operation_logs`
-        // return response()->json(['message' => 'Estado da válvula recebido', 'data' => $validated]);
-        return response()->json(['message' => 'Estado da válvula recebido (placeholder)', 'data' => $request->all()]);
-    })->name('api.esp32.valve.status');
-
-    // Rota para o ESP32 enviar um log genérico
-    Route::post('/esp32/log', function (Request $request) {
-        // Validar os dados: level (info, error, debug), message, details_json
-        // Ex: $validated = $request->validate([
-        // 'level' => 'required|string|in:info,error,warning,debug',
-        // 'message' => 'required|string',
-        // 'details' => 'nullable|json'
-        // ]);
-        // Lógica para guardar o log em `operation_logs`
-        // return response()->json(['message' => 'Log do ESP32 recebido', 'data' => $validated]);
-        return response()->json(['message' => 'Log do ESP32 recebido (placeholder)', 'data' => $request->all()]);
-    })->name('api.esp32.log');
+        // Manual control endpoints
+        Route::post('/control-valve', [Esp32Controller::class, 'controlValve'])->name('control.valve');
+        Route::post('/start-cycle', [Esp32Controller::class, 'startCycle'])->name('start.cycle');
+        Route::post('/stop-all', [Esp32Controller::class, 'stopAll'])->name('stop.all');
+    });
 
     // Rota para o ESP32 obter comandos pendentes (se usar polling em vez de ESP32 ser um servidor HTTP)
     // Route::get('/esp32/commands', function(Request $request) {
-        // Lógica para verificar se há comandos para este ESP32
-        // return response()->json(['commands' => []]); // Placeholder
+    // Lógica para verificar se há comandos para este ESP32
+    // return response()->json(['commands' => []]); // Placeholder
     // });
 
     // Rota de teste para verificar o utilizador autenticado via token

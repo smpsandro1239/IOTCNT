@@ -5,84 +5,49 @@
 // --------------------------------------------------------------------------
 // Includes
 // --------------------------------------------------------------------------
+#include "config.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <ArduinoJson.h> // Para JSON com a API
-
-// Para NTP (Network Time Protocol)
+#include <ArduinoJson.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
-
-// Para RTC (Real-Time Clock) - Exemplo com DS3231
-#include <Wire.h> // Necessário para I2C comunicação com RTC
-#include <RTClib.h>
-RTC_DS3231 rtc; // Instancia o objeto RTC DS3231
-bool rtcFound = false; // Flag para indicar se o RTC foi detectado
-bool rtcTimeReliable = false; // Flag para indicar se a hora do RTC é confiável (ex: sincronizada com NTP)
-
-// Para LoRa (se o hardware ESP32 tiver e for ser usado no futuro)
-// #include <SPI.h>
-// #include <LoRa.h>
-
-// Para FileSystem (LittleFS)
 #include <FS.h>
 #include <LittleFS.h>
-// Definições dos pinos LoRa (exemplo para Heltec WiFi LoRa 32)
-// #define LORA_SCK 5
-// #define LORA_MISO 19
-// #define LORA_MOSI 27
-// #define LORA_SS 18
-// #define LORA_RST 14
-// #define LORA_DIO0 26
-// #define LORA_BAND 868E6 // Ou 915E6, 433E6 conforme a sua região/módulo
+
+#if ENABLE_RTC
+#include <Wire.h>
+#include <RTClib.h>
+RTC_DS3231 rtc;
+bool rtcFound = false;
+bool rtcTimeReliable = false;
+#endif
+
+#if ENABLE_LORA
+#include <SPI.h>
+#include <LoRa.h>
+#endif
 
 // --------------------------------------------------------------------------
-// Definições e Configurações Globais
+// Global Variables
 // --------------------------------------------------------------------------
 
-// --- Configurações de Rede Wi-Fi ---
-const char* WIFI_SSID = "SUA_REDE_WIFI";
-const char* WIFI_PASSWORD = "SUA_SENHA_WIFI";
-
-// --- Configurações do Servidor API Laravel ---
-const char* API_SERVER_HOST = "http://seu_laravel_server.com"; // Ex: http://192.168.1.100:8000 ou URL de produção
-const char* API_TOKEN = "SEU_TOKEN_API_SANCTUM_AQUI"; // Token para autenticação na API
-const char* API_ENDPOINT_VALVE_STATUS = "/api/esp32/valve-status";
-const char* API_ENDPOINT_LOG = "/api/esp32/log";
-const char* API_ENDPOINT_CONFIG = "/api/esp32/config";
-
-// --- Configurações NTP ---
-const char* NTP_SERVER = "pool.ntp.org";
-const long GMT_OFFSET_SEC = 0; // Offset do GMT em segundos (Ex: Portugal Continental é 0 ou 3600 no verão)
-const int DAYLIGHT_OFFSET_SEC = 3600; // Offset do horário de verão (Ex: 3600 para +1 hora)
+// WiFi and NTP
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_SERVER, GMT_OFFSET_SEC, DAYLIGHT_OFFSET_SEC);
-// Nota: A gestão de horário de verão pode ser complexa. Pode ser mais simples obter UTC e tratar no servidor.
 
-// --- Pinos das Válvulas (Relés) ---
-// Mapear os 5 relés para os pinos GPIO do ESP32
-const int VALVE_PINS[5] = {23, 22, 21, 19, 18}; // Exemplo de pinos, ajuste conforme a sua placa
-const int NUM_VALVES = 5;
-const int RELAY_ON_STATE = HIGH; // Mude para LOW se os seus relés forem ativos em baixo
-const int RELAY_OFF_STATE = LOW;  // Mude para HIGH se os seus relés forem ativos em baixo
+// Valve pins array
+const int VALVE_PINS[NUM_VALVES] = {VALVE_PIN_1, VALVE_PIN_2, VALVE_PIN_3, VALVE_PIN_4, VALVE_PIN_5};
 
-
-// --- Lógica de Agendamento ---
-const int SCHEDULE_DAY = 5; // 0=Dom, 1=Seg, ..., 5=Sex, 6=Sab. Sexta-feira.
-const int SCHEDULE_HOUR = 10; // 10 da manhã
-const int SCHEDULE_MINUTE = 00; // 00 minutos
-const int VALVE_DURATION_MINUTES = 5;
+// Scheduling variables
 unsigned long valveActivationDurationMillis = VALVE_DURATION_MINUTES * 60 * 1000;
-
-// --- Variáveis de Estado ---
-int currentValveInSequence = -1; // -1 significa que nenhum ciclo de agendamento está ativo
+int currentValveInSequence = -1;
 unsigned long currentValveStartTime = 0;
-bool systemTimeSynched = false; // NTP sincronizado
-bool scheduledCycleToday = false; // Para garantir que o ciclo agendado só corre uma vez por dia agendado
+bool systemTimeSynched = false;
+bool scheduledCycleToday = false;
 
-// --- Configurações de Log em Ficheiro ---
-#define LOG_FILE "/irrigation_log.txt"
-#define MAX_LOG_SIZE (10 * 1024) // 10KB para o tamanho máximo do log (ajuste conforme necessário)
+// System status
+unsigned long lastHeartbeat = 0;
+unsigned long lastConfigSync = 0;
 
 
 // --------------------------------------------------------------------------
@@ -651,44 +616,268 @@ void appendLogToFile(const String& message) {
 // Assumindo core recente onde LittleFS.h é suficiente.
 
 // --------------------------------------------------------------------------
-// Implementação das Funções de Comando Manual (Placeholders)
+// Implementação das Funções de Comando Manual
 // --------------------------------------------------------------------------
 
 /**
- * Placeholder para processar comandos recebidos (ex: via Serial, MQTT, HTTP Polling).
- * Esta função seria chamada no loop principal.
+ * Processa comandos recebidos via Serial, API polling ou outras fontes.
  */
 void processIncomingCommands() {
-    // Exemplo: Ler do Serial para teste
-    // if (Serial.available() > 0) {
-    //     String command = Serial.readStringUntil('\n');
-    //     command.trim();
-    //     Serial.print("[CMD] Comando recebido via Serial: ");
-    //     Serial.println(command);
+    // Processar comandos via Serial para debug/teste
+    if (Serial.available() > 0) {
+        String command = Serial.readStringUntil('\n');
+        command.trim();
+        Serial.print("[CMD] Comando recebido via Serial: ");
+        Serial.println(command);
 
-    //     if (command.startsWith("VALVE_ON_")) {
-    //         int valveNum = command.substring(9).toInt();
-    //         if (valveNum > 0 && valveNum <= NUM_VALVES) {
-    //             manualValveControl(valveNum - 1, true, "SERIAL");
-    //         }
-    //     } else if (command.startsWith("VALVE_OFF_")) {
-    //         int valveNum = command.substring(10).toInt();
-    //         if (valveNum > 0 && valveNum <= NUM_VALVES) {
-    //             manualValveControl(valveNum - 1, false, "SERIAL");
-    //         }
-    //     } else if (command == "START_CYCLE") {
-    //         manualStartFullCycle("SERIAL");
-    //     } else if (command == "STOP_ALL") {
-    //         manualStopAllValves("SERIAL");
-    //     } else {
-    //         Serial.println("[CMD] Comando serial desconhecido.");
-    //     }
-    // }
+        if (command.startsWith("VALVE_ON_")) {
+            int valveNum = command.substring(9).toInt();
+            if (valveNum > 0 && valveNum <= NUM_VALVES) {
+                manualValveControl(valveNum - 1, true, "SERIAL");
+            }
+        } else if (command.startsWith("VALVE_OFF_")) {
+            int valveNum = command.substring(10).toInt();
+            if (valveNum > 0 && valveNum <= NUM_VALVES) {
+                manualValveControl(valveNum - 1, false, "SERIAL");
+            }
+        } else if (command == "START_CYCLE") {
+            manualStartFullCycle("SERIAL");
+        } else if (command == "STOP_ALL") {
+            manualStopAllValves("SERIAL");
+        } else if (command == "STATUS") {
+            printSystemStatus();
+        } else if (command == "SYNC_TIME") {
+            syncTimeNTP();
+        } else if (command == "GET_CONFIG") {
+            getConfigFromAPI();
+        } else {
+            Serial.println("[CMD] Comando serial desconhecido.");
+        }
+    }
 
-    // Aqui seria o local para verificar:
-    // - Mensagens MQTT subscritas
-    // - Resposta de um pedido HTTP a /api/esp32/commands (polling)
-    // - Estado de botões físicos
+    // Polling de comandos da API (executar a cada 30 segundos)
+    static unsigned long lastCommandPoll = 0;
+    if (WiFi.status() == WL_CONNECTED && millis() - lastCommandPoll > 30000) {
+        pollAPICommands();
+        lastCommandPoll = millis();
+    }
+}
+
+/**
+ * Imprime o status atual do sistema via Serial.
+ */
+void printSystemStatus() {
+    Serial.println("\n=== STATUS DO SISTEMA ===");
+    Serial.print("WiFi: ");
+    Serial.println(WiFi.status() == WL_CONNECTED ? "Conectado" : "Desconectado");
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.print("IP: ");
+        Serial.println(WiFi.localIP());
+    }
+
+    Serial.print("NTP Sincronizado: ");
+    Serial.println(systemTimeSynched ? "Sim" : "Não");
+    if (systemTimeSynched) {
+        Serial.print("Hora atual: ");
+        Serial.println(timeClient.getFormattedTime());
+    }
+
+    Serial.print("RTC Encontrado: ");
+    Serial.println(rtcFound ? "Sim" : "Não");
+
+    Serial.println("\nEstado das Válvulas:");
+    for (int i = 0; i < NUM_VALVES; i++) {
+        bool state = digitalRead(VALVE_PINS[i]) == RELAY_ON_STATE;
+        Serial.print("  Válvula ");
+        Serial.print(i + 1);
+        Serial.print(": ");
+        Serial.println(state ? "LIGADA" : "DESLIGADA");
+    }
+
+    Serial.print("Ciclo Ativo: ");
+    if (currentValveInSequence != -1) {
+        Serial.print("Sim (Válvula ");
+        Serial.print(currentValveInSequence + 1);
+        Serial.println(")");
+    } else {
+        Serial.println("Não");
+    }
+    Serial.println("========================\n");
+}
+
+/**
+ * Obtém configuração da API Laravel.
+ */
+void getConfigFromAPI() {
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("[API] WiFi desconectado. Impossível obter configuração.");
+        return;
+    }
+
+    HTTPClient http;
+    String serverPath = String(API_SERVER_HOST) + String(API_ENDPOINT_CONFIG);
+
+    http.begin(serverPath);
+    http.addHeader("Authorization", "Bearer " + String(API_TOKEN));
+    http.addHeader("Accept", "application/json");
+
+    Serial.println("[API] Obtendo configuração do servidor...");
+    int httpResponseCode = http.GET();
+
+    if (httpResponseCode > 0) {
+        Serial.print("[API] Resposta da configuração: ");
+        Serial.println(httpResponseCode);
+
+        if (httpResponseCode == HTTP_CODE_OK) {
+            String payload = http.getString();
+            Serial.println("[API] Configuração recebida:");
+            Serial.println(payload);
+
+            // Parse da configuração JSON
+            JsonDocument doc;
+            DeserializationError error = deserializeJson(doc, payload);
+
+            if (!error) {
+                if (doc["success"]) {
+                    JsonObject data = doc["data"];
+                    Serial.println("[CONFIG] Processando configuração...");
+
+                    // Processar válvulas
+                    if (data.containsKey("valves")) {
+                        JsonArray valves = data["valves"];
+                        Serial.print("[CONFIG] Válvulas configuradas: ");
+                        Serial.println(valves.size());
+                    }
+
+                    // Processar agendamentos
+                    if (data.containsKey("schedules")) {
+                        JsonArray schedules = data["schedules"];
+                        Serial.print("[CONFIG] Agendamentos ativos: ");
+                        Serial.println(schedules.size());
+                    }
+
+                    // Sincronizar hora do servidor
+                    if (data.containsKey("server_time")) {
+                        Serial.print("[CONFIG] Hora do servidor: ");
+                        Serial.println(data["server_time"].as<String>());
+                    }
+                }
+            } else {
+                Serial.print("[CONFIG] Erro ao parsear JSON: ");
+                Serial.println(error.c_str());
+            }
+        }
+    } else {
+        Serial.print("[API] Erro ao obter configuração: ");
+        Serial.println(httpResponseCode);
+    }
+
+    http.end();
+}
+
+/**
+ * Faz polling de comandos pendentes na API.
+ */
+void pollAPICommands() {
+    if (WiFi.status() != WL_CONNECTED) {
+        return;
+    }
+
+    HTTPClient http;
+    String serverPath = String(API_SERVER_HOST) + "/api/esp32/commands";
+
+    http.begin(serverPath);
+    http.addHeader("Authorization", "Bearer " + String(API_TOKEN));
+    http.addHeader("Accept", "application/json");
+
+    int httpResponseCode = http.GET();
+
+    if (httpResponseCode == HTTP_CODE_OK) {
+        String payload = http.getString();
+        JsonDocument doc;
+        DeserializationError error = deserializeJson(doc, payload);
+
+        if (!error && doc["success"]) {
+            JsonArray commands = doc["commands"];
+
+            for (JsonObject command : commands) {
+                String type = command["type"];
+                Serial.print("[API_CMD] Comando recebido: ");
+                Serial.println(type);
+
+                if (type == "VALVE_CONTROL") {
+                    int valveNum = command["valve_number"];
+                    bool state = command["state"];
+                    if (valveNum >= 1 && valveNum <= NUM_VALVES) {
+                        manualValveControl(valveNum - 1, state, "API");
+                    }
+                } else if (type == "START_CYCLE") {
+                    manualStartFullCycle("API");
+                } else if (type == "STOP_ALL") {
+                    manualStopAllValves("API");
+                } else if (type == "SYNC_TIME") {
+                    syncTimeNTP();
+                }
+            }
+        }
+    }
+
+    http.end();
+}
+
+/**
+ * Implementação básica do RTC (pode ser expandida).
+ */
+void initRTC() {
+    Serial.println("[RTC] Inicializando RTC...");
+    if (rtc.begin()) {
+        Serial.println("[RTC] RTC inicializado com sucesso.");
+        rtcFound = true;
+
+        if (rtc.lostPower()) {
+            Serial.println("[RTC] RTC perdeu energia. Será sincronizado com NTP.");
+            rtcTimeReliable = false;
+        } else {
+            rtcTimeReliable = true;
+        }
+    } else {
+        Serial.println("[RTC] Falha ao inicializar RTC.");
+        rtcFound = false;
+    }
+}
+
+/**
+ * Obtém a hora atual (prioriza NTP, fallback para RTC).
+ */
+DateTime getCurrentTime() {
+    if (systemTimeSynched) {
+        return DateTime(timeClient.getEpochTime());
+    } else if (rtcFound) {
+        return rtc.now();
+    } else {
+        // Retorna uma data padrão se não houver fonte de tempo
+        return DateTime(2024, 1, 1, 0, 0, 0);
+    }
+}
+
+/**
+ * Verifica se o tempo do sistema é confiável.
+ */
+bool isSystemTimeReliable() {
+    return systemTimeSynched || (rtcFound && rtcTimeReliable);
+}
+
+/**
+ * Formata DateTime para string.
+ */
+String formatDateTime(const DateTime& dt) {
+    char buffer[20];
+    sprintf(buffer, "%04d-%02d-%02d %02d:%02d:%02d",
+            dt.year(), dt.month(), dt.day(),
+            dt.hour(), dt.minute(), dt.second());
+    return String(buffer);
+}ommandPoll = millis();
+    }
 }
 
 /**

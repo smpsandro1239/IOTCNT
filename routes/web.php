@@ -5,8 +5,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\ValveController;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\UserController;
-// Se for criar um AdminDashboardController, descomente a linha abaixo
-// use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\OperationLogController;
+use App\Http\Controllers\Admin\TelegramUserController;
+use App\Http\Controllers\TelegramController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +26,7 @@ Route::get('/', function () {
 });
 
 // Dashboard principal para utilizadores logados
-use App\Http{Controllers\UserDashboardController;
+use App\Http\Controllers\UserDashboardController;
 
 Route::get('/dashboard', [UserDashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -40,15 +42,8 @@ Route::middleware('auth')->group(function () {
 // Grupo de Rotas para Administração
 // Protegidas pelo middleware 'auth' (requer login) e 'role:admin' (requer papel de admin)
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Dashboard de Administração (Exemplo, precisaria de um AdminDashboardController)
-    /*
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard'); // Criar esta view: resources/views/admin/dashboard.blade.php
-    })->name('dashboard');
-    */
-    // Ou usando um controlador:
-    // Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-
+    // Dashboard de Administração
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // CRUD para Válvulas
     Route::resource('valves', ValveController::class);
@@ -59,12 +54,22 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // CRUD para Utilizadores
     Route::resource('users', UserController::class);
 
-    // Outras rotas de administração podem ser adicionadas aqui
-    // Ex: Route::get('operation-logs', [OperationLogController::class, 'index'])->name('logs.index');
-    // Ex: Route::get('telegram-users', [TelegramUserController::class, 'index'])->name('telegram.users.index');
+    // Gestão de Logs de Operação
+    Route::resource('logs', OperationLogController::class)->only(['index', 'show', 'destroy']);
+    Route::delete('logs/bulk-delete', [OperationLogController::class, 'bulkDelete'])->name('logs.bulk-delete');
+
+    // Gestão de Utilizadores Telegram
+    Route::resource('telegram-users', TelegramUserController::class)->only(['index', 'edit', 'update', 'destroy']);
+    Route::patch('telegram-users/{telegramUser}/authorize', [TelegramUserController::class, 'authorize'])->name('telegram-users.authorize');
+    Route::patch('telegram-users/{telegramUser}/revoke', [TelegramUserController::class, 'revoke'])->name('telegram-users.revoke');
 });
+
+// Rotas do Telegram Bot
+Route::post('/telegram/webhook', [TelegramController::class, 'webhook'])->name('telegram.webhook');
+Route::get('/telegram/set-webhook', [TelegramController::class, 'setWebhook'])->name('telegram.set-webhook');
+Route::get('/telegram/remove-webhook', [TelegramController::class, 'removeWebhook'])->name('telegram.remove-webhook');
 
 
 // Rotas de autenticação (login, register, password reset, etc.)
 // Estas são incluídas pelo Laravel Breeze e estão em routes/auth.php
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

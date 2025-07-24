@@ -5,75 +5,102 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Valve;
 use App\Models\Schedule;
-use App\Models\User;
 use App\Models\OperationLog;
+use App\Models\TelegramUser;
+use App\Models\User;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
+    /**
+     * Display the admin dashboard.
+     */
     public function index()
     {
-        $totalValves = Valve::count();
-        $activeSchedules = Schedule::where('is_enabled', true)->count();
-        $totalUsers = User::count();
+        // Estatísticas gerais
+        $stats = [
+            'total_valves' => Valve::count(),
+            'active_valves' => Valve::where('current_state', true)->count(),
+            'total_schedules' => Schedule::count(),
+            'enabled_schedules' => Schedule::where('is_enabled', true)->count(),
+            'total_users' => User::count(),
+            'admin_users' => User::where('role', 'admin')->count(),
+            'telegram_users' => TelegramUser::count(),
+            'authorized_telegram_users' => TelegramUser::where('is_authorized', true)->count(),
+        ];
 
-        $valvesStatus = Valve::orderBy('valve_number')->get(['valve_number', 'name', 'current_state', 'last_activated_at']);
+        // Estado atual das válvulas
+        $valvesStatus = Valve::orderBy('valve_number')->get();
 
-        // Próximos agendamentos (exemplo simples para os próximos 7 dias)
-        // Esta lógica pode ser mais complexa para calcular a próxima execução real de cada agendamento
-        $upcomingSchedules = Schedule::where('is_enabled', true)
-            // ->where('day_of_week', '>=', Carbon::now()->dayOfWeek) // Simplificação, precisa de lógica mais robusta
-            ->orderBy('day_of_week')
-            ->orderBy('start_time')
-            ->take(5)
+        // Próximos agendamentos
+        $upcomingSchedules = $this->getUpcomingSchedules();
+
+        // Logs recentes (últimas 24h)
+        $recentLogs = OperationLog::with(['valve', 'user', 'telegramUser'])
+            ->where('logged_at', '>=', now()->subDay())
+            ->orderBy('logged_at', 'desc')
+            ->take(10)
             ->get();
 
-        // Lógica mais precisa para próximos agendamentos
-        $nextOccurrences = [];
-        $schedules = Schedule::where('is_enabled', true)->get();
-        $today = Carbon::now();
-
-        foreach ($schedules as $schedule) {
-            $scheduleTime = Carbon::createFromTimeString($schedule->start_time);
-            for ($i = 0; $i < 7; $i++) { // Verificar nos próximos 7 dias
-                $checkDay = $today->copy()->addDays($i);
-                if ($checkDay->dayOfWeek == $schedule->day_of_week) {
-                    $occurrence = $checkDay->setTime($scheduleTime->hour, $scheduleTime->minute, $scheduleTime->second);
-                    if ($occurrence->isFuture()) {
-                        $nextOccurrences[] = [
-                            'name' => $schedule->name,
-                            'datetime' => $occurrence,
-                            'original_schedule' => $schedule // Para links ou mais detalhes
-                        ];
-                        break; // Pegar apenas a próxima ocorrência deste agendamento
-                    }
-                }
-            }
-        }
-        // Ordenar as ocorrências e pegar as primeiras 5
-        usort($nextOccurrences, function ($a, $b) {
-            return $a['datetime'] <=> $b['datetime'];
-        });
-        $upcomingSchedulesProcessed = array_slice($nextOccurrences, 0, 5);
-
-
-        $recentErrorLogs = OperationLog::whereIn('status', ['ERROR', 'CRITICAL'])
+        // Logs de erro recentes
+        $errorLogs = OperationLog::where('status', 'ERROR')
+            ->where('logged_at', '>=', now()->subDays(7))
             ->orderBy('logged_at', 'desc')
             ->take(5)
             ->get();
 
-        $recentSystemLogs = OperationLog::orderBy('logged_at', 'desc')
-            ->take(5)
+        // Atividade por fonte (últimos 7 dias)
+        $activityBySource = OperationLog::where('logged_at', '>=', now()->subDays(7))
+            ->selectRaw('source, COUNT(*) as count')
+            ->groupBy('source')
+            ->orderBy('count', 'desc')
             ->get();
 
         return view('admin.dashboard', compact(
-            'totalValves',
-            'activeSchedules',
-            'totalUsers',
+            'stats',
             'valvesStatus',
-            'upcomingSchedulesProcessed', // Usar esta variável processada
-            'recentErrorLogs',
-            'recentSystemLogs'
+            'upcomingSchedules',
+            'recentLogs',
+            'errorLogs',
+            'activityBySource'
         ));
+    }
+
+    /**
+     * Get upcoming schedules for the next 7 days.
+     */
+    private function getUpcomingSchedules()
+    {
+        $schedules = Schedule::where('is_enabled', true)->get();
+        $upcomingSchedules = [];
+        $today = Carbon::now();
+
+        foreach ($schedules as $schedule) {
+            $scheduleTime = Carbon::createFromTimeString($schedule->start_time);
+
+            for ($i = 0; $i < 7; $i++) {
+                $checkDay = $today->copy()->addDays($i);
+
+                if ($checkDay->dayOfWeek == $schedule->day_of_week) {
+                    $occurrence = $checkDay->setTime($scheduleTime->hour, $scheduleTime->minute, $scheduleTime->second);
+
+                    if ($occurrence->isFuture()) {
+                        $upcomingSchedules[] = [
+                            'schedule' => $schedule,
+                            'datetime' => $occurrence,
+                            'days_until' => $i
+                        ];
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Ordenar por data
+        usort($upcomingSchedules, function ($a, $b) {
+            return $a['datetime'] <=> $b['datetime'];
+        });
+
+        return array_slice($upcomingSchedules, 0, 5);
     }
 }

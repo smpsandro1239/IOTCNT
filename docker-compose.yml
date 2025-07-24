@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  # Laravel Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iotcnt_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - iotcnt_network
+    depends_on:
+      - database
+      - redis
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=database
+      - DB_DATABASE=iotcnt
+      - DB_USERNAME=iotcnt_user
+      - DB_PASSWORD=secure_password_here
+      - REDIS_HOST=redis
+
+  # Nginx Web Server
+  webserver:
+    image: nginx:alpine
+    container_name: iotcnt_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./docker/nginx/ssl/:/etc/nginx/ssl/
+    networks:
+      - iotcnt_network
+    depends_on:
+      - app
+
+  # MySQL Database
+  database:
+    image: mysql:8.0
+    container_name: iotcnt_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: iotcnt
+      MYSQL_USER: iotcnt_user
+      MYSQL_PASSWORD: secure_password_here
+      MYSQL_ROOT_PASSWORD: root_password_here
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    ports:
+      - "3306:3306"
+    networks:
+      - iotcnt_network
+
+  # Redis Cache
+  redis:
+    image: redis:alpine
+    container_name: iotcnt_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - iotcnt_network
+
+  # Queue Worker
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iotcnt_queue
+    restart: unless-stopped
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - iotcnt_network
+    depends_on:
+      - database
+      - redis
+    environment:
+      - APP_ENV=production
+      - DB_HOST=database
+      - REDIS_HOST=redis
+
+  # Scheduler (Cron)
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iotcnt_scheduler
+    restart: unless-stopped
+    command: /bin/sh -c "while true; do php artisan schedule:run; sleep 60; done"
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - iotcnt_network
+    depends_on:
+      - database
+      - redis
+    environment:
+      - APP_ENV=production
+      - DB_HOST=database
+      - REDIS_HOST=redis
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  iotcnt_network:
+    driver: bridge

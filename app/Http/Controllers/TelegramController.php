@@ -7,9 +7,18 @@ use Illuminate\Support\Facades\Log;
 use Telegram\Bot\Laravel\Facades\Telegram; // Importar a Facade
 use App\Models\TelegramUser;
 use App\Models\OperationLog;
+use App\Models\Valve;
+use App\Models\Schedule;
+use App\Services\TelegramNotificationService;
 
 class TelegramController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(TelegramNotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
     /**
      * Handle incoming Telegram updates.
      *
@@ -106,30 +115,234 @@ class TelegramController extends Controller
                 $responseText = "Olá {$telegramUser->first_name}! Bem-vindo ao Sistema de Controlo de Irrigação.\n";
                 $responseText .= "Comandos disponíveis:\n";
                 $responseText .= "/status - Estado atual das válvulas\n";
-                // Adicionar mais comandos à medida que são implementados
-                // $responseText .= "/log - Últimos eventos registados\n";
-                // $responseText .= "/ligar <N> - Ligar válvula N\n";
-                // $responseText .= "/desligar <N> - Desligar válvula N\n";
+                $responseText .= "/logs - Últimos eventos do sistema\n";
+                $responseText .= "/schedules - Ver agendamentos ativos\n";
+
                 if ($telegramUser->authorization_level === 'admin') {
-                    // $responseText .= "/iniciarciclo - Forçar início do ciclo\n";
-                    // $responseText .= "/pararciclo - Parar ciclo em curso\n";
+                    $responseText .= "\n🔧 *Comandos de Admin:*\n";
+                    $responseText .= "/emergency_stop - Parar todas as válvulas\n";
+                    $responseText .= "/start_cycle - Iniciar ciclo manual\n";
+                    $responseText .= "/system_status - Estado detalhado do sistema\n";
+                    $responseText .= "/valve_on [N] - Ligar válvula N\n";
+                    $responseText .= "/valve_off [N] - Desligar válvula N\n";
                 }
                 Telegram::sendMessage(['chat_id' => $chatId, 'text' => $responseText]);
                 break;
 
             case '/status':
-                // Lógica para obter o estado das válvulas (do ESP32 ou da BD)
-                // Exemplo:
-                // $valvesStatus = Valve::all()->map(function ($valve) {
-                // return "Válvula {$valve->valve_number} ({$valve->name}): " . ($valve->current_state ? 'Ligada' : 'Desligada');
-                // })->implode("\n");
-                // Telegram::sendMessage(['chat_id' => $chatId, 'text' => "Estado das Válvulas:\n{$valvesStatus}"]);
-                Telegram::sendMessage(['chat_id' => $chatId, 'text' => 'Funcionalidade /status ainda em desenvolvimento.']);
+                $valves = Valve::orderBy('valve_number')->get();
+                $statusText = "🌱 *Estado das Válvulas*\n\n";
+
+                foreach ($valves as $valve) {
+                    $status = $valve->current_state ? '🟢 Ligada' : '🔴 Desligada';
+                    $lastActivated = $valve->last_activated_at ?
+                        $valve->last_activated_at->diffForHumans() : 'Nunca';
+
+                    $statusText .= "💧 *Válvula {$valve->valve_number}* ({$valve->name})\n";
+                    $statusText .= "   Estado: {$status}\n";
+                    $statusText .= "   Última ativação: {$lastActivated}\n\n";
+                }
+
+                Telegram::sendMessage([
+                    'chat_id' => $chatId,
+                    'text' => $statusText,
+                    'parse_mode' => 'Markdown'
+                ]);
                 break;
 
-            // Adicionar outros casos para /log, /ligar, /desligar, etc.
+            case '/logs':
+                $recentLogs = OperationLog::orderBy('logged_at', 'desc')
+                    ->take(5)
+                    ->get();
+
+                $logsText = "📋 *Últimos Eventos*\n\n";
+
+                foreach ($recentLogs as $log) {
+                    $icon = match ($log->status) {
+                        'SUCCESS' => '✅',
+                        'ERROR' => '❌',
+                        'WARNING' => '⚠️',
+                        default => 'ℹ️'
+                    };
+
+                    $logsText .= "{$icon} *{$log->event_type}*\n";
+                    $logsText .= "   {$log->message}\n";
+                    $logsText .= "   📅 {$log->logged_at->format('d/m H:i')}\n\n";
+                }
+
+                Telegram::sendMessage([
+                    'chat_id' => $chatId,
+                    'text' => $logsText,
+                    'parse_mode' => 'Markdown'
+                ]);
+                break;
+
+            case '/schedules':
+                $schedules = Schedule::where('is_enabled', true)->get();
+                $schedulesText = "⏰ *Agendamentos Ativos*\n\n";
+
+                foreach ($schedules as $schedule) {
+                    $dayName = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][$schedule->day_of_week];
+                    $schedulesText .= "📅 *{$schedule->name}*\n";
+                    $schedulesText .= "   Dia: {$dayName}\n";
+                    $schedulesText .= "   Hora: {$schedule->start_time}\n";
+                    $schedulesText .= "   Duração: {$schedule->per_valve_duration_minutes}min/válvula\n\n";
+                }
+
+                if ($schedules->isEmpty()) {
+                    $schedulesText .= "Nenhum agendamento ativo.";
+                }
+
+                Telegram::sendMessage([
+                    'chat_id' => $chatId,
+                    'text' => $schedulesText,
+                    'parse_mode' => 'Markdown'
+                ]);
+                break;
+
+            case '/emergency_stop':
+                if ($telegramUser->authorization_level !== 'admin') {
+                    Telegram::sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => '❌ Acesso negado. Apenas administradores podem usar este comando.'
+                    ]);
+                    break;
+                }
+
+                // Parar todas as válvulas
+                Valve::query()->update(['current_state' => false]);
+
+                // Log da operação de emergência
+                OperationLog::create([
+                    'telegram_user_id' => $telegramUser->id,
+                    'event_type' => 'EMERGENCY_STOP_TELEGRAM',
+                    'message' => "Paragem de emergência ativada via Telegram por {$telegramUser->first_name}",
+                    'source' => 'TELEGRAM_BOT',
+                    'status' => 'WARNING',
+                    'details' => [
+                        'telegram_user_id' => $telegramUser->id,
+                        'chat_id' => $chatId,
+                        'stopped_valves' => Valve::count()
+                    ]
+                ]);
+
+                Telegram::sendMessage([
+                    'chat_id' => $chatId,
+                    'text' => '🚨 *PARAGEM DE EMERGÊNCIA ATIVADA*\n\nTodas as válvulas foram desligadas imediatamente.',
+                    'parse_mode' => 'Markdown'
+                ]);
+
+                // Notify all admins about emergency stop
+                $this->notificationService->sendToAdmins(
+                    "🚨 *PARAGEM DE EMERGÊNCIA*\n\nAtivada por {$telegramUser->first_name} via Telegram\n📅 " . now()->format('d/m/Y H:i')
+                );
+                break;
+
+            case '/start_cycle':
+                if ($telegramUser->authorization_level !== 'admin') {
+                    Telegram::sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => '❌ Acesso negado. Apenas administradores podem usar este comando.'
+                    ]);
+                    break;
+                }
+
+                // Log the manual cycle start
+                OperationLog::create([
+                    'telegram_user_id' => $telegramUser->id,
+                    'event_type' => 'MANUAL_CYCLE_START_TELEGRAM',
+                    'message' => "Ciclo manual iniciado via Telegram por {$telegramUser->first_name}",
+                    'source' => 'TELEGRAM_BOT',
+                    'status' => 'INFO',
+                    'details' => [
+                        'telegram_user_id' => $telegramUser->id,
+                        'chat_id' => $chatId
+                    ]
+                ]);
+
+                Telegram::sendMessage([
+                    'chat_id' => $chatId,
+                    'text' => '🌱 *Ciclo de Irrigação Iniciado*\n\nO ciclo manual foi iniciado com sucesso.',
+                    'parse_mode' => 'Markdown'
+                ]);
+
+                $this->notificationService->notifyCycleStart('TELEGRAM');
+                break;
+
+            case '/system_status':
+                if ($telegramUser->authorization_level !== 'admin') {
+                    Telegram::sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => '❌ Acesso negado. Apenas administradores podem usar este comando.'
+                    ]);
+                    break;
+                }
+
+                $this->notificationService->sendSystemStatus();
+                break;
 
             default:
+                // Check for valve control commands
+                if (preg_match('/^\/valve_(on|off)\s+(\d+)$/', $text, $matches)) {
+                    if ($telegramUser->authorization_level !== 'admin') {
+                        Telegram::sendMessage([
+                            'chat_id' => $chatId,
+                            'text' => '❌ Acesso negado. Apenas administradores podem controlar válvulas.'
+                        ]);
+                        break;
+                    }
+
+                    $action = $matches[1]; // 'on' or 'off'
+                    $valveNumber = (int) $matches[2];
+
+                    if ($valveNumber < 1 || $valveNumber > 5) {
+                        Telegram::sendMessage([
+                            'chat_id' => $chatId,
+                            'text' => '❌ Número de válvula inválido. Use números de 1 a 5.'
+                        ]);
+                        break;
+                    }
+
+                    $valve = Valve::where('valve_number', $valveNumber)->first();
+                    if (!$valve) {
+                        Telegram::sendMessage([
+                            'chat_id' => $chatId,
+                            'text' => '❌ Válvula não encontrada.'
+                        ]);
+                        break;
+                    }
+
+                    $newState = $action === 'on';
+                    $valve->update([
+                        'current_state' => $newState,
+                        'last_activated_at' => $newState ? now() : $valve->last_activated_at
+                    ]);
+
+                    // Log the operation
+                    OperationLog::create([
+                        'valve_id' => $valve->id,
+                        'telegram_user_id' => $telegramUser->id,
+                        'event_type' => $newState ? 'MANUAL_VALVE_ON_TELEGRAM' : 'MANUAL_VALVE_OFF_TELEGRAM',
+                        'message' => "Válvula {$valve->name} " . ($newState ? 'ligada' : 'desligada') . " via Telegram por {$telegramUser->first_name}",
+                        'source' => 'TELEGRAM_BOT',
+                        'status' => 'SUCCESS',
+                        'details' => [
+                            'valve_number' => $valveNumber,
+                            'new_state' => $newState,
+                            'telegram_user_id' => $telegramUser->id
+                        ]
+                    ]);
+
+                    $statusText = $newState ? '🟢 ligada' : '🔴 desligada';
+                    Telegram::sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => "💧 Válvula {$valveNumber} ({$valve->name}) foi {$statusText} com sucesso.",
+                        'parse_mode' => 'Markdown'
+                    ]);
+
+                    $this->notificationService->notifyValveChange($valveNumber, $newState, 'TELEGRAM_BOT');
+                    break;
+                }
                 Telegram::sendMessage(['chat_id' => $chatId, 'text' => 'Comando não reconhecido. Use /start para ver a lista de comandos.']);
                 break;
         }
@@ -167,8 +380,8 @@ class TelegramController extends Controller
         $webhookUrl = route('telegram.webhook'); // Garanta que esta rota está definida e é HTTPS
 
         if (strpos($webhookUrl, 'localhost') !== false && app()->environment('production')) {
-             Log::error('Tentativa de definir webhook para localhost em produção. Abortado.');
-             return "ERRO: Não defina webhook para localhost em produção!";
+            Log::error('Tentativa de definir webhook para localhost em produção. Abortado.');
+            return "ERRO: Não defina webhook para localhost em produção!";
         }
         if (strpos($webhookUrl, 'http://') !== false && strpos($webhookUrl, 'localhost') === false) {
             Log::warning('Webhook URL não é HTTPS: ' . $webhookUrl);

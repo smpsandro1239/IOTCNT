@@ -1,0 +1,113 @@
+# Laravel
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+docker-compose.override.yml
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+docker-compose.prod.yml
+docker/mysql/data/
+docker/redis/data/
+docker/nginx/ssl/*.key
+docker/nginx/ssl/*.crt
+docker/nginx/ssl/*.pem
+
+# Logs
+*.log
+logs/
+storage/logs/*.log
+
+# Database
+*.sql
+*.sqlite
+*.db
+backup_*.sql
+
+# ESP32
+esp32_irrigation_controller/.pio/
+esp32_irrigation_controller/.vscode/
+esp32_irrigation_controller/lib/
+esp32_irrigation_controller/test/
+esp32_irrigation_controller/platformio.ini.local
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Composer
+composer.phar
+/vendor/
+
+# NPM
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Production builds
+/public/build
+/public/mix-manifest.json
+
+# Cache
+bootstrap/cache/*.php
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# Uploads
+storage/app/public/uploads/*
+!storage/app/public/uploads/.gitkeep
+
+# Backups
+backups/
+*.backup
+
+# SSL Certificates
+*.key
+*.crt
+*.pem
+*.p12
+
+# Configuration overrides
+config/local.php
+config/production.php
+
+# Personal notes
+TODO.md
+NOTES.md
+personal/
+
+# System files
+.htaccess.local
+robots.txt.local

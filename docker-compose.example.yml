@@ -1,0 +1,269 @@
+# ==========================================================================
+# IOTCNT - Docker Compose Configuration Example
+# ==========================================================================
+#
+# IMPORTANTE:
+# 1. Copie este arquivo para docker-compose.yml
+# 2. Ajuste as configurações conforme seu ambiente
+# 3. Altere TODAS as senhas padrão
+# 4. Para produção, use volumes externos para dados persistentes
+#
+
+version: '3.8'
+
+services:
+  # --------------------------------------------------------------------------
+  # Laravel Application
+  # --------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iotcnt_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - iotcnt_network
+    depends_on:
+      - database
+      - redis
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=database
+      - DB_DATABASE=iotcnt
+      - DB_USERNAME=iotcnt_user
+      - DB_PASSWORD=ALTERE_ESTA_SENHA_SEGURA  # ⚠️ ALTERAR
+      - REDIS_HOST=redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --------------------------------------------------------------------------
+  # Nginx Web Server
+  # --------------------------------------------------------------------------
+  webserver:
+    image: nginx:alpine
+    container_name: iotcnt_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"      # HTTP
+      - "443:443"    # HTTPS (configure SSL certificates)
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./docker/nginx/ssl/:/etc/nginx/ssl/  # Para certificados SSL
+    networks:
+      - iotcnt_network
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --------------------------------------------------------------------------
+  # MySQL Database
+  # --------------------------------------------------------------------------
+  database:
+    image: mysql:8.0
+    container_name: iotcnt_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: iotcnt
+      MYSQL_USER: iotcnt_user
+      MYSQL_PASSWORD: ALTERE_ESTA_SENHA_SEGURA      # ⚠️ ALTERAR
+      MYSQL_ROOT_PASSWORD: ALTERE_SENHA_ROOT_MYSQL   # ⚠️ ALTERAR
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d  # Scripts de inicialização
+    ports:
+      - "3306:3306"  # ⚠️ Remover em produção ou alterar porta
+    networks:
+      - iotcnt_network
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # --------------------------------------------------------------------------
+  # Redis Cache & Queue
+  # --------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: iotcnt_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"  # ⚠️ Remover em produção ou alterar porta
+    volumes:
+      - redis_data:/data
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - iotcnt_network
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # --------------------------------------------------------------------------
+  # Queue Worker
+  # --------------------------------------------------------------------------
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iotcnt_queue
+    restart: unless-stopped
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600 --memory=512
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - iotcnt_network
+    depends_on:
+      - database
+      - redis
+    environment:
+      - APP_ENV=production
+      - DB_HOST=database
+      - REDIS_HOST=redis
+    healthcheck:
+      test: ["CMD", "ps", "aux", "|", "grep", "queue:work"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+
+  # --------------------------------------------------------------------------
+  # Scheduler (Cron Jobs)
+  # --------------------------------------------------------------------------
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iotcnt_scheduler
+    restart: unless-stopped
+    command: /bin/sh -c "while true; do php artisan schedule:run; sleep 60; done"
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - iotcnt_network
+    depends_on:
+      - database
+      - redis
+    environment:
+      - APP_ENV=production
+      - DB_HOST=database
+      - REDIS_HOST=redis
+
+  # --------------------------------------------------------------------------
+  # Backup Service (opcional)
+  # --------------------------------------------------------------------------
+  backup:
+    image: mysql:8.0
+    container_name: iotcnt_backup
+    restart: "no"
+    volumes:
+      - ./backups:/backups
+      - ./docker/backup/backup.sh:/backup.sh
+    networks:
+      - iotcnt_network
+    depends_on:
+      - database
+    environment:
+      - MYSQL_HOST=database
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=ALTERE_SENHA_ROOT_MYSQL  # ⚠️ ALTERAR
+      - MYSQL_DATABASE=iotcnt
+    # Executar backup manualmente: docker-compose run --rm backup /backup.sh
+    profiles:
+      - backup
+
+  # --------------------------------------------------------------------------
+  # Monitoring (opcional - descomente se necessário)
+  # --------------------------------------------------------------------------
+  # monitoring:
+  #   image: prom/prometheus
+  #   container_name: iotcnt_monitoring
+  #   restart: unless-stopped
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./docker/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+  #   networks:
+  #     - iotcnt_network
+  #   profiles:
+  #     - monitoring
+
+# ==========================================================================
+# Volumes
+# ==========================================================================
+volumes:
+  mysql_data:
+    driver: local
+    # Para produção, considere usar volumes externos:
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: /opt/iotcnt/mysql_data
+
+  redis_data:
+    driver: local
+    # Para produção, considere usar volumes externos:
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: /opt/iotcnt/redis_data
+
+# ==========================================================================
+# Networks
+# ==========================================================================
+networks:
+  iotcnt_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# ==========================================================================
+# Configurações Adicionais para Produção
+# ==========================================================================
+#
+# 1. SSL/TLS:
+#    - Coloque certificados em docker/nginx/ssl/
+#    - Configure nginx para HTTPS
+#
+# 2. Firewall:
+#    - Remova exposição de portas da DB e Redis
+#    - Use apenas portas 80 e 443
+#
+# 3. Backup:
+#    - Configure backups automáticos
+#    - Use volumes externos para dados
+#
+# 4. Monitorização:
+#    - Ative healthchecks
+#    - Configure alertas
+#
+# 5. Segurança:
+#    - Use secrets do Docker para senhas
+#    - Configure usuários não-root nos containers
+#
+# 6. Performance:
+#    - Ajuste recursos (CPU/RAM) conforme necessário
+#    - Configure cache adequadamente
+#
+# ==========================================================================

@@ -23,7 +23,7 @@ services:
       - DB_HOST=database
       - DB_DATABASE=iotcnt
       - DB_USERNAME=iotcnt_user
-      - DB_PASSWORD=secure_password_here
+      - DB_PASSWORD=1234567890aa
       - REDIS_HOST=redis
 
   # Nginx Web Server
@@ -51,8 +51,8 @@ services:
     environment:
       MYSQL_DATABASE: iotcnt
       MYSQL_USER: iotcnt_user
-      MYSQL_PASSWORD: secure_password_here
-      MYSQL_ROOT_PASSWORD: root_password_here
+      MYSQL_PASSWORD: 1234567890aa
+      MYSQL_ROOT_PASSWORD: 1234567890aa
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
@@ -111,16 +111,4 @@ services:
       - database
       - redis
     environment:
-      - APP_ENV=production
-      - DB_HOST=database
-      - REDIS_HOST=redis
-
-volumes:
-  mysql_data:
-    driver: local
-  redis_data:
-    driver: local
-
-networks:
-  iotcnt_network:
-    driver: bridge
+      - APP_ENV=productio

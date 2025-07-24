@@ -1,0 +1,2 @@
+# This directory is for file uploads
+# Laravel will create a symbolic link from public/storage to this directory

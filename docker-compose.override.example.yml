@@ -1,0 +1,150 @@
+# ==========================================================================
+# IOTCNT - Docker Compose Override Example
+# ==========================================================================
+#
+# Este arquivo permite sobrescrever configurações do docker-compose.yml
+# sem modificar o arquivo principal.
+#
+# IMPORTANTE:
+# 1. Copie este arquivo para docker-compose.override.yml
+# 2. Ajuste conforme suas necessidades de desenvolvimento
+# 3. O arquivo docker-compose.override.yml é ignorado pelo Git
+#
+
+version: '3.8'
+
+services:
+  # --------------------------------------------------------------------------
+  # Development Overrides
+  # --------------------------------------------------------------------------
+
+  # Laravel App - Development Settings
+  app:
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - LOG_LEVEL=debug
+    volumes:
+      # Mount source code for live editing
+      - ./:/var/www:cached
+      # Override PHP configuration for development
+      - ./docker/php/local.dev.ini:/usr/local/etc/php/conf.d/local.ini
+    # Enable Xdebug for debugging
+    # environment:
+    #   - XDEBUG_MODE=debug
+    #   - XDEBUG_CONFIG=client_host=host.docker.internal
+
+  # Database - Development Settings
+  database:
+    ports:
+      - "3306:3306"  # Expose MySQL port for external tools
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_dev_password
+      - MYSQL_PASSWORD=dev_password
+    # Mount custom MySQL config for development
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/my.dev.cnf:/etc/mysql/my.cnf
+
+  # Redis - Development Settings
+  redis:
+    ports:
+      - "6379:6379"  # Expose Redis port for external tools
+
+  # Web Server - Development Settings
+  webserver:
+    volumes:
+      - ./:/var/www:cached
+      - ./docker/nginx/conf.d/app.dev.conf:/etc/nginx/conf.d/default.conf
+
+  # --------------------------------------------------------------------------
+  # Additional Development Services
+  # --------------------------------------------------------------------------
+
+  # Mailpit for email testing
+  mailpit:
+    image: axllent/mailpit
+    container_name: iotcnt_mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - iotcnt_network
+    profiles:
+      - dev
+
+  # phpMyAdmin for database management
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: iotcnt_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=database
+      - PMA_USER=root
+      - PMA_PASSWORD=root_dev_password
+    networks:
+      - iotcnt_network
+    depends_on:
+      - database
+    profiles:
+      - dev
+
+  # Redis Commander for Redis management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: iotcnt_redis_commander
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    networks:
+      - iotcnt_network
+    depends_on:
+      - redis
+    profiles:
+      - dev
+
+  # Node.js for frontend development (if needed)
+  node:
+    image: node:18-alpine
+    container_name: iotcnt_node
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www:cached
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3000:3000"  # Vite dev server
+      - "5173:5173"  # Alternative Vite port
+    networks:
+      - iotcnt_network
+    profiles:
+      - frontend
+
+# --------------------------------------------------------------------------
+# Development Volumes
+# --------------------------------------------------------------------------
+volumes:
+  mysql_data:
+    driver: local
+
+# --------------------------------------------------------------------------
+# Usage Examples:
+# --------------------------------------------------------------------------
+#
+# Start with development tools:
+# docker-compose --profile dev up -d
+#
+# Start with frontend development:
+# docker-compose --profile frontend up -d
+#
+# Start everything:
+# docker-compose --profile dev --profile frontend up -d
+#
+# Override specific service:
+# docker-compose up -d app database
+#
+# --------------------------------------------------------------------------

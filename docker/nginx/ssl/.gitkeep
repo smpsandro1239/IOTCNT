@@ -1,0 +1,11 @@
+# This directory is for SSL certificates
+# Place your SSL certificates here:
+# - your-domain.com.crt
+# - your-domain.com.key
+# - ca-bundle.crt (if needed)
+
+# For Let's Encrypt certificates:
+# sudo cp /etc/letsencrypt/live/your-domain.com/fullchain.pem ./your-domain.com.crt
+# sudo cp /etc/letsencrypt/live/your-domain.com/privkey.pem ./your-domain.com.key
+
+# Remember to update nginx configuration to use these certificates

@@ -62,7 +62,7 @@ class TelegramUserController extends Controller
   /**
    * Authorize a Telegram user.
    */
-  public function authorize(TelegramUser $telegramUser)
+  public function authorizeUser(TelegramUser $telegramUser)
   {
     $telegramUser->update([
       'is_authorized' => true,

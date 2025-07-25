@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
+
 use App\Http\Controllers\Admin\ValveController;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\UserController;
@@ -32,12 +32,7 @@ Route::get('/dashboard', [UserDashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Rotas de Profile (Breeze default)
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+// Profile routes removed - not using Laravel Breeze
 
 // Grupo de Rotas para Administração
 // Protegidas pelo middleware 'auth' (requer login) e 'role:admin' (requer papel de admin)
@@ -60,7 +55,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Gestão de Utilizadores Telegram
     Route::resource('telegram-users', TelegramUserController::class)->only(['index', 'edit', 'update', 'destroy']);
-    Route::patch('telegram-users/{telegramUser}/authorize', [TelegramUserController::class, 'authorize'])->name('telegram-users.authorize');
+    Route::patch('telegram-users/{telegramUser}/authorize', [TelegramUserController::class, 'authorizeUser'])->name('telegram-users.authorize');
     Route::patch('telegram-users/{telegramUser}/revoke', [TelegramUserController::class, 'revoke'])->name('telegram-users.revoke');
 });
 

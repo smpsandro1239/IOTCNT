@@ -39,20 +39,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
 
-# Copy existing application directory contents
-COPY . /var/www
-
-# Copy existing application directory permissions
+# Copy existing application directory contents with correct ownership
 COPY --chown=www:www . /var/www
 
-# Change current user to www
-USER www
-
-# Install composer dependencies
+# Install composer dependencies as root to avoid permission issues
 RUN composer install --no-dev --optimize-autoloader
-
-# Change back to root for final setup
-USER root
 
 # Set proper permissions
 RUN chown -R www:www /var/www

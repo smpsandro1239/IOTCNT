@@ -1,12 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: IOTCNT System Startup and Verification Script
-:: This script initializes and checks the complete IOTCNT irrigation system
-
+:: IOTCNT System Startup Script - Fixed Version
 title IOTCNT - Sistema de Irrigacao IoT
 
-:: Colors for output (Windows 10+)
+:: Colors for output
 set "GREEN=[92m"
 set "RED=[91m"
 set "YELLOW=[93m"
@@ -21,7 +19,6 @@ echo  🌱 IOTCNT - Sistema de Irrigacao IoT
 echo  ========================================
 echo %RESET%
 
-:: Function to print colored messages
 goto :main
 
 :print_info
@@ -64,11 +61,14 @@ if %errorLevel% neq 0 (
     exit /b 1
 )
 
-docker-compose --version >nul 2>&1
+docker compose version >nul 2>&1
 if %errorLevel% neq 0 (
-    call :print_error "Docker Compose nao encontrado!"
-    pause
-    exit /b 1
+    docker-compose --version >nul 2>&1
+    if %errorLevel% neq 0 (
+        call :print_error "Docker Compose nao encontrado!"
+        pause
+        exit /b 1
+    )
 )
 
 call :print_success "Docker e Docker Compose encontrados"
@@ -99,6 +99,30 @@ if not exist ".env" (
 
 call :print_success "Arquivo .env encontrado"
 
+:: Copy other config files if missing
+call :print_step "Verificando outros arquivos de configuracao..."
+
+if not exist "docker\nginx\conf.d\app.conf" (
+    if exist "docker\nginx\conf.d\app.example.conf" (
+        copy "docker\nginx\conf.d\app.example.conf" "docker\nginx\conf.d\app.conf" >nul
+        call :print_info "Configuracao Nginx criada"
+    )
+)
+
+if not exist "docker\mysql\my.cnf" (
+    if exist "docker\mysql\my.example.cnf" (
+        copy "docker\mysql\my.example.cnf" "docker\mysql\my.cnf" >nul
+        call :print_info "Configuracao MySQL criada"
+    )
+)
+
+if not exist "docker\redis\redis.conf" (
+    if exist "docker\redis\redis.example.conf" (
+        copy "docker\redis\redis.example.conf" "docker\redis\redis.conf" >nul
+        call :print_info "Configuracao Redis criada"
+    )
+)
+
 :: Stop any running containers
 call :print_step "Parando containers existentes..."
 docker compose down --remove-orphans >nul 2>&1
@@ -110,30 +134,32 @@ if %errorLevel% neq 0 (
 call :print_step "Construindo e iniciando containers Docker..."
 echo %YELLOW%Isto pode demorar alguns minutos na primeira execucao...%RESET%
 
-docker compose build --no-cache
+:: Try docker compose first, then docker-compose
+docker compose build --no-cache >nul 2>&1
 if %errorLevel% neq 0 (
-    call :print_error "Falha ao construir containers!"
-    echo.
     call :print_info "Tentando com docker-compose..."
     docker-compose build --no-cache
     if %errorLevel% neq 0 (
-        call :print_error "Falha ao construir containers com ambos os comandos!"
+        call :print_error "Falha ao construir containers!"
+        echo.
+        call :print_info "Executando diagnostico..."
+        docker compose config
         pause
         exit /b 1
     )
+    set USE_COMPOSE=docker-compose
+) else (
+    set USE_COMPOSE=docker compose
 )
 
-docker compose up -d
+%USE_COMPOSE% up -d
 if %errorLevel% neq 0 (
     call :print_error "Falha ao iniciar containers!"
     echo.
-    call :print_info "Tentando com docker-compose..."
-    docker-compose up -d
-    if %errorLevel% neq 0 (
-        call :print_error "Falha ao iniciar containers com ambos os comandos!"
-        pause
-        exit /b 1
-    )
+    call :print_info "Verificando logs..."
+    %USE_COMPOSE% logs
+    pause
+    exit /b 1
 )
 
 call :print_success "Containers iniciados com sucesso"
@@ -145,41 +171,46 @@ ping 127.0.0.1 -n 31 >nul
 
 :: Check container status
 call :print_step "Verificando status dos containers..."
-docker compose ps 2>nul || docker-compose ps
+%USE_COMPOSE% ps
 
 :: Run Laravel setup
 call :print_step "Configurando aplicacao Laravel..."
 
 :: Install dependencies
 call :print_info "Instalando dependencias..."
-docker compose exec -T app composer install --no-dev --optimize-autoloader 2>nul
+%USE_COMPOSE% exec -T app composer install --no-dev --optimize-autoloader
 if %errorLevel% neq 0 (
-    docker-compose exec -T app composer install --no-dev --optimize-autoloader
-    if %errorLevel% neq 0 (
-        call :print_warning "Falha ao instalar dependencias, mas continuando..."
-    )
+    call :print_warning "Falha ao instalar dependencias, mas continuando..."
 )
 
 :: Generate app key
 call :print_info "Gerando chave da aplicacao..."
-docker compose exec -T app php artisan key:generate --force 2>nul || docker-compose exec -T app php artisan key:generate --force
+%USE_COMPOSE% exec -T app php artisan key:generate --force
 
 :: Run migrations
 call :print_info "Executando migracoes da base de dados..."
-docker compose exec -T app php artisan migrate --force 2>nul || docker-compose exec -T app php artisan migrate --force
+%USE_COMPOSE% exec -T app php artisan migrate --force
 if %errorLevel% neq 0 (
     call :print_error "Falha nas migracoes da base de dados!"
-    goto :show_logs
+    echo.
+    call :print_info "Verificando logs da base de dados..."
+    %USE_COMPOSE% logs database
+    pause
+    exit /b 1
 )
+
+:: Seed database
+call :print_info "Populando base de dados..."
+%USE_COMPOSE% exec -T app php artisan db:seed --force
 
 :: Cache configuration
 call :print_info "Otimizando configuracao..."
-docker compose exec -T app php artisan config:cache 2>nul || docker-compose exec -T app php artisan config:cache
-docker compose exec -T app php artisan route:cache 2>nul || docker-compose exec -T app php artisan route:cache
-docker compose exec -T app php artisan view:cache 2>nul || docker-compose exec -T app php artisan view:cache
+%USE_COMPOSE% exec -T app php artisan config:cache
+%USE_COMPOSE% exec -T app php artisan route:cache
+%USE_COMPOSE% exec -T app php artisan view:cache
 
 :: Create storage link
-docker compose exec -T app php artisan storage:link 2>nul || docker-compose exec -T app php artisan storage:link
+%USE_COMPOSE% exec -T app php artisan storage:link
 
 call :print_success "Configuracao Laravel concluida"
 
@@ -189,7 +220,9 @@ call :print_step "Verificando sistema..."
 :: Check web server
 call :print_info "Testando servidor web..."
 ping 127.0.0.1 -n 6 >nul
-curl -s -o nul -w "%%{http_code}" http://localhost 2>nul | findstr "200" >nul
+
+:: Try to test web server
+powershell -Command "try { $response = Invoke-WebRequest -Uri 'http://localhost' -TimeoutSec 10; if ($response.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>&1
 if %errorLevel% equ 0 (
     call :print_success "Servidor web respondendo (HTTP 200)"
 ) else (
@@ -198,26 +231,11 @@ if %errorLevel% equ 0 (
 
 :: Check database connection
 call :print_info "Testando conexao com base de dados..."
-docker compose exec -T app php artisan tinker --execute="try{DB::connection()->getPdo(); echo 'Database OK';}catch(Exception $e){echo 'Database Error';}" 2>nul | findstr "Database OK" >nul
-if %errorLevel% neq 0 (
-    docker-compose exec -T app php artisan tinker --execute="try{DB::connection()->getPdo(); echo 'Database OK';}catch(Exception $e){echo 'Database Error';}" 2>nul | findstr "Database OK" >nul
-)
+%USE_COMPOSE% exec -T app php artisan tinker --execute="try { DB::connection()->getPdo(); echo 'Database OK'; } catch(Exception \$e) { echo 'Database Error'; exit(1); }" 2>nul | findstr "Database OK" >nul
 if %errorLevel% equ 0 (
     call :print_success "Conexao com base de dados OK"
 ) else (
     call :print_warning "Problema na conexao com base de dados"
-)
-
-:: Check Redis connection
-call :print_info "Testando conexao com Redis..."
-docker compose exec -T app php artisan tinker --execute="try{Redis::ping(); echo 'Redis OK';}catch(Exception $e){echo 'Redis Error';}" 2>nul | findstr "Redis OK" >nul
-if %errorLevel% neq 0 (
-    docker-compose exec -T app php artisan tinker --execute="try{Redis::ping(); echo 'Redis OK';}catch(Exception $e){echo 'Redis Error';}" 2>nul | findstr "Redis OK" >nul
-)
-if %errorLevel% equ 0 (
-    call :print_success "Conexao com Redis OK"
-) else (
-    call :print_warning "Problema na conexao com Redis"
 )
 
 :: Show system information
@@ -242,9 +260,9 @@ echo   5. Configurar ESP32 com endpoint da API
 echo   6. Configurar webhook do Telegram
 echo.
 echo %WHITE%Comandos Uteis:%RESET%
-echo   - Ver logs: docker-compose logs -f
-echo   - Parar sistema: docker-compose down
-echo   - Reiniciar: docker-compose restart
+echo   - Ver logs: %USE_COMPOSE% logs -f
+echo   - Parar sistema: %USE_COMPOSE% down
+echo   - Reiniciar: %USE_COMPOSE% restart
 echo.
 
 :: Ask if user wants to open web interface
@@ -256,18 +274,9 @@ if /i "!open_web!"=="s" (
 :: Ask if user wants to see logs
 set /p show_logs_choice="Ver logs em tempo real? (s/n): "
 if /i "!show_logs_choice!"=="s" (
-    goto :show_logs
+    %USE_COMPOSE% logs -f
 )
 
-goto :end
-
-:show_logs
-echo.
-call :print_info "Mostrando logs em tempo real (Ctrl+C para sair)..."
-echo.
-docker compose logs -f 2>nul || docker-compose logs -f
-
-:end
 echo.
 call :print_success "Script concluido!"
 pause

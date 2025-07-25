@@ -71,5 +71,4 @@ Route::get('/telegram/remove-webhook', [TelegramController::class, 'removeWebhoo
 
 
 // Rotas de autenticação (login, register, password reset, etc.)
-// Estas são incluídas pelo Laravel Breeze e estão em routes/auth.php
-require __DIR__ . '/auth.php';
+// Note: Authentication routes would be handled by Laravel Breeze if installed

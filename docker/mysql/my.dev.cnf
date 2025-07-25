@@ -1,0 +1,110 @@
+# ==========================================================================
+# IOTCNT - MySQL Development Configuration
+# ==========================================================================
+
+[mysqld]
+# Basic Settings
+user = mysql
+pid-file = /var/run/mysqld/mysqld.pid
+socket = /var/run/mysqld/mysqld.sock
+port = 3306
+basedir = /usr
+datadir = /var/lib/mysql
+tmpdir = /tmp
+lc-messages-dir = /usr/share/mysql
+
+# Character set and collation
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+init-connect = 'SET NAMES utf8mb4'
+
+# Development settings - more permissive
+max_connections = 200
+max_connect_errors = 100
+max_allowed_packet = 128M
+interactive_timeout = 28800
+wait_timeout = 28800
+connect_timeout = 60
+
+# Memory settings for development (adjust based on available RAM)
+innodb_buffer_pool_size = 512M
+key_buffer_size = 64M
+query_cache_size = 64M
+query_cache_limit = 4M
+sort_buffer_size = 4M
+read_buffer_size = 2M
+read_rnd_buffer_size = 4M
+join_buffer_size = 4M
+tmp_table_size = 128M
+max_heap_table_size = 128M
+
+# InnoDB Settings
+innodb_file_per_table = 1
+innodb_flush_log_at_trx_commit = 2
+innodb_log_buffer_size = 32M
+innodb_log_file_size = 256M
+innodb_flush_method = O_DIRECT
+innodb_lock_wait_timeout = 120
+innodb_io_capacity = 1000
+
+# Query Cache
+query_cache_type = 1
+query_cache_size = 64M
+query_cache_limit = 4M
+
+# Logging - verbose for development
+log-error = /var/log/mysql/error.log
+
+# General log for debugging (disable in production)
+general_log = 1
+general_log_file = /var/log/mysql/general.log
+
+# Slow query log
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/slow.log
+long_query_time = 1
+
+# Binary log
+log-bin = mysql-bin
+binlog_format = ROW
+expire_logs_days = 3
+max_binlog_size = 100M
+
+# Security Settings (relaxed for development)
+local-infile = 1
+symbolic-links = 0
+skip-name-resolve = 1
+
+# Performance Schema
+performance_schema = ON
+performance_schema_max_table_instances = 1000
+performance_schema_max_table_handles = 10000
+
+# SQL Mode (less strict for development)
+sql_mode = STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+
+# Time Zone
+default-time-zone = '+00:00'
+
+# Development specific settings
+innodb_stats_on_metadata = 0
+innodb_buffer_pool_dump_at_shutdown = 1
+innodb_buffer_pool_load_at_startup = 1
+
+[client]
+default-character-set = utf8mb4
+port = 3306
+socket = /var/run/mysqld/mysqld.sock
+
+[mysql]
+default-character-set = utf8mb4
+
+[mysqldump]
+default-character-set = utf8mb4
+single-transaction = true
+routines = true
+triggers = true
+
+[mysqld_safe]
+log-error = /var/log/mysql/error.log
+pid-file = /var/run/mysqld/mysqld.pid

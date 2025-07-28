@@ -1,4 +1,4 @@
-# IOTCNT - Controlo de Centrais de Frio e Prevenção de Legionella
+# IOTCNT - Controlo e arrefecimento de Centrais de Frio e Prevenção de Legionella
 
 Desenvolvido para **O Continente**, líder incomparável no retalho alimentar em Portugal, o IOTCNT é um sistema de automação de vanguarda baseado em ESP32 e Laravel. 
 Com **Melhoria Contínua** como motor e **Empatia** no cuidado com a saúde dos clientes, este projeto redefine os padrões de segurança e eficiência. 

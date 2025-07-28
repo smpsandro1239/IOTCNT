@@ -1,44 +1,62 @@
-# IOTCNT - Sistema de Controlo de Irrigação IoT
+# IOTCNT - Revolução no Controlo de Centrais de Frio e Prevenção de Legionella
 
-Um sistema completo de automação de irrigação baseado em ESP32 e Laravel, com controlo via web e Telegram.
+Desenvolvido para **O Continente**, líder incomparável no retalho alimentar em Portugal, o IOTCNT é um sistema de automação de vanguarda baseado em ESP32 e Laravel. Com **Melhoria Contínua** como motor e **Empatia** no cuidado com a saúde dos clientes, este projeto redefine os padrões de segurança e eficiência. Alinhado com as políticas exemplares de higiene e segurança alimentar do **Continente**, o IOTCNT garante o arrefecimento otimizado de centrais de frio e a prevenção rigorosa da legionella, protegendo vidas com inovação e responsabilidade.
 
-## 🌱 Características
+## 🩺 Missão: Saúde Pública com Empatia e Melhoria Contínua
 
-- **Controlo Automático**: Agendamento de irrigação por dias da semana
-- **Controlo Manual**: Interface web e comandos Telegram para controlo manual
-- **5 Válvulas**: Suporte para até 5 válvulas de irrigação independentes
-- **Monitorização**: Logs detalhados de todas as operações
-- **Notificações**: Alertas via Telegram para administradores
-- **API REST**: Comunicação entre ESP32 e servidor Laravel
-- **Dashboard**: Interface web responsiva para gestão completa
+No **Continente**, a saúde e o bem-estar dos clientes são a essência de cada decisão. Com **Empatia** no centro da nossa missão, investimos em soluções inovadoras para assegurar a segurança alimentar e a saúde pública. O IOTCNT transforma o desafio de prevenir a legionella numa solução automatizada e inteligente, eliminando o risco de água estagnada, otimizando o arrefecimento de condensadores e reduzindo custos operacionais. Com **Melhoria Contínua**, este sistema evolui constantemente, garantindo supervisão total via web e Telegram, sempre em linha com a excelência que define **O Continente**.
 
-## 🏗️ Arquitetura
+## 🚀 Características que Redefinem o Futuro
+
+- **Automação de Elite**: Ciclos automáticos de arrefecimento e renovação de água, eliminando riscos de legionella.
+- **Prevenção Implacável**: Agendamentos inteligentes para evitar água parada, com **Empatia** pela saúde pública.
+- **Controlo Total**: Interface web intuitiva e comandos Telegram para ajustes imediatos.
+- **Monitorização Avançada**: Logs detalhados em tempo real de operações, alertas e anomalias.
+- **Notificações Instantâneas**: Alertas via Telegram para respostas ágeis, refletindo **Melhoria Contínua**.
+- **API REST Poderosa**: Integração perfeita entre ESP32 e backend Laravel.
+- **Dashboard Visionário**: Supervisão completa com uma interface web moderna e responsiva.
+
+## 🏗️ Arquitetura de Classe Mundial
 
 ### Componentes Principais
 
-- **ESP32 Firmware**: Controlo direto das válvulas e comunicação com API
-- **Laravel Backend**: API REST, gestão de utilizadores, agendamentos e logs
-- **Interface Web**: Dashboard para administração e monitorização
-- **Bot Telegram**: Controlo remoto e notificações
-- **Base de Dados**: MySQL para armazenamento de dados
-- **Redis**: Cache e gestão de filas
+- **ESP32 Firmware**: Controlo preciso de bombas e válvulas, com comunicação robusta via API.
+- **Laravel Backend**: API REST de alto desempenho para gestão de utilizadores, agendamentos e logs.
+- **Interface Web**: Dashboard dinâmico para administração e monitorização em tempo real.
+- **Bot Telegram**: Controlo remoto e alertas instantâneos, com **Empatia** na interação com os utilizadores.
+- **Base de Dados MySQL**: Armazenamento seguro de eventos, configurações e históricos.
+- **Redis**: Gestão de filas e cache para operações ultra-rápidas.
 
-### Tecnologias Utilizadas
+### Tecnologias de Ponta
 
-- **Hardware**: ESP32, Relés, Válvulas solenoides
-- **Backend**: Laravel 10, PHP 8.2, MySQL 8.0, Redis
-- **Frontend**: Blade Templates, Tailwind CSS, Alpine.js
-- **Comunicação**: HTTP REST API, Telegram Bot API
-- **Deployment**: Docker, Docker Compose, Nginx
+- **Hardware**: ESP32, relés de alta fiabilidade, sensores de temperatura e fluxo.
+- **Backend**: Laravel 9, PHP 8.1+, MySQL 8.0, Redis.
+- **Frontend**: Blade Templates, Tailwind CSS, Alpine.js.
+- **Comunicação**: HTTP REST API, Telegram Bot API.
+- **Deployment**: Docker, Docker Compose, Nginx.
 
-## 🚀 Instalação Rápida
+## ⚡ Instalação Rápida e Eficiente
 
 ### Pré-requisitos
 
-- Docker e Docker Compose
+- PHP 8.1+ ou Docker
+- Composer
+- MySQL/SQLite
 - Git
 
-### Deployment Automático
+### Setup Local Simplificado
+
+```bash
+git clone https://github.com/seu-usuario/iotcnt.git
+cd iotcnt
+composer install
+cp .env.example .env
+php artisan key:generate
+php simple_setup.php
+php artisan serve
+```
+
+### Deployment Automático com Docker
 
 ```bash
 git clone https://github.com/seu-usuario/iotcnt.git
@@ -46,44 +64,31 @@ cd iotcnt
 ./deploy.sh
 ```
 
-O script de deployment irá:
-1. Configurar o ambiente Docker
-2. Instalar dependências Laravel
-3. Configurar base de dados
-4. Criar utilizador administrador
-5. Configurar Telegram webhook
+O script de deployment do **Continente**:
 
-## 📱 Configuração ESP32
+- Configura o ambiente Docker com precisão.
+- Instala dependências Laravel automaticamente.
+- Configura a base de dados e cria um utilizador administrador.
+- Ativa o webhook Telegram para controlo instantâneo.
 
-### Hardware
+## ⚙️ Configuração do Sistema
 
+### ESP32: O Coração da Automação
+
+- **Ligações**: ESP32 conectado a relés para bombas e válvulas, garantindo circulação de água precisa.
+- **Configuração**: Edite `esp32_irrigation_controller/config.h`:
+
+```c
+#define WIFI_SSID "SUA_REDE_WIFI"
+#define WIFI_PASSWORD "SUA_SENHA_WIFI"
+#define API_SERVER_HOST "http://seu-servidor.com"
+#define API_TOKEN "seu_token_sanctum"
+#define VALVE_PIN_1 23
+#define VALVE_PIN_2 22
+// ... etc
 ```
-ESP32 → Módulo Relé → Válvulas Solenoides
-```
 
-### Configuração Firmware
-
-1. Abrir `esp32_irrigation_controller/config.h`
-2. Configurar WiFi:
-   ```cpp
-   #define WIFI_SSID "SUA_REDE_WIFI"
-   #define WIFI_PASSWORD "SUA_SENHA_WIFI"
-   ```
-
-3. Configurar API:
-   ```cpp
-   #define API_SERVER_HOST "http://seu-servidor.com"
-   #define API_TOKEN "seu_token_sanctum"
-   ```
-
-4. Configurar pinos das válvulas:
-   ```cpp
-   #define VALVE_PIN_1 23
-   #define VALVE_PIN_2 22
-   // ... etc
-   ```
-
-### Upload do Firmware
+- **Upload do Firmware**:
 
 ```bash
 cd esp32_irrigation_controller
@@ -91,88 +96,83 @@ pio run --target upload
 pio device monitor
 ```
 
-## 🤖 Configuração Telegram
+### Telegram: Controlo com Empatia
 
-### Criar Bot
+1. Crie um bot com o @BotFather e obtenha o token.
+2. Configure no `.env`:
 
-1. Falar com @BotFather no Telegram
-2. Criar novo bot: `/newbot`
-3. Obter token do bot
-4. Configurar no `.env`:
-   ```
-   TELEGRAM_BOT_TOKEN=seu_token_aqui
-   ```
+```env
+TELEGRAM_BOT_TOKEN=seu_token_aqui
+```
 
-### Configurar Webhook
+3. Ative o webhook: `https://seu-dominio.com/telegram/set-webhook`.
 
-Aceder a: `https://seu-dominio.com/telegram/set-webhook`
+#### Comandos Disponíveis
 
-### Comandos Disponíveis
+**Utilizadores**:
 
-**Utilizadores:**
-- `/start` - Iniciar bot
-- `/status` - Estado das válvulas
-- `/logs` - Últimos eventos
-- `/schedules` - Agendamentos ativos
+- `/start`: Inicia a interação com o bot.
+- `/status`: Estado em tempo real dos condensadores.
+- `/logs`: Histórico de eventos críticos.
+- `/schedules`: Agendamentos ativos.
 
-**Administradores:**
-- `/emergency_stop` - Parar todas as válvulas
-- `/start_cycle` - Iniciar ciclo manual
-- `/valve_on [N]` - Ligar válvula N
-- `/valve_off [N]` - Desligar válvula N
-- `/system_status` - Estado detalhado
+**Administradores**:
 
-## 🌐 Interface Web
+- `/emergency_stop`: Para todas as operações imediatamente.
+- `/start_cycle`: Inicia um ciclo manual de arrefecimento.
+- `/valve_on [N]`: Ativa a válvula N.
+- `/valve_off [N]`: Desativa a válvula N.
+- `/system_status`: Relatório detalhado do sistema.
 
-### Acesso
+## 💻 Interface Web: Visão Total
 
-- **URL**: `http://localhost` (ou seu domínio)
-- **Admin**: Acesso completo a todas as funcionalidades
-- **Utilizador**: Visualização de estado e logs
+- **URL**: `http://localhost:8000` (ou seu domínio).
+- **Login**: admin@iotcnt.local
+- **Password**: admin123
+- **Admin**: Gestão completa de agendamentos, logs, estados e utilizadores.
+- **Utilizador**: Visualização de estados e históricos em tempo real, com **Empatia** na usabilidade.
 
 ### Funcionalidades
 
-#### Dashboard Principal
-- Estado atual das válvulas
-- Próximos agendamentos
-- Logs recentes do sistema
+- **Dashboard Principal**: Visão imediata do estado dos condensadores, agendamentos e logs.
+- **Administração**: Configuração de válvulas, agendamentos, utilizadores e análise de eventos.
 
-#### Administração
-- Gestão de válvulas
-- Configuração de agendamentos
-- Gestão de utilizadores
-- Logs de operação
-- Utilizadores Telegram
+## 📊 Endpoints da API: Conectividade Sem Limites
 
-## 📊 API Endpoints
+| Endpoint                        | Função                                         |
+|----------------------------------|------------------------------------------------|
+| GET  `/api/esp32/config`         | Obtém configurações do sistema                 |
+| POST `/api/esp32/valve-status`   | Reporta estado das válvulas                    |
+| POST `/api/esp32/log`            | Regista eventos e alertas                      |
+| GET  `/api/esp32/commands`       | Obtém comandos pendentes para o ESP32         |
+| POST `/api/esp32/control-valve`  | Ativa/desativa válvulas                        |
+| POST `/api/esp32/start-cycle`    | Inicia ciclo de arrefecimento/renovação        |
+| POST `/api/esp32/stop-all`       | Interrompe todas as operações                  |
 
-### ESP32 Endpoints
+## 🗄️ Modelos de Dados
 
-```
-GET  /api/esp32/config          - Obter configuração
-POST /api/esp32/valve-status    - Reportar estado válvula
-POST /api/esp32/log            - Enviar log
-GET  /api/esp32/commands       - Obter comandos pendentes
-```
+- `users`: Gestão de utilizadores do sistema.
+- `valves`: Configurações de condensadores e válvulas.
+- `schedules`: Agendamentos para ciclos automáticos.
+- `operation_logs`: Registo detalhado de operações e alertas.
+- `telegram_users`: Utilizadores associados ao Telegram.
+- `system_settings`: Parâmetros globais do sistema.
 
-### Controlo Manual
+## 🛡️ Segurança Intransigente
 
-```
-POST /api/esp32/control-valve  - Controlar válvula
-POST /api/esp32/start-cycle    - Iniciar ciclo
-POST /api/esp32/stop-all       - Parar todas
-```
+- **Autenticação**: Laravel Sanctum para proteção robusta da API.
+- **Permissões**: Roles Admin/Utilizador com controlo granular.
+- **Comunicação**: HTTPS obrigatório em produção para máxima segurança.
+- **Tokens**: Tokens de API seguros e renováveis.
+- **Validação**: Sanitização rigorosa de entradas para prevenir vulnerabilidades.
 
-## 🗄️ Base de Dados
+## 🏥 Impacto Transformador
 
-### Tabelas Principais
-
-- `users` - Utilizadores do sistema
-- `valves` - Configuração das válvulas
-- `schedules` - Agendamentos de irrigação
-- `operation_logs` - Logs de todas as operações
-- `telegram_users` - Utilizadores Telegram
-- `system_settings` - Configurações do sistema
+- **Saúde Pública Garantida**: Eliminação do risco de legionella com automação precisa, refletindo **Empatia** pelos clientes.
+- **Eficiência Inigualável**: Arrefecimento otimizado, reduzindo custos operacionais.
+- **Transparência Total**: Auditoria digital com logs detalhados e monitorização em tempo real.
+- **Resposta Imediata**: Alertas instantâneos para falhas, alinhados com **Melhoria Contínua**.
+- **Sustentabilidade**: Redução de desperdícios e manutenção otimizada, com responsabilidade ambiental.
 
 ## 🔧 Configuração Avançada
 
@@ -185,10 +185,11 @@ APP_ENV=production
 APP_URL=https://seu-dominio.com
 
 # Base de Dados
-DB_HOST=database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
 DB_DATABASE=iotcnt
-DB_USERNAME=iotcnt_user
-DB_PASSWORD=senha_segura
+DB_USERNAME=root
+DB_PASSWORD=
 
 # Telegram
 TELEGRAM_BOT_TOKEN=seu_token
@@ -200,77 +201,49 @@ ESP32_API_TOKEN=token_esp32
 
 ### Docker Compose
 
-O sistema inclui:
-- **app**: Aplicação Laravel
-- **webserver**: Nginx
-- **database**: MySQL 8.0
-- **redis**: Cache e filas
-- **queue**: Worker de filas
-- **scheduler**: Tarefas agendadas
+Inclui:
 
-## 📈 Monitorização
+- `app`: Aplicação Laravel de alto desempenho.
+- `webserver`: Nginx para acesso seguro.
+- `database`: MySQL 8.0 para dados robustos.
+- `redis`: Cache e filas para operações ágeis.
+- `queue`: Worker de filas para notificações.
+- `scheduler`: Tarefas agendadas para automação.
 
-### Logs
+## 📈 Monitorização de Excelência
 
-- **Sistema**: `/admin/logs`
-- **ESP32**: Logs locais em LittleFS
-- **Telegram**: Notificações automáticas
+- **Logs**: Acessíveis via `/admin/logs` e Telegram, com histórico completo.
+- **Métricas**: Estado em tempo real, histórico de ativações e estatísticas de uso.
+- **Alertas**: Notificações automáticas para erros, garantindo resposta imediata e **Melhoria Contínua**.
 
-### Métricas
+## 🚨 Resolução de Problemas
 
-- Estado das válvulas em tempo real
-- Histórico de ativações
-- Estatísticas de uso por fonte
-- Alertas de erro
+**ESP32 não conecta**:
 
-## 🔒 Segurança
+- Verifique credenciais WiFi, URL do servidor e token API.
+- Consulte logs via `pio device monitor`.
 
-### Autenticação
+**Telegram sem resposta**:
 
-- Laravel Sanctum para API
-- Roles (admin/user)
-- Autorização Telegram por admin
+- Confirme token e webhook.
+- Verifique autorização de utilizadores.
 
-### Comunicação
+**Válvulas inativas**:
 
-- HTTPS recomendado para produção
-- Tokens API seguros
-- Validação de entrada
-
-## 🚨 Troubleshooting
-
-### ESP32 não conecta
-
-1. Verificar credenciais WiFi
-2. Verificar URL do servidor
-3. Verificar token API
-4. Verificar logs serial
-
-### Telegram não funciona
-
-1. Verificar token do bot
-2. Configurar webhook
-3. Autorizar utilizadores
-4. Verificar logs
-
-### Válvulas não respondem
-
-1. Verificar ligações hardware
-2. Verificar pinos configurados
-3. Verificar estado dos relés
-4. Verificar logs ESP32
+- Inspecione ligações físicas e pinos configurados.
+- Analise logs do ESP32.
 
 ## 📝 Desenvolvimento
 
 ### Estrutura do Projeto
 
 ```
-├── app/                    # Laravel application
-├── esp32_irrigation_controller/  # ESP32 firmware
-├── resources/views/        # Blade templates
-├── docker/                # Docker configuration
-├── routes/                # Laravel routes
-└── database/migrations/   # Database migrations
+├── app/                    # Core da aplicação Laravel
+├── esp32_irrigation_controller/  # Firmware ESP32
+├── resources/views/        # Templates Blade
+├── docker/                # Configuração Docker
+├── routes/                # Rotas Laravel
+└── database/migrations/   # Migrações da base de dados
 ```
 
 ### Comandos Úteis
@@ -294,23 +267,23 @@ pio run --target upload
 
 ## 🤝 Contribuição
 
-1. Fork o projeto
-2. Criar branch para feature (`git checkout -b feature/nova-funcionalidade`)
-3. Commit das alterações (`git commit -am 'Adicionar nova funcionalidade'`)
-4. Push para branch (`git push origin feature/nova-funcionalidade`)
-5. Criar Pull Request
+1. Faça um fork do projeto.
+2. Crie uma branch para sua funcionalidade (`git checkout -b feature/nova-funcionalidade`).
+3. Registe as alterações (`git commit -am 'Adiciona nova funcionalidade'`).
+4. Envie para a branch (`git push origin feature/nova-funcionalidade`).
+5. Crie um Pull Request.
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a Licença MIT - ver arquivo [LICENSE](LICENSE) para detalhes.
+Licença **MIT**. Consulte o arquivo `LICENSE` para detalhes.
 
 ## 🙏 Agradecimentos
 
-- Comunidade ESP32
-- Laravel Framework
-- Telegram Bot API
-- Contribuidores do projeto
+- Comunidade ESP32, por impulsionar a inovação em IoT.
+- Laravel Framework, por sua robustez e flexibilidade.
+- Telegram Bot API, por conectar o sistema ao mundo.
+- Equipa do **Continente**, por liderar com **Empatia** e **Melhoria Contínua** em higiene e segurança alimentar.
 
 ---
 
-**IOTCNT** - Irrigação Inteligente para o Futuro 🌱💧
+*IOTCNT - A Automação que Protege Vidas com Empatia e Eleva a Excelência do Continente* 🌡️💧

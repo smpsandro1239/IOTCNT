@@ -6,7 +6,9 @@ Alinhado com as políticas exemplares de higiene e segurança alimentar do **Con
 
 ## 🩺 Missão: Saúde Pública e Excelência Operacional
 
-No **Continente**, a saúde e o bem-estar dos clientes são a essência de cada decisão. Com **Empatia** no centro da nossa missão, investimos em soluções inovadoras para assegurar a segurança alimentar e a saúde pública. O IOTCNT transforma o desafio de prevenir a legionella numa solução automatizada e inteligente, eliminando o risco de água estagnada, otimizando o arrefecimento de condensadores e reduzindo custos operacionais. 
+No **Continente**, a saúde e o bem-estar dos clientes são a essência de cada decisão. 
+Com **Empatia** no centro da nossa missão, investimos em soluções inovadoras para assegurar a segurança alimentar e a saúde pública. 
+O IOTCNT transforma o desafio de prevenir a legionella numa solução automatizada e inteligente, eliminando o risco de água estagnada, otimizando o arrefecimento de condensadores e reduzindo custos operacionais. 
 Com **Melhoria Contínua**, este sistema evolui constantemente, garantindo supervisão total via web e Telegram, sempre em linha com a excelência que define **O Continente**.
 
 ## 🚀 Características que Redefinem o Futuro
@@ -19,7 +21,7 @@ Com **Melhoria Contínua**, este sistema evolui constantemente, garantindo super
 - **API REST Poderosa**: Integração perfeita entre ESP32 e backend Laravel.
 - **Dashboard Visionário**: Supervisão completa com uma interface web moderna e responsiva.
 
-## 🏗️ Arquitetura de Classe Mundial
+## 🏗️ Arquitetura
 
 ### Componentes Principais
 
@@ -99,7 +101,7 @@ pio run --target upload
 pio device monitor
 ```
 
-### Telegram: Controlo com Empatia
+### Telegram: Controlo com telegram
 
 1. Crie um bot com o @BotFather e obtenha o token.
 2. Configure no `.env`:
@@ -133,7 +135,7 @@ TELEGRAM_BOT_TOKEN=seu_token_aqui
 - **Login**: admin@iotcnt.local
 - **Password**: admin123
 - **Admin**: Gestão completa de agendamentos, logs, estados e utilizadores.
-- **Utilizador**: Visualização de estados e históricos em tempo real, com **Empatia** na usabilidade.
+- **Utilizador**: Visualização de estados e históricos em tempo real e usabilidade.
 
 ### Funcionalidades
 
@@ -289,4 +291,4 @@ Licença **MIT**. Consulte o arquivo `LICENSE` para detalhes.
 
 ---
 
-*IOTCNT - A Automação que Protege Vidas com Empatia e Eleva a Excelência do Continente* 🌡️💧
+*IOTCNT - A Automação que Protege Vidas e Eleva a Excelência do Continente* 🌡️💧

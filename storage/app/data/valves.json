@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "name": "V\u00e1lvula 1 - Jardim Principal",
+        "description": "Rega do jardim principal da frente",
+        "pin_number": 2,
+        "is_active": false,
+        "duration": 5
+    },
+    {
+        "id": 2,
+        "name": "V\u00e1lvula 2 - Horta",
+        "description": "Sistema de rega da horta",
+        "pin_number": 3,
+        "is_active": false,
+        "duration": 5
+    },
+    {
+        "id": 3,
+        "name": "V\u00e1lvula 3 - Relvado",
+        "description": "Aspersores do relvado",
+        "pin_number": 4,
+        "is_active": false,
+        "duration": 5
+    },
+    {
+        "id": 4,
+        "name": "V\u00e1lvula 4 - Vasos",
+        "description": "Rega dos vasos da varanda",
+        "pin_number": 5,
+        "is_active": false,
+        "duration": 5
+    },
+    {
+        "id": 5,
+        "name": "V\u00e1lvula 5 - Estufa",
+        "description": "Sistema de rega da estufa",
+        "pin_number": 6,
+        "is_active": false,
+        "duration": 5
+    }
+]

@@ -55,6 +55,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Dashboard de Administração
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
+    // API endpoints para dashboard de admin
+    Route::get('/api/metrics', [AdminDashboardController::class, 'getMetrics'])->name('api.metrics');
+    Route::get('/api/valve-usage', [AdminDashboardController::class, 'getValveUsage'])->name('api.valve-usage');
+    Route::get('/api/esp32-status', [AdminDashboardController::class, 'getEsp32Status'])->name('api.esp32-status');
+    Route::get('/api/dashboard-data', [AdminDashboardController::class, 'getDashboardData'])->name('api.dashboard-data');
+
+    // Ações do sistema
+    Route::post('/test-system', [AdminDashboardController::class, 'testSystem'])->name('test-system');
+    Route::post('/restart-esp32', [AdminDashboardController::class, 'restartEsp32'])->name('restart-esp32');
+    Route::get('/export/data', [AdminDashboardController::class, 'exportData'])->name('export.data');
+
     // CRUD para Válvulas
     Route::resource('valves', ValveController::class);
 

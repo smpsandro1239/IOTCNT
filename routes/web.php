@@ -37,6 +37,16 @@ Route::get('/dashboard/api/data', [UserDashboardController::class, 'apiData'])
     ->middleware(['auth'])
     ->name('dashboard.api.data');
 
+// Rotas para agendamentos de utilizadores
+use App\Http\Controllers\ScheduleController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('schedules', ScheduleController::class);
+    Route::patch('schedules/{schedule}/toggle', [ScheduleController::class, 'toggle'])->name('schedules.toggle');
+    Route::post('schedules/{schedule}/execute', [ScheduleController::class, 'execute'])->name('schedules.execute');
+    Route::get('api/schedules', [ScheduleController::class, 'apiIndex'])->name('schedules.api.index');
+});
+
 // Profile routes removed - not using Laravel Breeze
 
 // Grupo de Rotas para Administração

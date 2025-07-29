@@ -41,6 +41,16 @@ Route::middleware('auth:sanctum')->group(function () {
     // return response()->json(['commands' => []]); // Placeholder
     // });
 
+    // Rotas para interface web
+    Route::prefix('valve')->name('api.valve.')->group(function () {
+        Route::get('/status', [App\Http\Controllers\Api\ValveStatusController::class, 'index'])->name('status');
+        Route::get('/status/{valve}', [App\Http\Controllers\Api\ValveStatusController::class, 'show'])->name('show');
+        Route::post('/control', [App\Http\Controllers\Api\ValveStatusController::class, 'control'])->name('control');
+        Route::post('/start-cycle', [App\Http\Controllers\Api\ValveStatusController::class, 'startCycle'])->name('start-cycle');
+        Route::post('/stop-all', [App\Http\Controllers\Api\ValveStatusController::class, 'stopAll'])->name('stop-all');
+        Route::get('/stats', [App\Http\Controllers\Api\ValveStatusController::class, 'stats'])->name('stats');
+    });
+
     // Rota de teste para verificar o utilizador autenticado via token
     Route::get('/user', function (Request $request) {
         return $request->user(); // Retorna o utilizador associado ao token

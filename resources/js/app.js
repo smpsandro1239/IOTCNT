@@ -207,10 +207,158 @@ class IOTCNTApp {
     }
 }
 
+    // Estatísticas do Sistema
+    async fetchSystemStats() {
+        try {
+            const response = await window.axios.get('/api/valve/stats');
+            if (response.data.success) {
+                this.updateSystemStats(response.data.stats);
+            }
+        } catch (error) {
+            console.error('Erro ao obter estatísticas:', error);
+        }
+    }
+
+    updateSystemStats(stats) {
+        const elements = {
+            'active-valves-count': stats.active_valves,
+            'total-valves-count': stats.total_valves,
+            'operations-today-count': stats.total_operations_today,
+            'system-uptime': stats.system_uptime || '---'
+        };
+
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        });
+
+        // Atualizar timestamp
+        const lastUpdate = document.getElementById('last-update');
+        if (lastUpdate) {
+            lastUpdate.textContent = new Date().toLocaleTimeString('pt-PT');
+        }
+    }
+
+    // Logs do Sistema
+    async fetchRecentLogs() {
+        try {
+            const response = await window.axios.get('/api/logs?limit=10');
+            if (response.data.success) {
+                this.updateRecentLogs(response.data.logs);
+            }
+        } catch (error) {
+            console.error('Erro ao obter logs:', error);
+        }
+    }
+
+    updateRecentLogs(logs) {
+        const container = document.getElementById('recent-logs');
+        if (!container) return;
+
+        if (logs.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <p class="text-gray-500 dark:text-gray-400">Nenhuma atividade recente</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = logs.map(log => `
+            <div class="flex items-start justify-between py-3 px-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0 mt-1">
+                        <div class="w-2 h-2 rounded-full ${this.getLogColor(log.action)}"></div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            ${log.valve_name || 'Sistema'}
+                        </p>
+                        <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                            ${log.notes || log.action}
+                        </p>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                    ${this.formatDateTime(log.created_at)}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    getLogColor(action) {
+        const colorMap = {
+            'manual_on': 'bg-green-500',
+            'cycle_start': 'bg-green-500',
+            'scheduled_on': 'bg-green-500',
+            'manual_off': 'bg-red-500',
+            'cycle_stop': 'bg-red-500',
+            'scheduled_off': 'bg-red-500',
+            'system_start': 'bg-blue-500',
+            'esp32_connected': 'bg-blue-500'
+        };
+        return colorMap[action] || 'bg-gray-500';
+    }
+
+    // Verificação de Saúde do Sistema
+    async checkSystemHealth() {
+        try {
+            const response = await window.axios.get('/api/system/health');
+            if (response.data.success) {
+                this.updateSystemHealth(response.data.health);
+            }
+        } catch (error) {
+            console.error('Erro ao verificar saúde do sistema:', error);
+            this.updateSystemHealth({ status: 'error' });
+        }
+    }
+
+    updateSystemHealth(health) {
+        const statusElement = document.getElementById('system-status-text');
+        const statusCard = document.getElementById('system-status-card');
+
+        if (!statusElement || !statusCard) return;
+
+        let status = 'Online';
+        let colorClass = 'stat-card-green';
+        let textColor = 'text-green-600 dark:text-green-400';
+
+        if (health.status === 'error' || health.database !== 'ok') {
+            status = 'Offline';
+            colorClass = 'stat-card-red';
+            textColor = 'text-red-600 dark:text-red-400';
+        } else if (health.esp32_connection !== 'ok') {
+            status = 'Parcial';
+            colorClass = 'stat-card-yellow';
+            textColor = 'text-yellow-600 dark:text-yellow-400';
+        }
+
+        statusElement.textContent = status;
+        statusElement.className = `text-lg font-bold ${textColor}`;
+
+        // Atualizar classe do card
+        statusCard.className = statusCard.className.replace(/stat-card-(green|red|yellow)/g, '');
+        statusCard.classList.add(colorClass);
+    }
+
+    // Atualização Completa
+    async refreshAllData() {
+        await Promise.all([
+            this.fetchValveStatus(),
+            this.fetchSystemStats(),
+            this.checkSystemHealth()
+        ]);
+    }
+}
+
 // Funções globais para uso nos templates
 window.iotcnt = {
     startCycle: () => window.iotcntApp.startIrrigationCycle(),
     stopAll: () => window.iotcntApp.stopAllValves(),
+    refreshData: () => window.iotcntApp.refreshAllData(),
+    refreshLogs: () => window.iotcntApp.fetchRecentLogs(),
     controlValve: (valveId, action, duration) => {
         const button = document.createElement('button');
         button.dataset.valveId = valveId;

@@ -1,9 +1,0 @@
-[
-    {
-        "id": 1,
-        "name": "Administrator",
-        "email": "admin@iotcnt.local",
-        "password": "$2y$10$avAwnikfsWeJYXOB18cDlu5hOT6NrBfo0Xy9wyKvJn38W69FDLnju",
-        "role": "admin"
-    }
-]

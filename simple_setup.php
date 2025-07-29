@@ -24,7 +24,7 @@ $users = [
     'id' => 1,
     'name' => 'Administrator',
     'email' => 'admin@iotcnt.local',
-    'password' => password_hash('admin123', PASSWORD_DEFAULT),
+    'password' => password_hash('admin_' . bin2hex(random_bytes(8)), PASSWORD_DEFAULT),
     'role' => 'admin',
     'created_at' => date('Y-m-d H:i:s')
   ]
@@ -57,7 +57,7 @@ echo "\n🎉 Simple setup completed!\n\n";
 echo "=== ACCESS INFORMATION ===\n";
 echo "URL: http://localhost:8000\n";
 echo "Login: admin@iotcnt.local\n";
-echo "Password: admin123\n\n";
+echo "Password: [GERADA ALEATORIAMENTE - Verifique o arquivo de utilizadores]\n\n";
 echo "To start the server, run:\n";
 echo "php artisan serve\n\n";
 echo "Note: This is a simplified version using file storage.\n";

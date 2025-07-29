@@ -30,7 +30,15 @@
                     <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                         {{ __('Utilizadores') }}
                     </x-nav-link>
-                    {{-- Adicionar outros links de admin aqui (Logs, Configurações Telegram, etc.) --}}
+                    <x-nav-link :href="route('admin.logs.index')" :active="request()->routeIs('admin.logs.*')">
+                        {{ __('Logs') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.telegram-users.index')" :active="request()->routeIs('admin.telegram-users.*')">
+                        {{ __('Telegram') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
+                        {{ __('Configurações') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -99,6 +107,15 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                 {{ __('Utilizadores') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.logs.index')" :active="request()->routeIs('admin.logs.*')">
+                {{ __('Logs') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.telegram-users.index')" :active="request()->routeIs('admin.telegram-users.*')">
+                {{ __('Telegram') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
+                {{ __('Configurações') }}
             </x-responsive-nav-link>
         </div>
 

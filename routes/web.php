@@ -66,6 +66,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/restart-esp32', [AdminDashboardController::class, 'restartEsp32'])->name('restart-esp32');
     Route::get('/export/data', [AdminDashboardController::class, 'exportData'])->name('export.data');
 
+    // Sistema de Configurações
+    use App\Http\Controllers\Admin\SettingsController;
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/reset', [SettingsController::class, 'reset'])->name('settings.reset');
+    Route::get('/settings/export', [SettingsController::class, 'export'])->name('settings.export');
+    Route::post('/settings/import', [SettingsController::class, 'import'])->name('settings.import');
+    Route::post('/settings/test-email', [SettingsController::class, 'testEmail'])->name('settings.test-email');
+    Route::post('/settings/test-telegram', [SettingsController::class, 'testTelegram'])->name('settings.test-telegram');
+    Route::get('/api/settings', [SettingsController::class, 'getApiSettings'])->name('api.settings');
+
     // CRUD para Válvulas
     Route::resource('valves', ValveController::class);
 

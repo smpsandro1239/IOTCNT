@@ -1,14 +1,14 @@
 # IOTCNT - Controlo e arrefecimento de Centrais de Frio e Prevenção de Legionella
 
-Desenvolvido para **O Continente**, líder incomparável no retalho alimentar em Portugal, o IOTCNT é um sistema de automação de vanguarda baseado em ESP32 e Laravel. 
-Com **Melhoria Contínua** como motor e **Empatia** no cuidado com a saúde dos clientes, este projeto redefine os padrões de segurança e eficiência. 
+Desenvolvido para **O Continente**, líder incomparável no retalho alimentar em Portugal, o IOTCNT é um sistema de automação de vanguarda baseado em ESP32 e Laravel.
+Com **Melhoria Contínua** como motor e **Empatia** no cuidado com a saúde dos clientes, este projeto redefine os padrões de segurança e eficiência.
 Alinhado com as políticas exemplares de higiene e segurança alimentar do **Continente**, o IOTCNT garante o arrefecimento otimizado de centrais de frio e a prevenção rigorosa da legionella, protegendo vidas com inovação e responsabilidade.
 
 ## 🩺 Missão: Saúde Pública e Excelência Operacional
 
-No **Continente**, a saúde e o bem-estar dos clientes são a essência de cada decisão. 
-Com **Empatia** no centro da nossa missão, investimos em soluções inovadoras para assegurar a segurança alimentar e a saúde pública. 
-O IOTCNT transforma o desafio de prevenir a legionella numa solução automatizada e inteligente, eliminando o risco de água estagnada, otimizando o arrefecimento de condensadores e reduzindo custos operacionais. 
+No **Continente**, a saúde e o bem-estar dos clientes são a essência de cada decisão.
+Com **Empatia** no centro da nossa missão, investimos em soluções inovadoras para assegurar a segurança alimentar e a saúde pública.
+O IOTCNT transforma o desafio de prevenir a legionella numa solução automatizada e inteligente, eliminando o risco de água estagnada, otimizando o arrefecimento de condensadores e reduzindo custos operacionais.
 Com **Melhoria Contínua**, este sistema evolui constantemente, garantindo supervisão total via web e Telegram, sempre em linha com a excelência que define **O Continente**.
 
 ## 🚀 Características que Redefinem o Futuro
@@ -55,9 +55,14 @@ Com **Melhoria Contínua**, este sistema evolui constantemente, garantindo super
 git clone https://github.com/seu-usuario/iotcnt.git
 cd iotcnt
 composer install
-cp .env.example .env
-php artisan key:generate
-php simple_setup.php
+
+# Copiar todos os arquivos de exemplo
+php setup_examples.php
+
+# Gerar credenciais seguras
+php secure_setup.php
+
+# Iniciar servidor
 php artisan serve
 ```
 

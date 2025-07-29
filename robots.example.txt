@@ -1,0 +1,33 @@
+# IOTCNT - Robots.txt Example
+#
+# IMPORTANTE:
+# 1. Copie este arquivo para robots.txt
+# 2. Ajuste conforme suas necessidades de SEO
+# 3. Para sistemas internos, considere bloquear todos os bots
+
+# Configuração para ambiente de produção público
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /docker/
+Disallow: /.env
+Disallow: /config.h
+Disallow: *.json$
+Disallow: *.log$
+
+# Permitir acesso à documentação pública (se houver)
+Allow: /docs/
+Allow: /help/
+
+# Configuração alternativa para sistemas internos/privados
+# Descomente as linhas abaixo se o sistema for apenas interno:
+#
+# User-agent: *
+# Disallow: /
+#
+# Crawl-delay: 86400
+
+# Sitemap (se aplicável)
+# Sitemap: https://seu-dominio.com/sitemap.xml

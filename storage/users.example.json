@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "name": "Administrator",
+    "email": "admin@iotcnt.local",
+    "password": "$2y$10$EXEMPLO_HASH_PASSWORD_AQUI_NAO_USAR_EM_PRODUCAO",
+    "role": "admin",
+    "created_at": "2024-01-01 00:00:00",
+    "updated_at": "2024-01-01 00:00:00",
+    "email_verified_at": null,
+    "remember_token": null
+  },
+  {
+    "id": 2,
+    "name": "User Example",
+    "email": "user@iotcnt.local",
+    "password": "$2y$10$EXEMPLO_HASH_PASSWORD_AQUI_NAO_USAR_EM_PRODUCAO",
+    "role": "user",
+    "created_at": "2024-01-01 00:00:00",
+    "updated_at": "2024-01-01 00:00:00",
+    "email_verified_at": null,
+    "remember_token": null
+  }
+]

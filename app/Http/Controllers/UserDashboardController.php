@@ -14,8 +14,8 @@ class UserDashboardController extends Controller
      */
     public function index()
     {
-        $valves = Valve::all();
-        $activeSchedules = Schedule::where('is_active', true)->get();
+        $valves = Valve::orderBy('valve_number')->get();
+        $activeSchedules = Schedule::where('is_enabled', true)->get();
         $recentLogs = OperationLog::with('valve')
             ->orderBy('created_at', 'desc')
             ->limit(10)

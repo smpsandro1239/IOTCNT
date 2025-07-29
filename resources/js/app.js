@@ -50,7 +50,7 @@ class IOTCNTApp {
             button.disabled = true;
             button.innerHTML = '<div class="loading-spinner"></div> A processar...';
 
-            const response = await window.axios.post('/api/esp32/control-valve', {
+            const response = await window.axios.post('/api/valve/control', {
                 valve_id: valveId,
                 action: action,
                 duration: duration
@@ -84,7 +84,7 @@ class IOTCNTApp {
 
     async fetchValveStatus() {
         try {
-            const response = await window.axios.get('/api/valve-status');
+            const response = await window.axios.get('/api/valve/status');
             if (response.data.success) {
                 this.updateAllValveStatus(response.data.valves);
             }
@@ -180,9 +180,10 @@ class IOTCNTApp {
     // Ciclo de Irrigação
     async startIrrigationCycle() {
         try {
-            const response = await window.axios.post('/api/esp32/start-cycle');
+            const response = await window.axios.post('/api/valve/start-cycle');
             if (response.data.success) {
                 this.showNotification('Ciclo de irrigação iniciado!', 'success');
+                this.fetchValveStatus(); // Atualizar estado
             }
         } catch (error) {
             this.showNotification('Erro ao iniciar ciclo: ' + error.message, 'error');
@@ -195,7 +196,7 @@ class IOTCNTApp {
         }
 
         try {
-            const response = await window.axios.post('/api/esp32/stop-all');
+            const response = await window.axios.post('/api/valve/stop-all');
             if (response.data.success) {
                 this.showNotification('Todas as válvulas foram paradas!', 'success');
                 this.fetchValveStatus(); // Atualizar estado

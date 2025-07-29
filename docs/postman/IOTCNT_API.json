@@ -1,0 +1,638 @@
+{
+  "info": {
+    "name": "IOTCNT Irrigation API",
+    "description": "Coleção completa da API do sistema IOTCNT para controlo de irrigação",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{api_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "api_token",
+      "value": "your_token_here",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Valve Management",
+      "item": [
+        {
+          "name": "Get All Valve Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/valve/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "valve", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Valve Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/valve/status/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "valve", "status", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Control Valve - Turn On",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valve_id\": 1,\n  \"action\": \"on\",\n  \"duration\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/valve/control",
+              "host": ["{{base_url}}"],
+              "path": ["api", "valve", "control"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Control Valve - Turn Off",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valve_id\": 1,\n  \"action\": \"off\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/valve/control",
+              "host": ["{{base_url}}"],
+              "path": ["api", "valve", "control"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Control Valve - Toggle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valve_id\": 2,\n  \"action\": \"toggle\",\n  \"duration\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/valve/control",
+              "host": ["{{base_url}}"],
+              "path": ["api", "valve", "control"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Start Irrigation Cycle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"duration_per_valve\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/valve/start-cycle",
+              "host": ["{{base_url}}"],
+              "path": ["api", "valve", "start-cycle"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Stop All Valves",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/valve/stop-all",
+              "host": ["{{base_url}}"],
+              "path": ["api", "valve", "stop-all"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get System Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/valve/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "valve", "stats"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ESP32 Integration",
+      "item": [
+        {
+          "name": "Get ESP32 Configuration",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/esp32/config",
+              "host": ["{{base_url}}"],
+              "path": ["api", "esp32", "config"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Report Valve Status (ESP32)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valve_number\": 1,\n  \"state\": true,\n  \"timestamp_device\": 1642248600\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/esp32/valve-status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "esp32", "valve-status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Log (ESP32)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valve_number\": 1,\n  \"action\": \"valve_on\",\n  \"duration_minutes\": 5,\n  \"timestamp_device\": 1642248600,\n  \"notes\": \"Scheduled irrigation cycle\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/esp32/log",
+              "host": ["{{base_url}}"],
+              "path": ["api", "esp32", "log"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pending Commands (ESP32)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/esp32/commands",
+              "host": ["{{base_url}}"],
+              "path": ["api", "esp32", "commands"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Schedules",
+      "item": [
+        {
+          "name": "Get All Schedules",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/schedules",
+              "host": ["{{base_url}}"],
+              "path": ["api", "schedules"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Schedule",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rega Vespertina\",\n  \"day_of_week\": 2,\n  \"start_time\": \"18:00:00\",\n  \"per_valve_duration_minutes\": 3,\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/schedules",
+              "host": ["{{base_url}}"],
+              "path": ["api", "schedules"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Schedule",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rega Vespertina Atualizada\",\n  \"day_of_week\": 3,\n  \"start_time\": \"19:00:00\",\n  \"per_valve_duration_minutes\": 4,\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/schedules/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "schedules", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Schedule",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/schedules/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "schedules", "1"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Logs & History",
+      "item": [
+        {
+          "name": "Get All Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/logs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "logs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Logs with Filters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/logs?valve_id=1&action=manual_on&date_from=2024-01-01&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "logs"],
+              "query": [
+                {
+                  "key": "valve_id",
+                  "value": "1"
+                },
+                {
+                  "key": "action",
+                  "value": "manual_on"
+                },
+                {
+                  "key": "date_from",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "System Management",
+      "item": [
+        {
+          "name": "Get System Settings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/system/settings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "system", "settings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update System Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"timezone\": \"Europe/Lisbon\",\n  \"auto_cycle_enabled\": true,\n  \"default_valve_duration\": 5,\n  \"max_concurrent_valves\": 1,\n  \"telegram_notifications\": true,\n  \"system_name\": \"IOTCNT Irrigation System\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/system/settings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "system", "settings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "System Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/system/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "system", "health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "System Diagnostics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/system/diagnostics",
+              "host": ["{{base_url}}"],
+              "path": ["api", "system", "diagnostics"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Telegram Integration",
+      "item": [
+        {
+          "name": "Get Telegram Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/telegram/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "telegram", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Send Telegram Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Sistema de irrigação ativado\",\n  \"chat_id\": 123456789\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/telegram/send-notification",
+              "host": ["{{base_url}}"],
+              "path": ["api", "telegram", "send-notification"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Adicionar timestamp para requests que precisam",
+          "if (pm.request.body && pm.request.body.raw) {",
+          "    try {",
+          "        const body = JSON.parse(pm.request.body.raw);",
+          "        if (body.timestamp_device !== undefined) {",
+          "            body.timestamp_device = Math.floor(Date.now() / 1000);",
+          "            pm.request.body.raw = JSON.stringify(body, null, 2);",
+          "        }",
+          "    } catch (e) {",
+          "        // Ignorar se não for JSON válido",
+          "    }",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Testes básicos para todas as respostas",
+          "pm.test('Status code is successful', function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+          "});",
+          "",
+          "pm.test('Response has JSON content-type', function () {",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});",
+          "",
+          "// Verificar estrutura básica da resposta",
+          "if (pm.response.code === 200) {",
+          "    pm.test('Response has success field', function () {",
+          "        const jsonData = pm.response.json();",
+          "        pm.expect(jsonData).to.have.property('success');",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ]
+}

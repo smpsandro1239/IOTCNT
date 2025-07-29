@@ -32,6 +32,11 @@ Route::get('/dashboard', [UserDashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// API endpoint para dados do dashboard
+Route::get('/dashboard/api/data', [UserDashboardController::class, 'apiData'])
+    ->middleware(['auth'])
+    ->name('dashboard.api.data');
+
 // Profile routes removed - not using Laravel Breeze
 
 // Grupo de Rotas para Administração

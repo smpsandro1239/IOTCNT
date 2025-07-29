@@ -111,6 +111,19 @@ personal/
 # Kiro IDE files
 .kiro/
 
+# Security - Sensitive files
+.env
+.env.local
+.env.production
+.env.staging
+*.key
+*.pem
+*.p12
+config/secrets.php
+storage/app/data/users.json
+storage/users.json
+esp32_irrigation_controller/config.h
+
 # System files
 .htaccess.local
 robots.txt.local

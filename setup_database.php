@@ -44,17 +44,17 @@ try {
     ['email' => 'admin@iotcnt.local'],
     [
       'name' => 'Administrator',
-      'password' => bcrypt('admin123'),
+      'password' => bcrypt('admin_' . bin2hex(random_bytes(8))),
       'role' => 'admin'
     ]
   );
   echo "✓ Admin user created: {$admin->email}\n";
-  echo "✓ Password: admin123\n";
+  echo "✓ Password: [GERADA ALEATORIAMENTE]\n";
 
   echo "\n=== SETUP COMPLETE ===\n";
   echo "Access the site at: http://localhost:8080\n";
   echo "Login: admin@iotcnt.local\n";
-  echo "Password: admin123\n";
+  echo "Password: [USE O SCRIPT secure_setup.php PARA CREDENCIAIS SEGURAS]\n";
 } catch (Exception $e) {
   echo "Error: " . $e->getMessage() . "\n";
 }

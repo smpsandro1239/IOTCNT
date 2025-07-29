@@ -11,6 +11,12 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- Meta tags for JavaScript -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        @auth
+            <meta name="api-token" content="{{ auth()->user()->createToken('web-access')->plainTextToken }}">
+        @endauth
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 

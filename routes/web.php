@@ -77,6 +77,22 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/settings/test-telegram', [SettingsController::class, 'testTelegram'])->name('settings.test-telegram');
     Route::get('/api/settings', [SettingsController::class, 'getApiSettings'])->name('api.settings');
 
+    // Sistema de Performance e Otimização
+    use App\Http\Controllers\Admin\PerformanceController;
+    Route::get('/performance', [PerformanceController::class, 'index'])->name('performance.index');
+    Route::get('/api/performance/metrics', [PerformanceController::class, 'getMetrics'])->name('api.performance.metrics');
+    Route::post('/performance/clear-cache', [PerformanceController::class, 'clearCache'])->name('performance.clear-cache');
+    Route::post('/performance/optimize', [PerformanceController::class, 'runFullOptimization'])->name('performance.optimize');
+    Route::post('/performance/warm-cache', [PerformanceController::class, 'warmUpCache'])->name('performance.warm-cache');
+    Route::post('/performance/optimize-database', [PerformanceController::class, 'optimizeDatabase'])->name('performance.optimize-database');
+    Route::get('/api/performance/cache-stats', [PerformanceController::class, 'getCacheStats'])->name('api.performance.cache-stats');
+    Route::get('/api/performance/database-stats', [PerformanceController::class, 'getDatabaseStats'])->name('api.performance.database-stats');
+    Route::get('/api/performance/system-resources', [PerformanceController::class, 'getSystemResources'])->name('api.performance.system-resources');
+    Route::post('/performance/clean-logs', [PerformanceController::class, 'cleanOldLogs'])->name('performance.clean-logs');
+    Route::post('/performance/test', [PerformanceController::class, 'testPerformance'])->name('performance.test');
+    Route::post('/performance/clean-logs', [PerformanceController::class, 'cleanOldLogs'])->name('performance.clean-logs');
+    Route::post('/performance/test', [PerformanceController::class, 'testPerformance'])->name('performance.test');
+
     // CRUD para Válvulas
     Route::resource('valves', ValveController::class);
 

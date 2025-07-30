@@ -39,6 +39,9 @@
                     <x-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
                         {{ __('Configurações') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.performance.index')" :active="request()->routeIs('admin.performance.*')">
+                        {{ __('Performance') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -116,6 +119,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.*')">
                 {{ __('Configurações') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.performance.index')" :active="request()->routeIs('admin.performance.*')">
+                {{ __('Performance') }}
             </x-responsive-nav-link>
         </div>
 

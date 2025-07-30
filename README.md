@@ -1,18 +1,28 @@
-# IOTCNT - Sistema de Irrigação IoT Inteligente
+# IOTCNT - Sistema de Arrefecimento de Condensadores e Prevenção de Legionela
 
-Sistema completo de automação de irrigação baseado em ESP32 e Laravel, desenvolvido para proporcionar controlo total e monitorização avançada de sistemas de rega.
+Desenvolvido para **O Continente**, líder incomparável no retalho alimentar em Portugal, o IOTCNT é um sistema de automação de vanguarda baseado em ESP32 e Laravel.
+Com **Melhoria Contínua** como motor e **Empatia** no cuidado com a saúde dos clientes, este projecto redefine os padrões de segurança e eficiência.
+Alinhado com as políticas exemplares de higiene e segurança alimentar do **Continente**, o IOTCNT garante o arrefecimento optimizado de condensadores de centrais de frio industriais e a prevenção rigorosa da legionela, protegendo vidas com inovação e responsabilidade.
 
-## 🌱 Visão Geral
+## 🩺 Missão: Saúde Pública e Excelência Operacional
 
-O IOTCNT é um sistema de irrigação IoT que combina hardware ESP32 com uma aplicação web Laravel para automatizar e monitorizar sistemas de rega. Com funcionalidades avançadas de performance, controlo remoto via Telegram e interface web intuitiva, oferece uma solução completa para gestão de irrigação.
+No **Continente**, a saúde e o bem-estar dos clientes são a essência de cada decisão.
+Com **Empatia** no centro da nossa missão, investimos em soluções inovadoras para assegurar a segurança alimentar e a saúde pública.
+O IOTCNT transforma o desafio de prevenir a legionela numa solução automatizada e inteligente, eliminando o risco de água estagnada nos sistemas de arrefecimento, optimizando o funcionamento de condensadores de centrais de frio industriais e reduzindo custos operacionais.
+Com **Melhoria Contínua**, este sistema evolui constantemente, garantindo supervisão total via web e Telegram, sempre em linha com a excelência que define **O Continente**.
+
+## 🌡️ Visão Geral do Sistema
+
+O IOTCNT é um sistema IoT industrial que combina hardware ESP32 com uma aplicação web Laravel para automatizar e monitorizar o arrefecimento de condensadores em centrais de frio. O sistema previne activamente o desenvolvimento de legionela e outros microorganismos patogénicos através da circulação controlada de água, garantindo que nunca existe água parada nos circuitos de arrefecimento.
 
 ## ✨ Funcionalidades Principais
 
-### 🚀 Sistema de Irrigação
-- **Controlo de Múltiplas Válvulas**: Gestão de até 5 válvulas independentes
-- **Agendamentos Automáticos**: Ciclos de irrigação programáveis por dia da semana
-- **Controlo Manual**: Activação/desactivação manual de válvulas
-- **Monitorização em Tempo Real**: Estado actual de todas as válvulas
+### 🌡️ Sistema de Arrefecimento Industrial
+- **Controlo de Múltiplas Válvulas**: Gestão de até 5 válvulas de arrefecimento independentes
+- **Prevenção de Legionela**: Ciclos automáticos de circulação para evitar água estagnada
+- **Arrefecimento de Condensadores**: Optimização do funcionamento de centrais de frio industriais
+- **Controlo Manual de Emergência**: Activação/desactivação manual para manutenção
+- **Monitorização em Tempo Real**: Estado actual de todos os circuitos de arrefecimento
 
 ### 📊 Sistema de Performance (NOVO!)
 - **Métricas em Tempo Real**: Tempo de resposta, uso de memória, cache hit rate
@@ -32,11 +42,13 @@ O IOTCNT é um sistema de irrigação IoT que combina hardware ESP32 com uma apl
 - **Notificações**: Alertas automáticos de operações e problemas
 - **Gestão de Utilizadores**: Autorização e controlo de acesso via Telegram
 
-### 🔧 Hardware ESP32
-- **Firmware Optimizado**: Código C++ eficiente para ESP32
+### 🔧 Hardware ESP32 Industrial
+- **Firmware Optimizado**: Código C++ eficiente para controlo industrial
 - **Comunicação API**: Integração robusta com backend Laravel
+- **Controlo de Relés**: Gestão precisa de bombas e válvulas de arrefecimento
+- **Sensores de Temperatura**: Monitorização térmica dos condensadores
 - **Armazenamento Local**: Sistema de ficheiros LittleFS para logs offline
-- **Sincronização Temporal**: NTP com fallback RTC para precisão
+- **Sincronização Temporal**: NTP com fallback RTC para ciclos precisos
 
 ## 🏗️ Arquitectura do Sistema
 
@@ -47,9 +59,12 @@ O IOTCNT é um sistema de irrigação IoT que combina hardware ESP32 com uma apl
 │   ESP32 Device  │◄──►│ Laravel Backend │◄──►│   Web Interface │
 │                 │    │                 │    │                 │
 │ • Controlo      │    │ • API REST      │    │ • Dashboard     │
-│   Válvulas      │    │ • Base Dados    │    │ • Admin Panel   │
-│ • Sensores      │    │ • Cache Redis   │    │ • Performance   │
-│ • WiFi/API      │    │ • Telegram Bot  │    │ • Logs          │
+│   Condensadores │    │ • Base Dados    │    │ • Admin Panel   │
+│ • Válvulas      │    │ • Cache Redis   │    │ • Performance   │
+│   Arrefecimento │    │ • Telegram Bot  │    │ • Logs          │
+│ • Sensores      │    │ • Prevenção     │    │ • Monitorização │
+│   Temperatura   │    │   Legionela     │    │   Industrial    │
+│ • WiFi/API      │    │                 │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -67,10 +82,13 @@ O IOTCNT é um sistema de irrigação IoT que combina hardware ESP32 com uma apl
 - Alpine.js
 - Vite (Build Tool)
 
-**Hardware:**
-- ESP32 (ESP32-WROOM-32)
-- PlatformIO
-- Arduino Framework
+**Hardware Industrial:**
+- ESP32 (ESP32-WROOM-32) - Controlador principal
+- Relés de alta fiabilidade para bombas industriais
+- Sensores de temperatura para condensadores
+- Válvulas solenóides para circuitos de arrefecimento
+- PlatformIO - Ambiente de desenvolvimento
+- Arduino Framework - Base do firmware
 - Bibliotecas: NTPClient, RTClib, ArduinoJson
 
 **Deployment:**
@@ -168,22 +186,26 @@ docker-compose exec app php artisan migrate --seed
 docker-compose exec app php artisan storage:link
 ```
 
-### Configuração do ESP32
+### Configuração do ESP32 Industrial
 
 1. **Editar Configuração**
 ```c
 // esp32_irrigation_controller/config.h
-#define WIFI_SSID "SUA_REDE_WIFI"
-#define WIFI_PASSWORD "SUA_SENHA_WIFI"
-#define API_SERVER_HOST "http://seu-servidor.com"
-#define API_TOKEN "seu_token_sanctum"
+#define WIFI_SSID "REDE_CONTINENTE_INDUSTRIAL"
+#define WIFI_PASSWORD "senha_segura_industrial"
+#define API_SERVER_HOST "http://servidor-iotcnt.continente.pt"
+#define API_TOKEN "token_sanctum_industrial"
 
-// Configuração dos pinos das válvulas
-#define VALVE_1_PIN 23
-#define VALVE_2_PIN 22
-#define VALVE_3_PIN 21
-#define VALVE_4_PIN 19
-#define VALVE_5_PIN 18
+// Configuração dos pinos das válvulas de arrefecimento
+#define COOLING_VALVE_1_PIN 23  // Condensador 1
+#define COOLING_VALVE_2_PIN 22  // Condensador 2
+#define COOLING_VALVE_3_PIN 21  // Condensador 3
+#define COOLING_VALVE_4_PIN 19  // Condensador 4
+#define COOLING_VALVE_5_PIN 18  // Condensador 5
+
+// Configuração dos sensores de temperatura
+#define TEMP_SENSOR_1_PIN A0
+#define TEMP_SENSOR_2_PIN A1
 ```
 
 2. **Upload do Firmware**
@@ -223,16 +245,18 @@ pio device monitor
 
 #### Utilizadores Gerais
 - `/start` - Iniciar interacção com o bot
-- `/status` - Estado actual das válvulas
-- `/logs` - Últimas operações
-- `/schedules` - Agendamentos activos
+- `/status` - Estado actual dos condensadores
+- `/temperature` - Temperaturas dos circuitos
+- `/logs` - Últimas operações de arrefecimento
+- `/schedules` - Ciclos de prevenção activos
 
-#### Administradores
-- `/valve_on [N]` - Activar válvula N
-- `/valve_off [N]` - Desactivar válvula N
-- `/start_schedule [ID]` - Iniciar agendamento
-- `/stop_all` - Parar todas as válvulas
-- `/system_status` - Estado detalhado do sistema
+#### Administradores Continente
+- `/cooling_on [N]` - Activar arrefecimento do condensador N
+- `/cooling_off [N]` - Desactivar arrefecimento do condensador N
+- `/emergency_stop` - PARAGEM DE EMERGÊNCIA de todos os circuitos
+- `/start_prevention_cycle` - Iniciar ciclo de prevenção de legionela
+- `/system_status` - Estado detalhado de todos os condensadores
+- `/temperature_alert` - Configurar alertas de temperatura
 
 ### Sistema de Performance
 
@@ -274,20 +298,22 @@ http://localhost/admin/performance
 
 ### Tabelas Principais
 
-- **`users`** - Utilizadores do sistema
-- **`valves`** - Configuração das válvulas
-- **`schedules`** - Agendamentos de irrigação
-- **`operation_logs`** - Histórico de operações
-- **`telegram_users`** - Utilizadores Telegram autorizados
-- **`system_settings`** - Configurações do sistema
+- **`users`** - Utilizadores do sistema (técnicos Continente)
+- **`valves`** - Configuração das válvulas de arrefecimento
+- **`schedules`** - Agendamentos de ciclos de prevenção
+- **`operation_logs`** - Histórico de operações de arrefecimento
+- **`telegram_users`** - Utilizadores Telegram autorizados (equipa técnica)
+- **`system_settings`** - Configurações industriais do sistema
+- **`temperature_logs`** - Registo de temperaturas dos condensadores
 
 ### Relacionamentos
 
 ```sql
-users (1) ──── (N) schedules
-users (1) ──── (N) operation_logs
-valves (1) ──── (N) operation_logs
-schedules (1) ──── (N) operation_logs
+users (1) ──── (N) schedules           # Técnicos → Ciclos de prevenção
+users (1) ──── (N) operation_logs      # Técnicos → Operações
+valves (1) ──── (N) operation_logs     # Condensadores → Histórico
+schedules (1) ──── (N) operation_logs  # Ciclos → Execuções
+valves (1) ──── (N) temperature_logs   # Condensadores → Temperaturas
 ```
 
 ## 🔧 Gestão do Sistema
@@ -429,10 +455,11 @@ netstat -an | findstr ":80\|:3306\|:6379"
 ```
 
 #### ESP32 não conecta
-1. Verificar configuração WiFi em `config.h`
-2. Confirmar URL do servidor e token API
+1. Verificar configuração WiFi industrial em `config.h`
+2. Confirmar URL do servidor Continente e token API
 3. Verificar logs série: `pio device monitor`
-4. Testar conectividade de rede
+4. Testar conectividade na rede industrial
+5. Contactar equipa de TI do Continente se necessário
 
 #### Telegram não responde
 1. Verificar token no `.env`
@@ -550,25 +577,34 @@ Este projecto está licenciado sob a Licença MIT - consulte o ficheiro [LICENSE
 ### Versão Actual: v2.0.0
 
 #### ✅ Funcionalidades Implementadas
-- ✅ Sistema de irrigação completo
-- ✅ Interface web responsiva
-- ✅ Bot Telegram integrado
-- ✅ API REST robusta
+- ✅ Sistema de arrefecimento de condensadores completo
+- ✅ Prevenção activa de legionela e microorganismos
+- ✅ Interface web industrial responsiva
+- ✅ Bot Telegram para equipa técnica
+- ✅ API REST robusta para controlo industrial
 - ✅ Sistema de performance avançado
-- ✅ Monitorização em tempo real
-- ✅ Optimização automática
+- ✅ Monitorização em tempo real de temperaturas
+- ✅ Optimização automática de ciclos
 - ✅ Gestão completa via .BAT
-- ✅ Documentação completa
-- ✅ Testes automatizados
+- ✅ Documentação técnica completa
+- ✅ Testes automatizados de segurança
 
 #### 🔄 Em Desenvolvimento
-- 🔄 Aplicação móvel nativa
-- 🔄 Integração com sensores de humidade
-- 🔄 Machine Learning para optimização
-- 🔄 Dashboard analytics avançado
+- 🔄 Integração com sensores de qualidade da água
+- 🔄 Machine Learning para previsão de manutenção
+- 🔄 Dashboard analytics para gestão Continente
+- 🔄 Alertas automáticos para equipas de manutenção
+
+#### 🏥 Impacto na Saúde Pública
+- **Prevenção de Legionela**: Eliminação total do risco através de circulação controlada
+- **Segurança Alimentar**: Garantia de arrefecimento seguro nas centrais de frio
+- **Saúde dos Clientes**: Protecção activa contra microorganismos patogénicos
+- **Conformidade Regulamentar**: Cumprimento rigoroso das normas de saúde pública
 
 ---
 
-*IOTCNT - Sistema de Irrigação IoT Inteligente* 🌱💧
+*IOTCNT - Sistema de Arrefecimento Industrial e Prevenção de Legionela* 🌡️💧
 
-**Transforme a sua irrigação com tecnologia de ponta!**
+**Protegendo a Saúde Pública com Tecnologia de Vanguarda do Continente!**
+
+*Desenvolvido com **Empatia** pelos clientes e **Melhoria Contínua** na excelência operacional.*

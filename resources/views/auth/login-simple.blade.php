@@ -14,7 +14,8 @@
                 <p class="text-gray-600">Sistema de Arrefecimento Industrial</p>
             </div>
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ url('/login') }}">
+                <meta name="csrf-token" content="{{ csrf_token() }}">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <div class="mb-4">
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>

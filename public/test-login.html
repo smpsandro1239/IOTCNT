@@ -42,6 +42,19 @@
     </div>
 
     <script>
+        function setCredentials(type) {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+
+            if (type === 'admin') {
+                emailInput.value = 'admin@iotcnt.local';
+                passwordInput.value = 'password';
+            } else {
+                emailInput.value = 'user@iotcnt.local';
+                passwordInput.value = 'password';
+            }
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 

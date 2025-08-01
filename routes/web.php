@@ -29,16 +29,11 @@ use App\Http\Controllers\ScheduleController;
 */
 
 Route::get('/', function () {
-    return response('IOTCNT Sistema Online - Continente', 200)
-        ->header('Content-Type', 'text/html; charset=UTF-8');
-});
-
-Route::get('/welcome', function () {
     return view('welcome');
 });
 
 Route::get('/test', function () {
-    return response('TESTE OK', 200);
+    return 'IOTCNT Sistema Online - Continente';
 });
 
 // Dashboard principal para utilizadores logados

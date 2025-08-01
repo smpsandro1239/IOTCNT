@@ -35,6 +35,9 @@ class RouteServiceProvider extends ServiceProvider
 
       Route::middleware('web')
         ->group(base_path('routes/web.php'));
+
+      // Rotas simples sem middleware para teste
+      Route::group([], base_path('routes/simple.php'));
     });
   }
 }

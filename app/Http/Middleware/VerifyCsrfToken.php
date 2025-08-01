@@ -14,5 +14,6 @@ class VerifyCsrfToken extends Middleware
   protected $except = [
     'telegram/webhook',
     'api/*',
+    'login', // Temporariamente desabilitar CSRF para login
   ];
 }

@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
       ['email' => 'admin@iotcnt.local'],
       [
         'name' => 'Administrator',
-        'password' => Hash::make('admin123'),
+        'password' => Hash::make('password'),
         'role' => 'admin',
         'email_verified_at' => now(),
       ]

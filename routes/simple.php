@@ -16,3 +16,10 @@ Route::get('/test-encrypt', function () {
 Route::get('/test-session', function () {
   return 'TESTE SESSION!';
 })->middleware(\Illuminate\Session\Middleware\StartSession::class);
+
+Route::get('/login-test', function () {
+  return 'Página de Login - IOTCNT';
+});
+Route::get('/login-simple', function () {
+  return view('auth.login-simple');
+});

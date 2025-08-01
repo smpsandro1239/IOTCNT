@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
       ['email' => 'user@iotcnt.local'],
       [
         'name' => 'User',
-        'password' => Hash::make('user123'),
+        'password' => Hash::make('password'),
         'role' => 'user',
         'email_verified_at' => now(),
       ]

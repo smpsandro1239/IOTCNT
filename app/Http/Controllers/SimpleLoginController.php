@@ -15,12 +15,19 @@ class SimpleLoginController extends Controller
   public function login(Request $request)
   {
     // Validação básica
-    $email = $request->input('email');
+    $email = trim($request->input('email'));
     $password = $request->input('password');
 
+    // Debug: Verificar dados recebidos
     if (!$email || !$password) {
+      $allEmails = User::pluck('email')->toArray();
       return response()->json([
-        'error' => 'Email e password são obrigatórios'
+        'error' => 'Email e password são obrigatórios',
+        'debug' => [
+          'email_received' => $email,
+          'password_received' => !empty($password),
+          'available_emails' => $allEmails
+        ]
       ], 400);
     }
 
@@ -28,15 +35,25 @@ class SimpleLoginController extends Controller
     $user = User::where('email', $email)->first();
 
     if (!$user) {
+      $allEmails = User::pluck('email')->toArray();
       return response()->json([
-        'error' => 'Utilizador não encontrado'
+        'error' => 'Utilizador não encontrado',
+        'debug' => [
+          'email_searched' => $email,
+          'available_emails' => $allEmails,
+          'total_users' => User::count()
+        ]
       ], 401);
     }
 
     // Verificar password
     if (!Hash::check($password, $user->password)) {
       return response()->json([
-        'error' => 'Password incorrecta'
+        'error' => 'Password incorrecta',
+        'debug' => [
+          'user_found' => $user->email,
+          'password_test' => 'Hash check failed'
+        ]
       ], 401);
     }
 

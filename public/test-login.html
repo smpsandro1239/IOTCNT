@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Login - IOTCNT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="max-w-md w-full bg-white rounded-lg shadow-md p-6">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">IOTCNT - Teste de Login</h1>
+                <p class="text-gray-600">Sistema de Arrefecimento Industrial</p>
+            </div>
+
+            <div id="result" class="mb-4 p-3 rounded hidden"></div>
+
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" value="admin@iotcnt.local" required
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password" value="password" required
+                           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Testar Login
+                </button>
+            </form>
+
+            <div class="mt-4 text-center">
+                <a href="/" class="text-blue-600 hover:text-blue-800">← Voltar à página principal</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const resultDiv = document.getElementById('result');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/simple-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+                });
+
+                if (response.redirected) {
+                    resultDiv.className = 'mb-4 p-3 rounded bg-green-100 text-green-800';
+                    resultDiv.textContent = `Login bem-sucedido! Redirecionando para: ${response.url}`;
+                    resultDiv.classList.remove('hidden');
+
+                    setTimeout(() => {
+                        window.location.href = response.url;
+                    }, 2000);
+                } else {
+                    const data = await response.json();
+                    resultDiv.className = 'mb-4 p-3 rounded bg-red-100 text-red-800';
+                    resultDiv.innerHTML = `<strong>Erro:</strong> ${data.error}<br>`;
+                    if (data.debug) {
+                        resultDiv.innerHTML += `<strong>Debug:</strong> <pre>${JSON.stringify(data.debug, null, 2)}</pre>`;
+                    }
+                    resultDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                resultDiv.className = 'mb-4 p-3 rounded bg-red-100 text-red-800';
+                resultDiv.textContent = `Erro de conexão: ${error.message}`;
+                resultDiv.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -62,10 +62,10 @@ class SimpleLoginController extends Controller
 
     // Redirecionar baseado no papel
     if ($user->isAdmin()) {
-      return redirect('/admin/dashboard');
+      return redirect('/admin/dashboard-test');
     }
 
-    return redirect('/dashboard');
+    return redirect('/dashboard-test');
   }
 
   /**

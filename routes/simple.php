@@ -1,34 +1,36 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 Route::get('/simple', function () {
-  return 'FUNCIONANDO!';
+    return 'FUNCIONANDO!';
 });
 
 Route::get('/test-web', function () {
-  return 'TESTE COM WEB MIDDLEWARE!';
+    return 'TESTE COM WEB MIDDLEWARE!';
 })->middleware('web');
 Route::get('/test-encrypt', function () {
-  return 'TESTE ENCRYPT COOKIES!';
+    return 'TESTE ENCRYPT COOKIES!';
 })->middleware(\App\Http\Middleware\EncryptCookies::class);
 
 Route::get('/test-session', function () {
-  return 'TESTE SESSION!';
+    return 'TESTE SESSION!';
 })->middleware(\Illuminate\Session\Middleware\StartSession::class);
 
 Route::get('/login-test', function () {
-  return 'Página de Login - IOTCNT';
+    return 'Página de Login - IOTCNT';
 });
 Route::get('/login-simple', function () {
-  return view('auth.login-simple');
+    return view('auth.login-simple');
 });
 Route::get('/login-working', function () {
-  return view('auth.login-working');
+    return view('auth.login-working');
 });
 // Rota de login funcional sem middleware
 Route::get('/login-direct', function () {
-  return '<!DOCTYPE html>
+    return '<!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
@@ -87,11 +89,11 @@ Route::post('/simple-login', [App\Http\Controllers\SimpleLoginController::class,
 Route::post('/simple-logout', [App\Http\Controllers\SimpleLoginController::class, 'logout']);
 // Dashboards simples para teste
 Route::get('/dashboard', function () {
-  if (!Auth::check()) {
-    return redirect('/login-direct');
-  }
+    if (!Auth::check()) {
+        return redirect('/login-direct');
+    }
 
-  return '<!DOCTYPE html>
+    return '<!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
@@ -129,11 +131,11 @@ Route::get('/dashboard', function () {
 });
 
 Route::get('/admin/dashboard', function () {
-  if (!Auth::check() || !Auth::user()->isAdmin()) {
-    return redirect('/login-direct');
-  }
+    if (!Auth::check() || !Auth::user()->isAdmin()) {
+        return redirect('/login-direct');
+    }
 
-  return '<!DOCTYPE html>
+    return '<!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
@@ -175,6 +177,112 @@ Route::get('/admin/dashboard', function () {
                     <div class="bg-purple-50 p-4 rounded-lg">
                         <h3 class="font-bold text-purple-900">Prevenção</h3>
                         <p class="text-purple-600">Legionela</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>';
+});
+// Dashboard simples sem autenticação para teste
+Route::get('/dashboard-test', function () {
+    return '<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOTCNT - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <nav class="bg-blue-600 text-white p-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold">IOTCNT - Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <span>Bem-vindo, Utilizador</span>
+                    <a href="/login-direct" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">
+                        Voltar ao Login
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mx-auto p-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-2xl font-bold mb-4">✅ Login Realizado com Sucesso!</h2>
+                <p class="text-gray-600">Sistema de Arrefecimento de Condensadores</p>
+                <p class="mt-4">🏭 <strong>Continente - Prevenção de Legionela</strong></p>
+                <p class="mt-2">🌡️ Sistema IOTCNT Operacional</p>
+
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-blue-900">Sistema</h3>
+                        <p class="text-2xl font-bold text-blue-600">Online</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-green-900">Condensadores</h3>
+                        <p class="text-2xl font-bold text-green-600">5</p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-purple-900">Status</h3>
+                        <p class="text-purple-600">Funcionando</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>';
+});
+
+// Admin dashboard simples sem autenticação para teste
+Route::get('/admin/dashboard-test', function () {
+    return '<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOTCNT - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <nav class="bg-red-600 text-white p-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold">IOTCNT - Admin Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <span>Admin: Administrador</span>
+                    <a href="/login-direct" class="bg-red-800 px-3 py-1 rounded hover:bg-red-900">
+                        Voltar ao Login
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mx-auto p-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-2xl font-bold mb-4">🔧 Painel de Administração</h2>
+                <p class="text-gray-600">Sistema de Arrefecimento de Condensadores - Continente</p>
+                <p class="mt-4">👨‍💼 <strong>Acesso Administrativo Confirmado</strong></p>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-blue-900">Utilizadores</h3>
+                        <p class="text-2xl font-bold text-blue-600">2</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-green-900">Sistema</h3>
+                        <p class="text-green-600">Online</p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-purple-900">Prevenção</h3>
+                        <p class="text-purple-600">Legionela</p>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-yellow-900">Alertas</h3>
+                        <p class="text-yellow-600">0</p>
                     </div>
                 </div>
             </div>

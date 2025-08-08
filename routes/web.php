@@ -33,7 +33,7 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function () {
-    return 'IOTCNT Sistema Online - Continente';
+    return 'IOTCNT Sistema Online - A minha empresa x';
 });
 
 // Dashboard principal para utilizadores logados

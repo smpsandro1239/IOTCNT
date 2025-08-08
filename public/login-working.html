@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOTCNT - Login Funcional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div class="bg-white rounded-lg shadow-xl p-8">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">IOTCNT</h1>
+                    <p class="text-gray-600 mt-2">Sistema de Arrefecimento Industrial</p>
+                    <p class="text-sm text-blue-600 font-semibold">Continente - Prevenção de Legionela</p>
+                </div>
+
+                <!-- Status -->
+                <div id="status" class="mb-4 p-3 rounded hidden"></div>
+
+                <!-- Formulário de Login -->
+                <form id="loginForm" class="space-y-6">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            Endereço de Email
+                        </label>
+                        <input type="email"
+                               id="email"
+                               name="email"
+                               value="admin@iotcnt.local"
+                               required
+                               autocomplete="email"
+                               class="w-full px-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                            Password
+                        </label>
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               value="password"
+                               required
+                               autocomplete="current-password"
+                               class="w-full px-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex space-x-2">
+                            <button type="button" onclick="setCredentials('admin')" class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600">
+                                Admin
+                            </button>
+                            <button type="button" onclick="setCredentials('user')" class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
+                                User
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                        </svg>
+                        Entrar no Sistema
+                    </button>
+                </form>
+
+                <!-- Credenciais de Teste -->
+                <div class="mt-8">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-blue-900 mb-3">🔑 Credenciais de Teste:</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="bg-white p-3 rounded border">
+                                <p class="font-medium text-gray-900">👨‍💼 Administrador</p>
+                                <p class="text-blue-700">Email: <code>admin@iotcnt.local</code></p>
+                                <p class="text-blue-700">Password: <code>password</code></p>
+                            </div>
+                            <div class="bg-white p-3 rounded border">
+                                <p class="font-medium text-gray-900">👤 Utilizador</p>
+                                <p class="text-blue-700">Email: <code>user@iotcnt.local</code></p>
+                                <p class="text-blue-700">Password: <code>password</code></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Link de Volta -->
+                <div class="mt-6 text-center">
+                    <a href="/" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition duration-150 ease-in-out">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Voltar à Página Principal
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setCredentials(type) {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+
+            if (type === 'admin') {
+                emailInput.value = 'admin@iotcnt.local';
+                passwordInput.value = 'password';
+            } else {
+                emailInput.value = 'user@iotcnt.local';
+                passwordInput.value = 'password';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const statusDiv = document.getElementById('status');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Mostrar loading
+            statusDiv.className = 'mb-4 p-3 rounded bg-blue-100 text-blue-800';
+            statusDiv.textContent = 'Processando login...';
+            statusDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/simple-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
+                    redirect: 'manual'
+                });
+
+                if (response.status === 302) {
+                    // Redirecionamento bem-sucedido
+                    const location = response.headers.get('Location');
+                    statusDiv.className = 'mb-4 p-3 rounded bg-green-100 text-green-800';
+                    statusDiv.textContent = `✅ Login bem-sucedido! Redirecionando...`;
+
+                    setTimeout(() => {
+                        window.location.href = location || '/dashboard-test';
+                    }, 1500);
+                } else if (response.status === 200) {
+                    // Possível redirecionamento via JavaScript
+                    const text = await response.text();
+                    if (text.includes('dashboard')) {
+                        statusDiv.className = 'mb-4 p-3 rounded bg-green-100 text-green-800';
+                        statusDiv.textContent = '✅ Login realizado! Redirecionando...';
+                        setTimeout(() => {
+                            window.location.href = email.includes('admin') ? '/admin/dashboard-test' : '/dashboard-test';
+                        }, 1500);
+                    } else {
+                        throw new Error('Resposta inesperada do servidor');
+                    }
+                } else {
+                    const data = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+                    statusDiv.className = 'mb-4 p-3 rounded bg-red-100 text-red-800';
+                    statusDiv.innerHTML = `❌ <strong>Erro:</strong> ${data.error || 'Falha no login'}`;
+                    if (data.debug) {
+                        statusDiv.innerHTML += `<br><small>Debug: ${JSON.stringify(data.debug)}</small>`;
+                    }
+                }
+            } catch (error) {
+                statusDiv.className = 'mb-4 p-3 rounded bg-red-100 text-red-800';
+                statusDiv.textContent = `❌ Erro de conexão: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

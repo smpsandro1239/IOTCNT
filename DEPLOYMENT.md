@@ -1,6 +1,6 @@
 # 🚀 Guia de Deployment - IOTCNT
 
-## Sistema de Arrefecimento Industrial - A minha empresa x
+## Sistema de Arrefecimento Industrial - EmpresaX
 
 Este documento descreve como fazer o deployment do sistema IOTCNT para produção.
 
@@ -208,10 +208,10 @@ docker-compose -f docker-compose.prod.yml exec app php artisan view:cache
 ## 📞 Suporte
 
 Para suporte técnico, contacte:
-- **Email**: suporte@iotcnt.aminhaempresax.pt
+- **Email**: suporte@iotcnt.empresax.pt
 - **GitHub**: https://github.com/smpsandro1239/IOTCNT/issues
 
 ---
 
-**🏭 Sistema IOTCNT - A minha empresa x**
+**🏭 Sistema IOTCNT - EmpresaX**
 *Prevenção de Legionela em Sistemas de Arrefecimento Industrial*

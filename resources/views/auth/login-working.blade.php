@@ -14,7 +14,7 @@
                 <div class="text-center mb-8">
                     <h1 class="text-3xl font-bold text-gray-900">IOTCNT</h1>
                     <p class="text-gray-600 mt-2">Sistema de Arrefecimento Industrial</p>
-                    <p class="text-sm text-blue-600 font-semibold">A minha empresa x - Prevenção de Legionela</p>
+                    <p class="text-sm text-blue-600 font-semibold">EmpresaX - Prevenção de Legionela</p>
                 </div>
 
                 <!-- Mensagem de Erro (se houver) -->

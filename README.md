@@ -1,15 +1,15 @@
 # IOTCNT - Sistema de Arrefecimento de Condensadores e Prevenção de Legionela
 
-Desenvolvido para **A minha empresa x**, líder incomparável no retalho alimentar em Portugal, o IOTCNT é um sistema de automação de vanguarda baseado em ESP32 e Laravel.
+Desenvolvido para **EmpresaX**, líder incomparável no retalho alimentar em Portugal, o IOTCNT é um sistema de automação de vanguarda baseado em ESP32 e Laravel.
 Com **Melhoria Contínua** como motor e **Empatia** no cuidado com a saúde dos clientes, este projecto redefine os padrões de segurança e eficiência.
-Alinhado com as políticas exemplares de higiene e segurança alimentar da **A minha empresa x**, o IOTCNT garante o arrefecimento optimizado de condensadores de centrais de frio industriais e a prevenção rigorosa da legionela, protegendo vidas com inovação e responsabilidade.
+Alinhado com as políticas exemplares de higiene e segurança alimentar da **EmpresaX**, o IOTCNT garante o arrefecimento optimizado de condensadores de centrais de frio industriais e a prevenção rigorosa da legionela, protegendo vidas com inovação e responsabilidade.
 
 ## 🩺 Missão: Saúde Pública e Excelência Operacional
 
-Na **A minha empresa x**, a saúde e o bem-estar dos clientes são a essência de cada decisão.
+Na **EmpresaX**, a saúde e o bem-estar dos clientes são a essência de cada decisão.
 Com **Empatia** no centro da nossa missão, investimos em soluções inovadoras para assegurar a segurança alimentar e a saúde pública.
 O IOTCNT transforma o desafio de prevenir a legionela numa solução automatizada e inteligente, eliminando o risco de água estagnada nos sistemas de arrefecimento, optimizando o funcionamento de condensadores de centrais de frio industriais e reduzindo custos operacionais.
-Com **Melhoria Contínua**, este sistema evolui constantemente, garantindo supervisão total via web e Telegram, sempre em linha com a excelência que define **A minha empresa x**.
+Com **Melhoria Contínua**, este sistema evolui constantemente, garantindo supervisão total via web e Telegram, sempre em linha com a excelência que define **EmpresaX**.
 
 ## 🌡️ Visão Geral do Sistema
 
@@ -191,9 +191,9 @@ docker-compose exec app php artisan storage:link
 1. **Editar Configuração**
 ```c
 // esp32_irrigation_controller/config.h
-#define WIFI_SSID "REDE_AMINHAEMPRESAX_INDUSTRIAL"
+#define WIFI_SSID "REDE_EMPRESAX_INDUSTRIAL"
 #define WIFI_PASSWORD "senha_segura_industrial"
-#define API_SERVER_HOST "http://servidor-iotcnt.aminhaempresax.pt"
+#define API_SERVER_HOST "http://servidor-iotcnt.empresax.pt"
 #define API_TOKEN "token_sanctum_industrial"
 
 // Configuração dos pinos das válvulas de arrefecimento
@@ -250,7 +250,7 @@ pio device monitor
 - `/logs` - Últimas operações de arrefecimento
 - `/schedules` - Ciclos de prevenção activos
 
-#### Administradores A minha empresa x
+#### Administradores EmpresaX
 - `/cooling_on [N]` - Activar arrefecimento do condensador N
 - `/cooling_off [N]` - Desactivar arrefecimento do condensador N
 - `/emergency_stop` - PARAGEM DE EMERGÊNCIA de todos os circuitos
@@ -298,7 +298,7 @@ http://localhost/admin/performance
 
 ### Tabelas Principais
 
-- **`users`** - Utilizadores do sistema (técnicos A minha empresa x)
+- **`users`** - Utilizadores do sistema (técnicos EmpresaX)
 - **`valves`** - Configuração das válvulas de arrefecimento
 - **`schedules`** - Agendamentos de ciclos de prevenção
 - **`operation_logs`** - Histórico de operações de arrefecimento
@@ -456,10 +456,10 @@ netstat -an | findstr ":80\|:3306\|:6379"
 
 #### ESP32 não conecta
 1. Verificar configuração WiFi industrial em `config.h`
-2. Confirmar URL do servidor A minha empresa x e token API
+2. Confirmar URL do servidor EmpresaX e token API
 3. Verificar logs série: `pio device monitor`
 4. Testar conectividade na rede industrial
-5. Contactar equipa de TI da A minha empresa x se necessário
+5. Contactar equipa de TI da EmpresaX se necessário
 
 #### Telegram não responde
 1. Verificar token no `.env`
@@ -592,7 +592,7 @@ Este projecto está licenciado sob a Licença MIT - consulte o ficheiro [LICENSE
 #### 🔄 Em Desenvolvimento
 - 🔄 Integração com sensores de qualidade da água
 - 🔄 Machine Learning para previsão de manutenção
-- 🔄 Dashboard analytics para gestão A minha empresa x
+- 🔄 Dashboard analytics para gestão EmpresaX
 - 🔄 Alertas automáticos para equipas de manutenção
 
 #### 🏥 Impacto na Saúde Pública
@@ -605,6 +605,6 @@ Este projecto está licenciado sob a Licença MIT - consulte o ficheiro [LICENSE
 
 *IOTCNT - Sistema de Arrefecimento Industrial e Prevenção de Legionela* 🌡️💧
 
-**Protegendo a Saúde Pública com Tecnologia de Vanguarda da A minha empresa x!**
+**Protegendo a Saúde Pública com Tecnologia de Vanguarda da EmpresaX!**
 
 *Desenvolvido com **Empatia** pelos clientes e **Melhoria Contínua** na excelência operacional.*

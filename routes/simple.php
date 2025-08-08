@@ -162,7 +162,7 @@ Route::get('/admin/dashboard', function () {
         <div class="container mx-auto p-6">
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-2xl font-bold mb-4">Painel de Administração</h2>
-                <p class="text-gray-600">Sistema de Arrefecimento de Condensadores - Continente</p>
+                <p class="text-gray-600">Sistema de Arrefecimento de Condensadores - A minha empresa x</p>
                 <p class="mt-4">Administrador: <strong>' . Auth::user()->email . '</strong></p>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
@@ -213,7 +213,7 @@ Route::get('/dashboard-test', function () {
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-2xl font-bold mb-4">✅ Login Realizado com Sucesso!</h2>
                 <p class="text-gray-600">Sistema de Arrefecimento de Condensadores</p>
-                <p class="mt-4">🏭 <strong>Continente - Prevenção de Legionela</strong></p>
+                <p class="mt-4">🏭 <strong>A minha empresa x - Prevenção de Legionela</strong></p>
                 <p class="mt-2">🌡️ Sistema IOTCNT Operacional</p>
 
                 <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -264,7 +264,7 @@ Route::get('/admin/dashboard-test', function () {
         <div class="container mx-auto p-6">
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-2xl font-bold mb-4">🔧 Painel de Administração</h2>
-                <p class="text-gray-600">Sistema de Arrefecimento de Condensadores - Continente</p>
+                <p class="text-gray-600">Sistema de Arrefecimento de Condensadores - A minha empresa x</p>
                 <p class="mt-4">👨‍💼 <strong>Acesso Administrativo Confirmado</strong></p>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">

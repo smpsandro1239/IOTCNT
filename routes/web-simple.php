@@ -7,7 +7,7 @@ Route::get('/', function () {
   return response()->json([
     'message' => 'IOTCNT - Sistema de Arrefecimento de Condensadores',
     'status' => 'Sistema Online',
-    'empresa' => 'Continente',
+    'empresa' => 'CNT',
     'proposito' => 'Prevenção de Legionela em Centrais de Frio',
     'timestamp' => now()->format('Y-m-d H:i:s'),
     'links' => [

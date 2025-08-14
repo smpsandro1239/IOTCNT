@@ -1,0 +1,46 @@
+{
+    "valves": [
+        {
+            "id": 1,
+            "name": "Condensador 1",
+            "status": "active",
+            "temperature": 18,
+            "last_cycle": "2025-08-14 06:00:00"
+        },
+        {
+            "id": 2,
+            "name": "Condensador 2",
+            "status": "active",
+            "temperature": 17,
+            "last_cycle": "2025-08-14 06:00:00"
+        },
+        {
+            "id": 3,
+            "name": "Condensador 3",
+            "status": "active",
+            "temperature": 19,
+            "last_cycle": "2025-08-14 06:00:00"
+        },
+        {
+            "id": 4,
+            "name": "Condensador 4",
+            "status": "maintenance",
+            "temperature": 20,
+            "last_cycle": "2025-08-14 02:00:00"
+        },
+        {
+            "id": 5,
+            "name": "Condensador 5",
+            "status": "active",
+            "temperature": 18,
+            "last_cycle": "2025-08-14 06:00:00"
+        }
+    ],
+    "system": {
+        "status": "online",
+        "uptime": "99.9%",
+        "efficiency": "95%",
+        "last_update": "2025-08-14 14:00:29"
+    },
+    "logs": []
+}

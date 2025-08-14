@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOTCNT - Documentação da API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .endpoint {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .method.get {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .method.post {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .url {
+            font-family: 'Courier New', monospace;
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .code-block {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .test-button:hover {
+            background: #2563eb;
+        }
+
+        .response {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .response.show {
+            display: block;
+        }
+
+        .response pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .badge.required {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge.optional {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>IOTCNT - Documentação da API ESP32</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Introdução -->
+        <div class="section">
+            <h2>📋 Introdução</h2>
+            <p>Esta API permite comunicação com o sistema IOTCNT de arrefecimento de condensadores. Desenvolvida para integração com hardware ESP32 e interfaces web.</p>
+
+            <h3>Base URL</h3>
+            <div class="code-block">http://localhost:8080/api.php</div>
+
+            <h3>Formato de Resposta</h3>
+            <p>Todas as respostas são em formato JSON com a seguinte estrutura:</p>
+            <div class="code-block">{
+  "status": "success|error",
+  "message": "Mensagem descritiva",
+  "data": {...}, // Dados quando aplicável
+  "timestamp": "2025-08-14 14:00:00"
+}</div>
+        </div>
+
+        <!-- Endpoints -->
+        <div class="section">
+            <h2>🔗 Endpoints Disponíveis</h2>
+
+            <!-- Status do Sistema -->
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    Status do Sistema
+                </h3>
+                <div class="url">GET /api.php</div>
+                <p>Retorna o status geral do sistema IOTCNT.</p>
+                <button class="test-button" onclick="testEndpoint('', 'status-response')">Testar</button>
+                <div id="status-response" class="response"></div>
+            </div>
+
+            <!-- Lista de Válvulas -->
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    Lista de Válvulas
+                </h3>
+                <div class="url">GET /api.php?action=valves</div>
+                <p>Retorna a lista completa de todas as válvulas/condensadores.</p>
+                <button class="test-button" onclick="testEndpoint('?action=valves', 'valves-response')">Testar</button>
+                <div id="valves-response" class="response"></div>
+            </div>
+
+            <!-- Detalhes de Válvula -->
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    Detalhes de Válvula
+                </h3>
+                <div class="url">GET /api.php?action=valve&id={id}</div>
+                <p>Retorna detalhes específicos de uma válvula.</p>
+                <p><strong>Parâmetros:</strong></p>
+                <ul>
+                    <li><code>id</code> <span class="badge required">obrigatório</span> - ID da válvula (1-5)</li>
+                </ul>
+                <button class="test-button" onclick="testEndpoint('?action=valve&id=1', 'valve-response')">Testar (ID=1)</button>
+                <div id="valve-response" class="response"></div>
+            </div>
+
+            <!-- Ping -->
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    Ping do Sistema
+                </h3>
+                <div class="url">GET /api.php?action=ping</div>
+                <p>Endpoint para verificar conectividade (usado pelo ESP32).</p>
+                <button class="test-button" onclick="testEndpoint('?action=ping', 'ping-response')">Testar</button>
+                <div id="ping-response" class="response"></div>
+            </div>
+
+            <!-- Toggle Válvula -->
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    Activar/Desactivar Válvula
+                </h3>
+                <div class="url">POST /api.php?action=toggle&id={id}</div>
+                <p>Alterna o estado de uma válvula (activa/inactiva).</p>
+                <p><strong>Parâmetros:</strong></p>
+                <ul>
+                    <li><code>id</code> <span class="badge required">obrigatório</span> - ID da válvula (1-5)</li>
+                </ul>
+                <button class="test-button" onclick="testEndpoint('?action=toggle&id=1', 'toggle-response', 'POST')">Testar (ID=1)</button>
+                <div id="toggle-response" class="response"></div>
+            </div>
+
+            <!-- Ciclo de Limpeza -->
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    Iniciar Ciclo de Limpeza
+                </h3>
+                <div class="url">POST /api.php?action=cycle&id={id}</div>
+                <p>Inicia um ciclo de limpeza para prevenção de legionela.</p>
+                <p><strong>Parâmetros:</strong></p>
+                <ul>
+                    <li><code>id</code> <span class="badge required">obrigatório</span> - ID da válvula (1-5)</li>
+                </ul>
+                <button class="test-button" onclick="testEndpoint('?action=cycle&id=1', 'cycle-response', 'POST')">Testar (ID=1)</button>
+                <div id="cycle-response" class="response"></div>
+            </div>
+        </div>
+
+        <!-- Códigos de Resposta -->
+        <div class="section">
+            <h2>📊 Códigos de Resposta HTTP</h2>
+            <ul>
+                <li><strong>200 OK</strong> - Requisição bem-sucedida</li>
+                <li><strong>400 Bad Request</strong> - Parâmetros inválidos</li>
+                <li><strong>404 Not Found</strong> - Recurso não encontrado</li>
+                <li><strong>500 Internal Server Error</strong> - Erro interno do servidor</li>
+            </ul>
+        </div>
+
+        <!-- Exemplos de Integração -->
+        <div class="section">
+            <h2>💻 Exemplos de Integração</h2>
+
+            <h3>ESP32 (C++)</h3>
+            <div class="code-block">#include &lt;HTTPClient.h&gt;
+#include &lt;ArduinoJson.h&gt;
+
+void pingServer() {
+  HTTPClient http;
+  http.begin("http://192.168.1.100:8080/api.php?action=ping");
+
+  int httpCode = http.GET();
+  if (httpCode == 200) {
+    String payload = http.getString();
+    Serial.println("Ping successful: " + payload);
+  }
+
+  http.end();
+}</div>
+
+            <h3>JavaScript (Frontend)</h3>
+            <div class="code-block">async function getValves() {
+  try {
+    const response = await fetch('/api.php?action=valves');
+    const data = await response.json();
+
+    if (data.status === 'success') {
+      console.log('Válvulas:', data.data);
+    }
+  } catch (error) {
+    console.error('Erro:', error);
+  }
+}</div>
+
+            <h3>Python</h3>
+            <div class="code-block">import requests
+
+def toggle_valve(valve_id):
+    url = f"http://localhost:8080/api.php?action=toggle&id={valve_id}"
+    response = requests.post(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        print(f"Válvula {valve_id}: {data['message']}")
+
+    return response.json()</div>
+        </div>
+    </main>
+
+    <script>
+        async function testEndpoint(params, responseId, method = 'GET') {
+            const url = `/api.php${params}`;
+            const responseDiv = document.getElementById(responseId);
+
+            try {
+                responseDiv.innerHTML = '<pre>Carregando...</pre>';
+                responseDiv.classList.add('show');
+
+                const response = await fetch(url, { method: method });
+                const data = await response.json();
+
+                responseDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                responseDiv.innerHTML = `<pre>Erro: ${error.message}</pre>`;
+            }
+        }
+    </script>
+</body>
+</html>

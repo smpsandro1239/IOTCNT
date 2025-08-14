@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOTCNT - Dashboard Utilizador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-right: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-badge {
+            background: #2563eb;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-title {
+            margin-bottom: 2rem;
+        }
+
+        .page-title h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: #6b7280;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.blue { background: #dbeafe; color: #2563eb; }
+        .stat-icon.green { background: #dcfce7; color: #16a34a; }
+        .stat-icon.purple { background: #f3e8ff; color: #9333ea; }
+        .stat-icon.orange { background: #fed7aa; color: #ea580c; }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number.blue { color: #2563eb; }
+        .stat-number.green { color: #16a34a; }
+        .stat-number.purple { color: #9333ea; }
+        .stat-number.orange { color: #ea580c; }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .status-list {
+            list-style: none;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-name {
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.ok {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-badge.maintenance {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .temp-display {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .temp-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .temp-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            border: 2px dashed #d1d5db;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .notification-icon.success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .notification-icon.info {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>IOTCNT</h1>
+                <span>Dashboard Utilizador</span>
+            </div>
+            <div class="user-info">
+                <span class="user-badge">👤 Utilizador</span>
+                <a href="/login-iotcnt.html" class="btn btn-secondary">Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="page-title">
+            <h2>Dashboard do Sistema</h2>
+            <p>Monitorização do sistema de arrefecimento de condensadores</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon blue">🏭</div>
+                </div>
+                <div class="stat-number blue">4</div>
+                <div class="stat-label">Condensadores Operacionais</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon green">✅</div>
+                </div>
+                <div class="stat-number green">95%</div>
+                <div class="stat-label">Eficiência do Sistema</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon purple">🌡️</div>
+                </div>
+                <div class="stat-number purple">18°C</div>
+                <div class="stat-label">Temperatura Actual</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon orange">⏱️</div>
+                </div>
+                <div class="stat-number orange">24h</div>
+                <div class="stat-label">Último Ciclo</div>
+            </div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="cards-grid">
+            <!-- Estado dos Condensadores -->
+            <div class="card">
+                <h3>🏭 Estado dos Condensadores</h3>
+                <ul class="status-list">
+                    <li class="status-item">
+                        <span class="status-name">Condensador 1</span>
+                        <span class="status-badge ok">Operacional</span>
+                    </li>
+                    <li class="status-item">
+                        <span class="status-name">Condensador 2</span>
+                        <span class="status-badge ok">Operacional</span>
+                    </li>
+                    <li class="status-item">
+                        <span class="status-name">Condensador 3</span>
+                        <span class="status-badge ok">Operacional</span>
+                    </li>
+                    <li class="status-item">
+                        <span class="status-name">Condensador 4</span>
+                        <span class="status-badge maintenance">Manutenção</span>
+                    </li>
+                    <li class="status-item">
+                        <span class="status-name">Condensador 5</span>
+                        <span class="status-badge ok">Operacional</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Temperatura -->
+            <div class="card">
+                <h3>🌡️ Monitorização de Temperatura</h3>
+                <div class="temp-display">
+                    <div class="temp-number" id="currentTemp">18°C</div>
+                    <div class="temp-label">Temperatura Actual</div>
+                </div>
+                <div class="chart-placeholder">
+                    📊 Gráfico de Temperatura (Em Desenvolvimento)
+                </div>
+            </div>
+
+            <!-- Prevenção de Legionela -->
+            <div class="card">
+                <h3>🦠 Prevenção de Legionela</h3>
+                <ul class="status-list">
+                    <li class="status-item">
+                        <span class="status-name">Último Ciclo de Limpeza</span>
+                        <span class="status-badge ok">Há 6h</span>
+                    </li>
+                    <li class="status-item">
+                        <span class="status-name">Próximo Ciclo</span>
+                        <span class="status-badge warning">Em 18h</span>
+                    </li>
+                    <li class="status-item">
+                        <span class="status-name">Estado de Prevenção</span>
+                        <span class="status-badge ok">Activo</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Notificações -->
+            <div class="card">
+                <h3>🔔 Notificações Recentes</h3>
+                <div class="notification-item">
+                    <div class="notification-icon success">✅</div>
+                    <div class="notification-content">
+                        <div class="notification-title">Ciclo de prevenção concluído</div>
+                        <div class="notification-time">Há 6 horas</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon info">ℹ️</div>
+                    <div class="notification-content">
+                        <div class="notification-title">Sistema a funcionar normalmente</div>
+                        <div class="notification-time">Há 2 horas</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon info">🔧</div>
+                    <div class="notification-content">
+                        <div class="notification-title">Condensador 4 em manutenção programada</div>
+                        <div class="notification-time">Há 4 horas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simular dados em tempo real
+        function updateTemperature() {
+            const temp = Math.floor(Math.random() * 5) + 16; // 16-20°C
+            document.getElementById('currentTemp').textContent = temp + '°C';
+            document.querySelector('.stat-number.purple').textContent = temp + '°C';
+        }
+
+        function updateEfficiency() {
+            const efficiency = Math.floor(Math.random() * 10) + 90; // 90-99%
+            document.querySelector('.stat-number.green').textContent = efficiency + '%';
+        }
+
+        // Actualizar a cada 10 segundos
+        setInterval(updateTemperature, 10000);
+        setInterval(updateEfficiency, 15000);
+
+        // Simular notificação em tempo real
+        setTimeout(() => {
+            const notificationCard = document.querySelector('.card:last-child');
+            const newNotification = document.createElement('div');
+            newNotification.className = 'notification-item';
+            newNotification.innerHTML = `
+                <div class="notification-icon success">🔄</div>
+                <div class="notification-content">
+                    <div class="notification-title">Dados actualizados automaticamente</div>
+                    <div class="notification-time">Agora mesmo</div>
+                </div>
+            `;
+            notificationCard.insertBefore(newNotification, notificationCard.querySelector('.notification-item'));
+        }, 30000);
+    </script>
+</body>
+</html>

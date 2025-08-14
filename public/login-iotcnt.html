@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOTCNT - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .header .subtitle {
+            color: #2563eb;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .btn-credential {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-admin {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-admin:hover {
+            background: #b91c1c;
+        }
+
+        .btn-user {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-user:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .btn-login:hover {
+            background: #2563eb;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .credentials {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .credentials h3 {
+            color: #1e40af;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .credential-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .credential-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .credential-item .role {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .credential-item .details {
+            font-size: 14px;
+            color: #3b82f6;
+        }
+
+        .back-link {
+            text-align: center;
+        }
+
+        .back-link a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <h1>IOTCNT</h1>
+            <p>Sistema de Arrefecimento Industrial</p>
+            <p class="subtitle">Continente - Prevenção de Legionela</p>
+        </div>
+
+        <div id="message"></div>
+
+        <form id="loginForm">
+            <div class="button-group">
+                <button type="button" class="btn-credential btn-admin" onclick="setCredentials('admin')">
+                    👨‍💼 Admin
+                </button>
+                <button type="button" class="btn-credential btn-user" onclick="setCredentials('user')">
+                    👤 User
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Endereço de Email</label>
+                <input type="email" id="email" name="email" value="admin@iotcnt.local" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" value="password" required>
+            </div>
+
+            <button type="submit" class="btn-login">
+                🔐 Entrar no Sistema
+            </button>
+        </form>
+
+        <div class="credentials">
+            <h3>🔑 Credenciais de Teste</h3>
+            <div class="credential-item">
+                <div class="role">👨‍💼 Administrador</div>
+                <div class="details">admin@iotcnt.local / password</div>
+            </div>
+            <div class="credential-item">
+                <div class="role">👤 Utilizador</div>
+                <div class="details">user@iotcnt.local / password</div>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="/index-iotcnt.html">← Voltar à Página Principal</a>
+        </div>
+    </div>
+
+    <script>
+        function setCredentials(type) {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+
+            if (type === 'admin') {
+                emailInput.value = 'admin@iotcnt.local';
+                passwordInput.value = 'password';
+            } else {
+                emailInput.value = 'user@iotcnt.local';
+                passwordInput.value = 'password';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+
+            // Simular autenticação
+            if ((email === 'admin@iotcnt.local' || email === 'user@iotcnt.local') && password === 'password') {
+                messageDiv.innerHTML = '<div class="alert alert-success">✅ Login realizado com sucesso! A redirecionar...</div>';
+
+                setTimeout(() => {
+                    if (email === 'admin@iotcnt.local') {
+                        window.location.href = '/dashboard-admin.html';
+                    } else {
+                        window.location.href = '/dashboard-user.html';
+                    }
+                }, 1500);
+            } else {
+                messageDiv.innerHTML = '<div class="alert alert-error">❌ Credenciais inválidas. Tente novamente.</div>';
+            }
+        });
+    </script>
+</body>
+</html>

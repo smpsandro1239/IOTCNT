@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IOTCNT - Dashboard Administrador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-right: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-badge {
+            background: #dc2626;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-title {
+            margin-bottom: 2rem;
+        }
+
+        .page-title h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: #6b7280;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.blue { background: #dbeafe; color: #2563eb; }
+        .stat-icon.green { background: #dcfce7; color: #16a34a; }
+        .stat-icon.purple { background: #f3e8ff; color: #9333ea; }
+        .stat-icon.red { background: #fee2e2; color: #dc2626; }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number.blue { color: #2563eb; }
+        .stat-number.green { color: #16a34a; }
+        .stat-number.purple { color: #9333ea; }
+        .stat-number.red { color: #dc2626; }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .valve-list {
+            list-style: none;
+        }
+
+        .valve-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .valve-item:last-child {
+            border-bottom: none;
+        }
+
+        .valve-name {
+            font-weight: 500;
+        }
+
+        .valve-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .valve-status.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .valve-status.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .alert-icon.warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .alert-icon.info {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-time {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .btn-warning {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #b45309;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>IOTCNT</h1>
+                <span>Dashboard Administrador</span>
+            </div>
+            <div class="user-info">
+                <span class="user-badge">👨‍💼 Admin</span>
+                <a href="/login-iotcnt.html" class="btn btn-secondary">Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="page-title">
+            <h2>Dashboard Administrador</h2>
+            <p>Monitorização e controlo do sistema de arrefecimento de condensadores</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon blue">🏭</div>
+                </div>
+                <div class="stat-number blue">5</div>
+                <div class="stat-label">Condensadores Activos</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon green">✅</div>
+                </div>
+                <div class="stat-number green">100%</div>
+                <div class="stat-label">Sistema Operacional</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon purple">🌡️</div>
+                </div>
+                <div class="stat-number purple">18°C</div>
+                <div class="stat-label">Temperatura Média</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon red">⚠️</div>
+                </div>
+                <div class="stat-number red">0</div>
+                <div class="stat-label">Alertas Activos</div>
+            </div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="cards-grid">
+            <!-- Válvulas -->
+            <div class="card">
+                <h3>🔧 Estado das Válvulas</h3>
+                <ul class="valve-list">
+                    <li class="valve-item">
+                        <span class="valve-name">Condensador 1</span>
+                        <span class="valve-status active">Activo</span>
+                    </li>
+                    <li class="valve-item">
+                        <span class="valve-name">Condensador 2</span>
+                        <span class="valve-status active">Activo</span>
+                    </li>
+                    <li class="valve-item">
+                        <span class="valve-name">Condensador 3</span>
+                        <span class="valve-status active">Activo</span>
+                    </li>
+                    <li class="valve-item">
+                        <span class="valve-name">Condensador 4</span>
+                        <span class="valve-status inactive">Inactivo</span>
+                    </li>
+                    <li class="valve-item">
+                        <span class="valve-name">Condensador 5</span>
+                        <span class="valve-status active">Activo</span>
+                    </li>
+                </ul>
+                <div class="actions">
+                    <button class="btn btn-primary">Controlar Válvulas</button>
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            <div class="card">
+                <h3>🔔 Alertas Recentes</h3>
+                <div class="alert-item">
+                    <div class="alert-icon info">ℹ️</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Sistema iniciado com sucesso</div>
+                        <div class="alert-time">Há 2 horas</div>
+                    </div>
+                </div>
+                <div class="alert-item">
+                    <div class="alert-icon warning">⚠️</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Condensador 4 desactivado para manutenção</div>
+                        <div class="alert-time">Há 4 horas</div>
+                    </div>
+                </div>
+                <div class="alert-item">
+                    <div class="alert-icon info">✅</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Ciclo de prevenção de legionela concluído</div>
+                        <div class="alert-time">Há 6 horas</div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-primary">Ver Todos os Alertas</button>
+                </div>
+            </div>
+
+            <!-- Acções Rápidas -->
+            <div class="card">
+                <h3>⚡ Acções Rápidas</h3>
+                <div class="actions">
+                    <button class="btn btn-success">Iniciar Ciclo de Limpeza</button>
+                    <button class="btn btn-warning">Modo Manutenção</button>
+                </div>
+                <br>
+                <div class="actions">
+                    <button class="btn btn-primary">Exportar Relatório</button>
+                    <button class="btn btn-secondary">Configurações</button>
+                </div>
+            </div>
+
+            <!-- Performance -->
+            <div class="card">
+                <h3>📊 Performance do Sistema</h3>
+                <ul class="valve-list">
+                    <li class="valve-item">
+                        <span class="valve-name">Uptime</span>
+                        <span class="valve-status active">99.9%</span>
+                    </li>
+                    <li class="valve-item">
+                        <span class="valve-name">Eficiência Energética</span>
+                        <span class="valve-status active">95%</span>
+                    </li>
+                    <li class="valve-item">
+                        <span class="valve-name">Prevenção de Legionela</span>
+                        <span class="valve-status active">100%</span>
+                    </li>
+                </ul>
+                <div class="actions">
+                    <button class="btn btn-primary">Ver Métricas Detalhadas</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simular dados em tempo real
+        function updateStats() {
+            const temp = Math.floor(Math.random() * 5) + 16; // 16-20°C
+            document.querySelector('.stat-number.purple').textContent = temp + '°C';
+        }
+
+        // Actualizar a cada 5 segundos
+        setInterval(updateStats, 5000);
+
+        // Adicionar funcionalidade aos botões
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.textContent.includes('Sair')) return;
+
+                alert('Funcionalidade: ' + this.textContent + '\n\nEsta funcionalidade será implementada na próxima fase do desenvolvimento.');
+            });
+        });
+    </script>
+</body>
+</html>

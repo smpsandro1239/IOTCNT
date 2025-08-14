@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>IOTCNT - Logs do Sistema</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; }
+        .header { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 1rem 0; }
+        .header-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo h1 { font-size: 1.5rem; font-weight: bold; color: #1f2937; }
+        .nav-links { display: flex; gap: 1rem; }
+        .nav-link { padding: 0.5rem 1rem; text-decoration: none; color: #6b7280; border-radius: 0.5rem; transition: all 0.2s; }
+        .nav-link:hover { background: #f3f4f6; color: #1f2937; }
+        .nav-link.active { background: #3b82f6; color: white; }
+        .main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .section { background: white; border-radius: 0.75rem; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .filters { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .filter-group { display: flex; flex-direction: column; }
+        .filter-group label { font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; }
+        .filter-group select, .filter-group input { padding: 0.5rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; }
+        .log-table { width: 100%; border-collapse: collapse; }
+        .log-table th, .log-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .log-table th { background: #f8fafc; font-weight: 600; color: #374151; }
+        .log-level { padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600; }
+        .log-level.info { background: #dbeafe; color: #1e40af; }
+        .log-level.success { background: #dcfce7; color: #166534; }
+        .log-level.warning { background: #fef3c7; color: #d97706; }
+        .log-level.error { background: #fee2e2; color: #991b1b; }
+        .log-level.critical { background: #fdf2f8; color: #be185d; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-warning { background: #d97706; color: white; }
+        .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; }
+        .pagination button { padding: 0.5rem 0.75rem; border: 1px solid #e5e7eb; background: white; cursor: pointer; }
+        .pagination button.active { background: #3b82f6; color: white; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo"><h1>IOTCNT - Logs do Sistema</h1></div>
+            <nav class="nav-links">
+                <a href="/dashboard-admin.html" class="nav-link">Dashboard</a>
+                <a href="/valve-control.html" class="nav-link">Válvulas</a>
+                <a href="/system-logs.html" class="nav-link active">Logs</a>
+                <a href="/login-iotcnt.html" class="nav-link">Sair</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main">
+        <div class="page-title">
+            <h2>Logs do Sistema</h2>
+            <p>Histórico completo de actividades e eventos do sistema IOTCNT</p>
+        </div>
+
+        <div class="section">
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Nível</label>
+                    <select id="levelFilter">
+                        <option value="">Todos</option>
+                        <option value="info">Info</option>
+                        <option value="success">Sucesso</option>
+                        <option value="warning">Aviso</option>
+                        <option value="error">Erro</option>
+                        <option value="critical">Crítico</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Componente</label>
+                    <select id="componentFilter">
+                        <option value="">Todos</option>
+                        <option value="valve">Válvulas</option>
+                        <option value="system">Sistema</option>
+                        <option value="api">API</option>
+                        <option value="auth">Autenticação</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Data Início</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="filter-group">
+                    <label>Data Fim</label>
+                    <input type="date" id="endDate">
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary" onclick="applyFilters()">Filtrar</button>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-success" onclick="exportLogs()">Exportar</button>
+                </div>
+            </div>
+
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Nível</th>
+                        <th>Componente</th>
+                        <th>Mensagem</th>
+                        <th>Utilizador</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTableBody">
+                    <!-- Logs serão carregados dinamicamente -->
+                </tbody>
+            </table>
+
+            <div class="pagination" id="pagination">
+                <!-- Paginação será gerada dinamicamente -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let allLogs = [];
+        let filteredLogs = [];
+        let currentPage = 1;
+        const logsPerPage = 20;
+
+        // Gerar logs de exemplo
+        function generateSampleLogs() {
+            const levels = ['info', 'success', 'warning', 'error', 'critical'];
+            const components = ['valve', 'system', 'api', 'auth'];
+            const users = ['admin@iotcnt.local', 'user@iotcnt.local', 'sistema'];
+            const messages = {
+                valve: ['Válvula activada', 'Ciclo de limpeza iniciado', 'Válvula desactivada', 'Manutenção programada'],
+                system: ['Sistema iniciado', 'Backup realizado', 'Configurações actualizadas', 'Sistema reiniciado'],
+                api: ['Pedido API recebido', 'Resposta enviada', 'Erro de comunicação', 'Timeout de conexão'],
+                auth: ['Login realizado', 'Logout executado', 'Tentativa de login falhada', 'Sessão expirada']
+            };
+
+            const logs = [];
+            const now = new Date();
+
+            for (let i = 0; i < 100; i++) {
+                const date = new Date(now.getTime() - (Math.random() * 7 * 24 * 60 * 60 * 1000)); // Últimos 7 dias
+                const level = levels[Math.floor(Math.random() * levels.length)];
+                const component = components[Math.floor(Math.random() * components.length)];
+                const user = users[Math.floor(Math.random() * users.length)];
+                const message = messages[component][Math.floor(Math.random() * messages[component].length)];
+
+                logs.push({
+                    id: i + 1,
+                    timestamp: date,
+                    level: level,
+                    component: component,
+                    message: message,
+                    user: user
+                });
+            }
+
+            return logs.sort((a, b) => b.timestamp - a.timestamp);
+        }
+
+        function renderLogs() {
+            const tbody = document.getElementById('logsTableBody');
+            const startIndex = (currentPage - 1) * logsPerPage;
+            const endIndex = startIndex + logsPerPage;
+            const pageData = filteredLogs.slice(startIndex, endIndex);
+
+            tbody.innerHTML = pageData.map(log => `
+                <tr>
+                    <td>${log.timestamp.toLocaleString('pt-PT')}</td>
+                    <td><span class="log-level ${log.level}">${log.level.toUpperCase()}</span></td>
+                    <td>${log.component}</td>
+                    <td>${log.message}</td>
+                    <td>${log.user}</td>
+                </tr>
+            `).join('');
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
+            const pagination = document.getElementById('pagination');
+
+            let paginationHTML = '';
+
+            if (currentPage > 1) {
+                paginationHTML += `<button onclick="changePage(${currentPage - 1})">Anterior</button>`;
+            }
+
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+                paginationHTML += `<button class="${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+
+            if (currentPage < totalPages) {
+                paginationHTML += `<button onclick="changePage(${currentPage + 1})">Próxima</button>`;
+            }
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderLogs();
+        }
+
+        function applyFilters() {
+            const levelFilter = document.getElementById('levelFilter').value;
+            const componentFilter = document.getElementById('componentFilter').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            filteredLogs = allLogs.filter(log => {
+                if (levelFilter && log.level !== levelFilter) return false;
+                if (componentFilter && log.component !== componentFilter) return false;
+                if (startDate && log.timestamp < new Date(startDate)) return false;
+                if (endDate && log.timestamp > new Date(endDate + 'T23:59:59')) return false;
+                return true;
+            });
+
+            currentPage = 1;
+            renderLogs();
+        }
+
+        function exportLogs() {
+            const data = {
+                logs: filteredLogs,
+                exported_at: new Date().toISOString(),
+                total_logs: filteredLogs.length
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `iotcnt_logs_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            allLogs = generateSampleLogs();
+            filteredLogs = [...allLogs];
+
+            // Definir datas padrão (última semana)
+            const today = new Date();
+            const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+            document.getElementById('startDate').value = lastWeek.toISOString().split('T')[0];
+            document.getElementById('endDate').value = today.toISOString().split('T')[0];
+
+            renderLogs();
+
+            // Adicionar novos logs em tempo real (simulação)
+            setInterval(() => {
+                const newLog = {
+                    id: allLogs.length + 1,
+                    timestamp: new Date(),
+                    level: ['info', 'success'][Math.floor(Math.random() * 2)],
+                    component: 'system',
+                    message: 'Monitorização automática executada',
+                    user: 'sistema'
+                };
+
+                allLogs.unshift(newLog);
+                applyFilters();
+            }, 30000); // Novo log a cada 30 segundos
+        });
+    </script>
+</body>
+</html>

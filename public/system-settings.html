@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>IOTCNT - Configurações do Sistema</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; }
+        .header { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 1rem 0; }
+        .header-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo h1 { font-size: 1.5rem; font-weight: bold; color: #1f2937; }
+        .nav-links { display: flex; gap: 1rem; }
+        .nav-link { padding: 0.5rem 1rem; text-decoration: none; color: #6b7280; border-radius: 0.5rem; transition: all 0.2s; }
+        .nav-link:hover { background: #f3f4f6; color: #1f2937; }
+        .nav-link.active { background: #3b82f6; color: white; }
+        .main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .section { background: white; border-radius: 0.75rem; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-warning { background: #d97706; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .alert { padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; }
+        .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-warning { background: #fffbeb; color: #d97706; border: 1px solid #fed7aa; }
+        .toggle { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #16a34a; }
+        input:checked + .slider:before { transform: translateX(26px); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo"><h1>IOTCNT - Configurações</h1></div>
+            <nav class="nav-links">
+                <a href="/dashboard-admin.html" class="nav-link">Dashboard</a>
+                <a href="/valve-control.html" class="nav-link">Válvulas</a>
+                <a href="/system-settings.html" class="nav-link active">Configurações</a>
+                <a href="/login-iotcnt.html" class="nav-link">Sair</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main">
+        <div class="page-title">
+            <h2>Configurações do Sistema</h2>
+            <p>Gestão de parâmetros e configurações do sistema IOTCNT</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="section">
+            <h3>⚙️ Configurações Gerais</h3>
+            <form id="generalSettings">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nome do Sistema</label>
+                        <input type="text" id="systemName" value="IOTCNT - CNT">
+                    </div>
+                    <div class="form-group">
+                        <label>Localização</label>
+                        <input type="text" id="location" value="Central de Frio - CNT">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Intervalo de Monitorização (segundos)</label>
+                        <input type="number" id="monitoringInterval" value="30" min="10" max="300">
+                    </div>
+                    <div class="form-group">
+                        <label>Temperatura Alerta (°C)</label>
+                        <input type="number" id="alertTemp" value="25" min="15" max="35">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="section">
+            <h3>🔧 Configurações das Válvulas</h3>
+            <form id="valveSettings">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Duração Ciclo Limpeza (minutos)</label>
+                        <input type="number" id="cleaningDuration" value="15" min="5" max="60">
+                    </div>
+                    <div class="form-group">
+                        <label>Pressão Mínima (bar)</label>
+                        <input type="number" id="minPressure" value="1.5" min="1.0" max="3.0" step="0.1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Modo Automático</label>
+                    <label class="toggle">
+                        <input type="checkbox" id="autoMode" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </form>
+        </div>
+
+        <div class="section">
+            <h3>📧 Configurações de Notificações</h3>
+            <form id="notificationSettings">
+                <div class="form-group">
+                    <label>Email de Alertas</label>
+                    <input type="email" id="alertEmail" value="admin@cnt.pt">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Notificações por Email</label>
+                        <label class="toggle">
+                            <input type="checkbox" id="emailNotifications" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Notificações Telegram</label>
+                        <label class="toggle">
+                            <input type="checkbox" id="telegramNotifications">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="section">
+            <h3>💾 Gestão de Dados</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Retenção de Logs (dias)</label>
+                    <input type="number" id="logRetention" value="30" min="7" max="365">
+                </div>
+                <div class="form-group">
+                    <label>Backup Automático</label>
+                    <label class="toggle">
+                        <input type="checkbox" id="autoBackup" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div style="margin-top: 1rem;">
+                <button type="button" class="btn btn-primary" onclick="exportData()">Exportar Dados</button>
+                <button type="button" class="btn btn-warning" onclick="clearLogs()">Limpar Logs</button>
+                <button type="button" class="btn btn-danger" onclick="resetSystem()">Reset Sistema</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="button" class="btn btn-success" onclick="saveSettings()">Guardar Configurações</button>
+                <button type="button" class="btn btn-warning" onclick="testSystem()">Testar Sistema</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function saveSettings() {
+            // Simular gravação das configurações
+            const settings = {
+                systemName: document.getElementById('systemName').value,
+                location: document.getElementById('location').value,
+                monitoringInterval: document.getElementById('monitoringInterval').value,
+                alertTemp: document.getElementById('alertTemp').value,
+                cleaningDuration: document.getElementById('cleaningDuration').value,
+                minPressure: document.getElementById('minPressure').value,
+                autoMode: document.getElementById('autoMode').checked,
+                alertEmail: document.getElementById('alertEmail').value,
+                emailNotifications: document.getElementById('emailNotifications').checked,
+                telegramNotifications: document.getElementById('telegramNotifications').checked,
+                logRetention: document.getElementById('logRetention').value,
+                autoBackup: document.getElementById('autoBackup').checked
+            };
+
+            localStorage.setItem('iotcnt_settings', JSON.stringify(settings));
+            showAlert('Configurações guardadas com sucesso!', 'success');
+        }
+
+        function testSystem() {
+            showAlert('A testar sistema...', 'warning');
+
+            setTimeout(() => {
+                showAlert('Teste do sistema concluído - Todos os componentes funcionais', 'success');
+            }, 2000);
+        }
+
+        function exportData() {
+            const data = {
+                settings: JSON.parse(localStorage.getItem('iotcnt_settings') || '{}'),
+                timestamp: new Date().toISOString(),
+                system: 'IOTCNT'
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `iotcnt_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+
+            showAlert('Dados exportados com sucesso!', 'success');
+        }
+
+        function clearLogs() {
+            if (confirm('Tem a certeza que deseja limpar todos os logs?')) {
+                showAlert('Logs limpos com sucesso!', 'warning');
+            }
+        }
+
+        function resetSystem() {
+            if (confirm('ATENÇÃO: Esta acção irá repor todas as configurações para os valores padrão. Continuar?')) {
+                localStorage.removeItem('iotcnt_settings');
+                location.reload();
+            }
+        }
+
+        // Carregar configurações guardadas
+        document.addEventListener('DOMContentLoaded', function() {
+            const saved = localStorage.getItem('iotcnt_settings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                Object.keys(settings).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = settings[key];
+                        } else {
+                            element.value = settings[key];
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

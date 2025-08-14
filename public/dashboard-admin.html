@@ -454,14 +454,74 @@
         // Actualizar a cada 5 segundos
         setInterval(updateStats, 5000);
 
-        // Adicionar funcionalidade aos botões
+        // Funcionalidades dos botões
         document.querySelectorAll('.btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (this.textContent.includes('Sair')) return;
+                if (this.tagName === 'A') return; // Links já têm destino
 
-                alert('Funcionalidade: ' + this.textContent + '\n\nEsta funcionalidade será implementada na próxima fase do desenvolvimento.');
+                const action = this.textContent.trim();
+
+                switch(action) {
+                    case 'Iniciar Ciclo de Limpeza':
+                        startCleaningCycle();
+                        break;
+                    case 'Modo Manutenção':
+                        toggleMaintenanceMode();
+                        break;
+                    case 'Configurações':
+                        openSettings();
+                        break;
+                    case 'Ver Todos os Alertas':
+                        showAllAlerts();
+                        break;
+                    case 'Ver Métricas Detalhadas':
+                        showDetailedMetrics();
+                        break;
+                    default:
+                        console.log('Acção:', action);
+                }
             });
         });
+
+        function startCleaningCycle() {
+            if (confirm('Iniciar ciclo de limpeza em todas as válvulas activas?')) {
+                addAlert('Ciclo de limpeza iniciado em todas as válvulas', 'success');
+                updateStats();
+            }
+        }
+
+        function toggleMaintenanceMode() {
+            if (confirm('Activar modo de manutenção do sistema?')) {
+                addAlert('Sistema colocado em modo de manutenção', 'warning');
+            }
+        }
+
+        function openSettings() {
+            window.location.href = '/system-settings.html';
+        }
+
+        function showAllAlerts() {
+            window.location.href = '/system-logs.html';
+        }
+
+        function showDetailedMetrics() {
+            window.location.href = '/performance-metrics.html';
+        }
+
+        function addAlert(message, type) {
+            const alertsContainer = document.querySelector('.card:nth-child(2)');
+            const newAlert = document.createElement('div');
+            newAlert.className = 'alert-item';
+            newAlert.innerHTML = `
+                <div class="alert-icon ${type === 'success' ? 'info' : 'warning'}">${type === 'success' ? '✅' : '⚠️'}</div>
+                <div class="alert-content">
+                    <div class="alert-title">${message}</div>
+                    <div class="alert-time">Agora mesmo</div>
+                </div>
+            `;
+            alertsContainer.insertBefore(newAlert, alertsContainer.querySelector('.actions'));
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>IOTCNT - Gestão de Base de Dados</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; }
+        .header { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 1rem 0; }
+        .header-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo h1 { font-size: 1.5rem; font-weight: bold; color: #1f2937; }
+        .nav-links { display: flex; gap: 1rem; }
+        .nav-link { padding: 0.5rem 1rem; text-decoration: none; color: #6b7280; border-radius: 0.5rem; transition: all 0.2s; }
+        .nav-link:hover { background: #f3f4f6; color: #1f2937; }
+        .nav-link.active { background: #3b82f6; color: white; }
+        .main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .section { background: white; border-radius: 0.75rem; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .status-card { background: #f8fafc; border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 1.5rem; text-align: center; }
+        .status-card.online { border-color: #16a34a; background: #f0fdf4; }
+        .status-card.offline { border-color: #dc2626; background: #fef2f2; }
+        .status-value { font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .status-value.online { color: #16a34a; }
+        .status-value.offline { color: #dc2626; }
+        .status-value.warning { color: #d97706; }
+        .status-label { color: #6b7280; font-size: 0.875rem; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-warning { background: #d97706; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .data-table th, .data-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .data-table th { background: #f8fafc; font-weight: 600; color: #374151; }
+        .alert { padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; }
+        .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .alert-warning { background: #fffbeb; color: #d97706; border: 1px solid #fed7aa; }
+        .tabs { display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 2rem; }
+        .tab { padding: 1rem 2rem; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .tab:hover { background: #f8fafc; }
+        .tab.active { border-bottom-color: #3b82f6; color: #3b82f6; font-weight: 600; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .json-viewer { background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.875rem; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo"><h1>IOTCNT - Base de Dados</h1></div>
+            <nav class="nav-links">
+                <a href="/dashboard-admin.html" class="nav-link">Dashboard</a>
+                <a href="/database-admin.html" class="nav-link active">Base de Dados</a>
+                <a href="/login-iotcnt.html" class="nav-link">Sair</a>
+            </nav>
+        </div>
+    </header>
+    <main class="main">
+        <div class="page-title">
+            <h2>Gestão de Base de Dados</h2>
+            <p>Monitorização e gestão da base de dados MySQL do sistema IOTCNT</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="section">
+            <h3>📊 Estado da Base de Dados</h3>
+            <div class="status-grid">
+                <div class="status-card" id="dbStatusCard">
+                    <div class="status-value" id="dbStatus">Verificando...</div>
+                    <div class="status-label">Estado da Conexão</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value" id="totalLogs">-</div>
+                    <div class="status-label">Total de Logs</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value" id="totalNotifications">-</div>
+                    <div class="status-label">Notificações</div>
+                </div>
+                <div class="status-card">
+                    <div class="status-value" id="activeValves">-</div>
+                    <div class="status-label">Válvulas Activas</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="checkDatabaseStatus()">Verificar Estado</button>
+                <button class="btn btn-success" onclick="initializeDatabase()">Inicializar BD</button>
+                <button class="btn btn-warning" onclick="backupDatabase()">Backup</button>
+                <button class="btn btn-danger" onclick="clearOldData()">Limpar Dados Antigos</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('valves')">Válvulas</div>
+                <div class="tab" onclick="showTab('logs')">Logs</div>
+                <div class="tab" onclick="showTab('settings')">Configurações</div>
+                <div class="tab" onclick="showTab('schedules')">Agendamentos</div>
+                <div class="tab" onclick="showTab('notifications')">Notificações</div>
+            </div>
+
+            <div id="valves" class="tab-content active">
+                <h3>🔧 Estado das Válvulas</h3>
+                <table class="data-table" id="valvesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Estado</th>
+                            <th>Temperatura</th>
+                            <th>Pressão</th>
+                            <th>Ciclos</th>
+                            <th>Eficiência</th>
+                            <th>Última Actualização</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div id="logs" class="tab-content">
+                <h3>📋 Logs do Sistema</h3>
+                <div style="margin-bottom: 1rem;">
+                    <select id="logLevel" style="padding: 0.5rem; margin-right: 1rem;">
+                        <option value="">Todos os níveis</option>
+                        <option value="info">Info</option>
+                        <option value="success">Sucesso</option>
+                        <option value="warning">Aviso</option>
+                        <option value="error">Erro</option>
+                        <option value="critical">Crítico</option>
+                    </select>
+                    <select id="logComponent" style="padding: 0.5rem; margin-right: 1rem;">
+                        <option value="">Todos os componentes</option>
+                        <option value="system">Sistema</option>
+                        <option value="valve">Válvulas</option>
+                        <option value="api">API</option>
+                        <option value="auth">Autenticação</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="loadLogs()">Filtrar</button>
+                </div>
+                <table class="data-table" id="logsTable">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Nível</th>
+                            <th>Componente</th>
+                            <th>Mensagem</th>
+                            <th>Utilizador</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div id="settings" class="tab-content">
+                <h3>⚙️ Configurações do Sistema</h3>
+                <div id="settingsContainer"></div>
+            </div>
+
+            <div id="schedules" class="tab-content">
+                <h3>📅 Agendamentos</h3>
+                <table class="data-table" id="schedulesTable">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Horário</th>
+                            <th>Frequência</th>
+                            <th>Válvulas</th>
+                            <th>Estado</th>
+                            <th>Última Execução</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div id="notifications" class="tab-content">
+                <h3>📧 Histórico de Notificações</h3>
+                <table class="data-table" id="notificationsTable">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Tipo</th>
+                            <th>Canal</th>
+                            <th>Mensagem</th>
+                            <th>Estado</th>
+                            <th>Destinatário</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let dbOnline = false;
+
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function showTab(tabName) {
+            // Esconder todos os conteúdos
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remover classe active de todos os tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Mostrar conteúdo seleccionado
+            document.getElementById(tabName).classList.add('active');
+
+            // Activar tab seleccionado
+            event.target.classList.add('active');
+
+            // Carregar dados do tab
+            loadTabData(tabName);
+        }
+
+        function loadTabData(tabName) {
+            switch(tabName) {
+                case 'valves':
+                    loadValves();
+                    break;
+                case 'logs':
+                    loadLogs();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+                case 'schedules':
+                    loadSchedules();
+                    break;
+                case 'notifications':
+                    loadNotifications();
+                    break;
+            }
+        }
+
+        async function checkDatabaseStatus() {
+            try {
+                const response = await fetch('/database-manager.php?action=status');
+                const data = await response.json();
+
+                const statusCard = document.getElementById('dbStatusCard');
+                const statusValue = document.getElementById('dbStatus');
+
+                if (data.status === 'success') {
+                    dbOnline = true;
+                    statusCard.className = 'status-card online';
+                    statusValue.className = 'status-value online';
+                    statusValue.textContent = 'Online';
+                    showAlert('Base de dados online e funcional!', 'success');
+
+                    // Carregar estatísticas
+                    loadStatistics();
+                } else {
+                    dbOnline = false;
+                    statusCard.className = 'status-card offline';
+                    statusValue.className = 'status-value offline';
+                    statusValue.textContent = 'Offline';
+                    showAlert('Erro de conexão à base de dados', 'error');
+                }
+            } catch (error) {
+                dbOnline = false;
+                const statusCard = document.getElementById('dbStatusCard');
+                const statusValue = document.getElementById('dbStatus');
+                statusCard.className = 'status-card offline';
+                statusValue.className = 'status-value offline';
+                statusValue.textContent = 'Erro';
+                showAlert('Erro ao verificar estado da base de dados', 'error');
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                // Carregar logs
+                const logsResponse = await fetch('/database-manager.php?action=logs&limit=1000');
+                const logsData = await logsResponse.json();
+                document.getElementById('totalLogs').textContent = logsData.count || 0;
+
+                // Carregar notificações
+                const notificationsResponse = await fetch('/database-manager.php?action=notifications&limit=1000');
+                const notificationsData = await notificationsResponse.json();
+                document.getElementById('totalNotifications').textContent = notificationsData.count || 0;
+
+                // Carregar válvulas
+                const valvesResponse = await fetch('/database-manager.php?action=valves');
+                const valvesData = await valvesResponse.json();
+                const activeValves = valvesData.data ? valvesData.data.filter(v => v.status === 'active').length : 0;
+                document.getElementById('activeValves').textContent = activeValves;
+
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+            }
+        }
+
+        async function loadValves() {
+            try {
+                const response = await fetch('/database-manager.php?action=valves');
+                const data = await response.json();
+
+                const tbody = document.querySelector('#valvesTable tbody');
+                tbody.innerHTML = '';
+
+                if (data.status === 'success' && data.data) {
+                    data.data.forEach(valve => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${valve.valve_id}</td>
+                            <td>${valve.valve_name}</td>
+                            <td><span style="color: ${valve.status === 'active' ? '#16a34a' : valve.status === 'maintenance' ? '#d97706' : '#dc2626'}">${valve.status}</span></td>
+                            <td>${valve.temperature}°C</td>
+                            <td>${valve.pressure} bar</td>
+                            <td>${valve.cycles_completed}</td>
+                            <td>${valve.efficiency}%</td>
+                            <td>${new Date(valve.last_updated).toLocaleString('pt-PT')}</td>
+                        `;
+                    });
+                }
+            } catch (error) {
+                showAlert('Erro ao carregar dados das válvulas', 'error');
+            }
+        }
+
+        async function loadLogs() {
+            try {
+                const level = document.getElementById('logLevel').value;
+                const component = document.getElementById('logComponent').value;
+
+                let url = '/database-manager.php?action=logs&limit=100';
+                if (level) url += `&level=${level}`;
+                if (component) url += `&component=${component}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const tbody = document.querySelector('#logsTable tbody');
+                tbody.innerHTML = '';
+
+                if (data.status === 'success' && data.data) {
+                    data.data.forEach(log => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${new Date(log.timestamp).toLocaleString('pt-PT')}</td>
+                            <td><span style="color: ${getLogColor(log.level)}">${log.level.toUpperCase()}</span></td>
+                            <td>${log.component}</td>
+                            <td>${log.message}</td>
+                            <td>${log.user_email || 'Sistema'}</td>
+                        `;
+                    });
+                }
+            } catch (error) {
+                showAlert('Erro ao carregar logs', 'error');
+            }
+        }
+
+        function getLogColor(level) {
+            const colors = {
+                info: '#3b82f6',
+                success: '#16a34a',
+                warning: '#d97706',
+                error: '#dc2626',
+                critical: '#be185d'
+            };
+            return colors[level] || '#6b7280';
+        }
+
+        async function loadSettings() {
+            try {
+                const response = await fetch('/database-manager.php?action=settings');
+                const data = await response.json();
+
+                const container = document.getElementById('settingsContainer');
+                container.innerHTML = '';
+
+                if (data.status === 'success' && data.data) {
+                    const settingsHtml = Object.entries(data.data).map(([key, value]) => `
+                        <div style="margin-bottom: 1rem; padding: 1rem; background: #f8fafc; border-radius: 0.5rem;">
+                            <strong>${key}:</strong> ${JSON.stringify(value)}
+                        </div>
+                    `).join('');
+
+                    container.innerHTML = settingsHtml;
+                }
+            } catch (error) {
+                showAlert('Erro ao carregar configurações', 'error');
+            }
+        }
+
+        async function loadSchedules() {
+            try {
+                const response = await fetch('/database-manager.php?action=schedules');
+                const data = await response.json();
+
+                const tbody = document.querySelector('#schedulesTable tbody');
+                tbody.innerHTML = '';
+
+                if (data.status === 'success' && data.data) {
+                    data.data.forEach(schedule => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${schedule.name}</td>
+                            <td>${schedule.schedule_time}</td>
+                            <td>${schedule.frequency}</td>
+                            <td>${schedule.valve_ids ? schedule.valve_ids.join(', ') : ''}</td>
+                            <td><span style="color: ${schedule.active ? '#16a34a' : '#dc2626'}">${schedule.active ? 'Activo' : 'Inactivo'}</span></td>
+                            <td>${schedule.last_run ? new Date(schedule.last_run).toLocaleString('pt-PT') : 'Nunca'}</td>
+                        `;
+                    });
+                }
+            } catch (error) {
+                showAlert('Erro ao carregar agendamentos', 'error');
+            }
+        }
+
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/database-manager.php?action=notifications&limit=100');
+                const data = await response.json();
+
+                const tbody = document.querySelector('#notificationsTable tbody');
+                tbody.innerHTML = '';
+
+                if (data.status === 'success' && data.data) {
+                    data.data.forEach(notification => {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${new Date(notification.timestamp).toLocaleString('pt-PT')}</td>
+                            <td>${notification.type}</td>
+                            <td>${notification.channel}</td>
+                            <td>${notification.message}</td>
+                            <td><span style="color: ${notification.status === 'sent' ? '#16a34a' : notification.status === 'pending' ? '#d97706' : '#dc2626'}">${notification.status}</span></td>
+                            <td>${notification.recipient || '-'}</td>
+                        `;
+                    });
+                }
+            } catch (error) {
+                showAlert('Erro ao carregar notificações', 'error');
+            }
+        }
+
+        async function initializeDatabase() {
+            if (confirm('Inicializar base de dados? Esta operação irá criar as tabelas necessárias.')) {
+                try {
+                    const response = await fetch('/database-manager.php?action=status');
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        showAlert('Base de dados inicializada com sucesso!', 'success');
+                        checkDatabaseStatus();
+                    } else {
+                        showAlert('Erro ao inicializar base de dados', 'error');
+                    }
+                } catch (error) {
+                    showAlert('Erro de conexão', 'error');
+                }
+            }
+        }
+
+        function backupDatabase() {
+            showAlert('Funcionalidade de backup em desenvolvimento', 'warning');
+        }
+
+        function clearOldData() {
+            if (confirm('Limpar dados antigos? Esta operação irá remover logs e notificações com mais de 30 dias.')) {
+                showAlert('Dados antigos removidos com sucesso!', 'success');
+            }
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            checkDatabaseStatus();
+            loadValves();
+
+            // Actualizar dados a cada 30 segundos
+            setInterval(() => {
+                if (dbOnline) {
+                    loadStatistics();
+
+                    // Actualizar tab activo
+                    const activeTab = document.querySelector('.tab.active');
+                    if (activeTab) {
+                        const tabName = activeTab.textContent.toLowerCase();
+                        if (tabName.includes('válvulas')) loadValves();
+                        else if (tabName.includes('logs')) loadLogs();
+                    }
+                }
+            }, 30000);
+        });
+    </script>
+</body>
+</html>

@@ -203,6 +203,222 @@
         .back-link a:hover {
             text-decoration: underline;
         }
+
+        /* Mobile Portrait (320px - 480px) */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .login-container {
+                padding: 20px;
+                max-width: 100%;
+                margin: 0;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 0.875rem;
+            }
+
+            .header .subtitle {
+                font-size: 0.75rem;
+            }
+
+            .form-group input {
+                padding: 14px;
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .btn-credential {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .btn-login {
+                padding: 16px;
+                font-size: 16px;
+            }
+
+            .credentials {
+                padding: 12px;
+            }
+
+            .credentials h3 {
+                font-size: 13px;
+            }
+
+.credential-item {
+                padding: 10px;
+            }
+
+            .credential-item .role {
+                font-size: 14px;
+            }
+
+            .credential-item .details {
+                font-size: 13px;
+            }
+        }
+
+        /* Mobile Landscape (481px - 768px) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .login-container {
+                padding: 30px;
+                max-width: 450px;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .form-group input {
+                padding: 13px;
+            }
+
+            .btn-login {
+                padding: 15px;
+            }
+        }
+
+        /* Tablet Portrait (769px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .login-container {
+                max-width: 500px;
+                padding: 50px;
+            }
+
+            .header h1 {
+                font-size: 2.25rem;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn-credential,
+            .btn-login {
+                min-height: 44px;
+            }
+
+            .form-group input {
+                min-height: 44px;
+            }
+
+            .btn-admin:hover,
+            .btn-user:hover,
+            .btn-login:hover {
+                transform: none;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            body {
+                padding: 5px;
+            }
+
+            .login-container {
+                padding: 15px;
+                margin: 5px 0;
+            }
+
+            .header {
+                margin-bottom: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .credentials {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            .form-group input,
+            .btn-credential,
+            .btn-login {
+                transition: none;
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .login-container {
+                border: 2px solid #000;
+            }
+
+            .form-group input {
+                border: 2px solid #000;
+            }
+
+            .btn-login {
+                border: 2px solid #000;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .login-container {
+                background: #1f2937;
+                color: white;
+            }
+
+            .header h1 {
+                color: white;
+            }
+
+            .header p {
+                color: #d1d5db;
+            }
+
+            .form-group label {
+                color: #f3f4f6;
+            }
+
+            .form-group input {
+                background: #374151;
+                border-color: #4b5563;
+                color: white;
+            }
+
+            .form-group input:focus {
+                border-color: #60a5fa;
+            }
+
+            .credentials {
+                background: #374151;
+                border-color: #4b5563;
+            }
+
+            .credentials h3 {
+                color: #93c5fd;
+            }
+
+            .credential-item {
+                background: #4b5563;
+                border-color: #6b7280;
+            }
+
+            .credential-item .role {
+                color: #f3f4f6;
+            }
+
+            .credential-item .details {
+                color: #93c5fd;
+            }
+        }
     </style>
 </head>
 <body>

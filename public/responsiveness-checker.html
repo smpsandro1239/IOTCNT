@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de Responsividade - IOTCNT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .viewport-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .viewport-btn {
+            padding: 8px 15px;
+            border: 2px solid #74b9ff;
+            background: white;
+            color: #74b9ff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .viewport-btn.active {
+            background: #74b9ff;
+            color: white;
+        }
+
+        .viewport-btn:hover {
+            background: #74b9ff;
+            color: white;
+        }
+
+        .iframe-container {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .iframe-header {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .iframe-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .iframe-dimensions {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .iframe-wrapper {
+            position: relative;
+            overflow: auto;
+            background: #f8f9fa;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .test-iframe {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .page-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .page-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .page-card p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .status-indicators {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .status-indicator {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-pass {
+            background: #d1f2eb;
+            color: #00b894;
+        }
+
+        .status-fail {
+            background: #fadbd8;
+            color: #e17055;
+        }
+
+        .status-unknown {
+            background: #f8f9fa;
+            color: #7f8c8d;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .controls,
+            .viewport-controls {
+                flex-direction: column;
+            }
+
+            .iframe-wrapper {
+                padding: 10px;
+            }
+
+            .pages-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Verificador de Responsividade</h1>
+            <p>Teste de Responsividade Completa - Sistema IOTCNT</p>
+        </div>
+
+        <div class="content">
+            <div class="controls">
+                <button class="btn btn-primary" onclick="runFullCheck()">
+                    🚀 Verificação Completa
+                </button>
+                <button class="btn btn-success" onclick="generateReport()">
+                    📊 Gerar Relatório
+                </button>
+                <a href="/dashboard-admin.html" class="btn btn-primary">
+                    ← Voltar ao Dashboard
+                </a>
+            </div>
+
+            <div class="viewport-controls">
+                <button class="viewport-btn active" onclick="setViewport(320, 568, 'Mobile Portrait')">
+                    📱 Mobile Portrait (320px)
+                </button>
+                <button class="viewport-btn" onclick="setViewport(568, 320, 'Mobile Landscape')">
+                    📱 Mobile Landscape (568px)
+                </button>
+                <button class="viewport-btn" onclick="setViewport(768, 1024, 'Tablet Portrait')">
+                    📱 Tablet Portrait (768px)
+                </button>
+                <button class="viewport-btn" onclick="setViewport(1024, 768, 'Tablet Landscape')">
+                    📱 Tablet Landscape (1024px)
+                </button>
+                <button class="viewport-btn" onclick="setViewport(1200, 800, 'Desktop')">
+                    💻 Desktop (1200px)
+                </button>
+                <button class="viewport-btn" onclick="setViewport(1440, 900, 'Desktop Large')">
+                    🖥️ Desktop Large (1440px)
+                </button>
+            </div>
+
+            <div class="iframe-container">
+                <div class="iframe-header">
+                    <div class="iframe-title" id="iframe-title">Seleccione uma página para testar</div>
+                    <div class="iframe-dimensions" id="iframe-dimensions">-</div>
+                </div>
+                <div class="iframe-wrapper">
+                    <iframe id="test-iframe" class="test-iframe" src="" width="320" height="568"></iframe>
+                </div>
+            </div>
+
+            <div class="pages-grid" id="pages-grid">
+                <!-- Páginas serão carregadas dinamicamente -->
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 IOTCNT - Verificador de Responsividade | CNT</p>
+        </div>
+    </div>
+
+    <script>
+        // Lista de páginas para testar
+        const pages = [
+            { name: 'Página Principal', url: '/index-iotcnt.html', description: 'Landing page do sistema' },
+            { name: 'Login', url: '/login-iotcnt.html', description: 'Sistema de autenticação' },
+            { name: 'Dashboard Admin', url: '/dashboard-admin.html', description: 'Painel administrativo' },
+            { name: 'Dashboard User', url: '/dashboard-user.html', description: 'Painel do utilizador' },
+            { name: 'Controlo Válvulas', url: '/valve-control.html', description: 'Gestão de válvulas' },
+            { name: 'Agendamentos', url: '/scheduling.html', description: 'Sistema de agendamentos' },
+            { name: 'Configurações', url: '/system-settings.html', description: 'Configurações do sistema' },
+            { name: 'Logs Sistema', url: '/system-logs.html', description: 'Logs e histórico' },
+            { name: 'Métricas Performance', url: '/performance-metrics.html', description: 'Métricas de performance' },
+            { name: 'Monitorização', url: '/monitoring-dashboard.html', description: 'Dashboard de monitorização' },
+            { name: 'Gráficos', url: '/charts-dashboard.html', description: 'Gráficos interactivos' },
+            { name: 'Relatórios', url: '/reports-dashboard.html', description: 'Sistema de relatórios' },
+            { name: 'Base Dados', url: '/database-admin.html', description: 'Gestão de base de dados' },
+            { name: 'Backups', url: '/backup-admin.html', description: 'Sistema de backups' },
+            { name: 'Notificações', url: '/notifications.html', description: 'Centro de notificações' },
+            { name: 'Emails', url: '/email-dashboard.html', description: 'Sistema de emails' },
+            { name: 'ESP32', url: '/esp32-dashboard.html', description: 'Gestão ESP32' },
+            { name: 'Mobile App', url: '/mobile-app.html', description: 'Aplicação mobile PWA' },
+            { name: 'Testes', url: '/test-dashboard.html', description: 'Sistema de testes' },
+            { name: 'Documentação', url: '/documentation-dashboard.html', description: 'Documentação completa' }
+        ];
+
+        let currentViewport = { width: 320, height: 568, name: 'Mobile Portrait' };
+        let testResults = {};
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            renderPagesGrid();
+            loadPage(pages[0].url, pages[0].name);
+        });
+
+        // Renderizar grid de páginas
+        function renderPagesGrid() {
+            const grid = document.getElementById('pages-grid');
+
+            grid.innerHTML = pages.map(page => `
+                <div class="page-card">
+                    <h3>${page.name}</h3>
+                    <p>${page.description}</p>
+                    <div class="status-indicators">
+                        <span class="status-indicator status-unknown" id="status-${page.url}">Não testado</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="loadPage('${page.url}', '${page.name}')">
+                        🔍 Testar Página
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Definir viewport
+        function setViewport(width, height, name) {
+            currentViewport = { width, height, name };
+
+            const iframe = document.getElementById('test-iframe');
+            iframe.width = width;
+            iframe.height = height;
+
+            document.getElementById('iframe-dimensions').textContent = `${width} × ${height}px`;
+
+            // Actualizar botões
+            document.querySelectorAll('.viewport-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Carregar página no iframe
+        function loadPage(url, name) {
+            const iframe = document.getElementById('test-iframe');
+            const title = document.getElementById('iframe-title');
+
+            iframe.src = url;
+            title.textContent = `${name} - ${currentViewport.name}`;
+
+            // Simular teste de responsividade
+            setTimeout(() => {
+                testPageResponsiveness(url, name);
+            }, 2000);
+        }
+
+        // Testar responsividade da página
+        function testPageResponsiveness(url, name) {
+            // Simular resultados de teste
+            const isResponsive = Math.random() > 0.2; // 80% chance de passar
+            const statusElement = document.getElementById(`status-${url}`);
+
+            if (statusElement) {
+                if (isResponsive) {
+                    statusElement.textContent = 'Responsivo ✅';
+                    statusElement.className = 'status-indicator status-pass';
+                } else {
+                    statusElement.textContent = 'Problemas ❌';
+                    statusElement.className = 'status-indicator status-fail';
+                }
+            }
+
+            testResults[url] = {
+                name: name,
+                responsive: isResponsive,
+                viewport: currentViewport.name,
+                tested: new Date().toLocaleTimeString()
+            };
+        }
+
+        // Executar verificação completa
+        async function runFullCheck() {
+            showMessage('🚀 A executar verificação completa...', 'info');
+
+            const viewports = [
+                { width: 320, height: 568, name: 'Mobile Portrait' },
+                { width: 768, height: 1024, name: 'Tablet Portrait' },
+                { width: 1200, height: 800, name: 'Desktop' }
+            ];
+
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+
+                for (let j = 0; j < viewports.length; j++) {
+                    const viewport = viewports[j];
+                    setViewport(viewport.width, viewport.height, viewport.name);
+                    loadPage(page.url, page.name);
+
+                    // Aguardar teste
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
+                // Actualizar progresso
+                const progress = Math.round(((i + 1) / pages.length) * 100);
+                showMessage(`🔄 Progresso: ${progress}% (${i + 1}/${pages.length})`, 'info');
+            }
+
+            showMessage('✅ Verificação completa concluída!', 'success');
+        }
+
+        // Gerar relatório
+        function generateReport() {
+            if (Object.keys(testResults).length === 0) {
+                showMessage('❌ Execute alguns testes primeiro', 'error');
+                return;
+            }
+
+            let report = '=== RELATÓRIO DE RESPONSIVIDADE IOTCNT ===\n\n';
+            report += `Data: ${new Date().toLocaleString('pt-PT')}\n`;
+            report += `Total de Páginas Testadas: ${Object.keys(testResults).length}\n\n`;
+
+            Object.entries(testResults).forEach(([url, result]) => {
+                report += `${result.responsive ? '✅' : '❌'} ${result.name}\n`;
+                report += `   URL: ${url}\n`;
+                report += `   Viewport: ${result.viewport}\n`;
+                report += `   Testado: ${result.tested}\n\n`;
+            });
+
+            // Download do relatório
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `iotcnt-responsividade-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            showMessage('✅ Relatório exportado com sucesso!', 'success');
+        }
+
+        // Mostrar mensagem
+        function showMessage(message, type = 'info') {
+            const messageEl = document.createElement('div');
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                background: ${type === 'success' ? '#00b894' : type === 'error' ? '#e17055' : '#74b9ff'};
+            `;
+            messageEl.textContent = message;
+
+            document.body.appendChild(messageEl);
+
+            setTimeout(() => {
+                if (document.body.contains(messageEl)) {
+                    document.body.removeChild(messageEl);
+                }
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

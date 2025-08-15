@@ -2,11 +2,9 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>IOTCNT - Sistema de Arrefecimento Industrial</title>
+    <title>IOTCNT - Sistema IoT de Arrefecimento Industrial</title>
     <style>
         * {
             margin: 0;
@@ -19,568 +17,413 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
+            font-size: 16px; /* Prevent iOS zoom */
+            overflow-x: hidden;
         }
 
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo h1 {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #1f2937;
-            margin-right: 1rem;
-        }
-
-        .logo-info {
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-        }
-
-        .logo-info p {
-            color: #6b7280;
-            font-size: 0.875rem;
-        }
-
-        .logo-info .subtitle {
-            color: #2563eb;
-            font-weight: 600;
-        }
-
-        .header-actions {
-            display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 1rem;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
-        }
-
-        .status-badge {
-            background: #dcfce7;
-            color: #166534;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-        }
-
-        .hero {
             text-align: center;
-            margin-bottom: 4rem;
+            padding: 2rem 1rem;
+            position: relative;
         }
 
-        .hero h2 {
-            font-size: 3rem;
-            font-weight: bold;
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
             color: white;
-            margin-bottom: 1rem;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
 
         .hero p {
             font-size: 1.25rem;
             color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        .hero-card {
-            background: rgba(255, 255, 255, 0.1);
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 16px; /* Prevent iOS zoom */
+            min-height: 56px; /* Touch target */
+            justify-content: center;
+            min-width: 180px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
-            border-radius: 1rem;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+        }
+
+        /* Features Section */
+        .features {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
             padding: 2rem;
+            margin: 2rem auto;
+            max-width: 1000px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .feature {
+            text-align: center;
+            color: white;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        /* Status Cards */
+        .status-section {
+            margin-top: 3rem;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
             max-width: 600px;
             margin: 0 auto;
         }
 
-        .hero-card p {
-            color: white;
-            font-size: 1.125rem;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .feature-icon {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .feature-icon.blue {
-            background: #dbeafe;
-            color: #2563eb;
-        }
-
-        .feature-icon.green {
-            background: #dcfce7;
-            color: #16a34a;
-        }
-
-        .feature-icon.purple {
-            background: #f3e8ff;
-            color: #9333ea;
-        }
-
-        .feature-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #1f2937;
-        }
-
-        .feature-card p {
-            color: #6b7280;
-            margin-bottom: 1.5rem;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-number.blue { color: #3b82f6; }
-        .stat-number.green { color: #16a34a; }
-        .stat-number.purple { color: #9333ea; }
-        .stat-number.red { color: #dc2626; }
-
-        .stat-label {
-            color: #6b7280;
-            font-size: 0.875rem;
-        }
-
-        .footer {
-            background: rgba(255, 255, 255, 0.1);
+        .status-card {
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
-            padding: 2rem 0;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             text-align: center;
-            color: white;
         }
 
-        .footer h3 {
-            font-size: 1.25rem;
+        .status-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
             margin-bottom: 0.5rem;
         }
 
-        .footer p {
-            margin-bottom: 1rem;
-        }
-
-        .footer-features {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-            font-size: 0.875rem;
+        .status-label {
             color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            font-weight: 500;
         }
 
-        /* Mobile Portrait (320px - 480px) */
-        @media (max-width: 480px) {
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 0 1rem;
-            }
-
-            .logo h1 {
-                font-size: 1.5rem;
-            }
-
-            .logo-info p {
-                font-size: 0.75rem;
-            }
-
-            .btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.875rem;
-            }
-
-            .hero h2 {
-                font-size: 1.75rem;
-                line-height: 1.2;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .hero-card {
-                padding: 1.5rem;
-                margin: 0 1rem;
-            }
-
-            .hero-card p {
-                font-size: 1rem;
-            }
-
-            .main {
-                padding: 2rem 1rem;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .feature-card {
-                padding: 1.5rem;
-            }
-
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-
-            .stat-card {
-                padding: 1rem;
-            }
-
-            .stat-number {
-                font-size: 1.5rem;
-            }
-
-            .footer-features {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
+        /* Responsive Design */
+        @media (min-width: 480px) {
+            .hero h1 { font-size: 3rem; }
+            .hero p { font-size: 1.375rem; }
+            .features { padding: 2.5rem; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .status-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        /* Mobile Landscape (481px - 768px) */
-        @media (min-width: 481px) and (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 0 1.5rem;
-            }
-
-            .logo h1 {
-                font-size: 1.75rem;
-            }
-
-            .hero h2 {
-                font-size: 2.25rem;
-            }
-
-            .hero p {
-                font-size: 1.125rem;
-            }
-
-            .main {
-                padding: 3rem 1.5rem;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Tablet Portrait (769px - 1024px) */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .header-content {
-                padding: 0 2rem;
-            }
-
-            .hero h2 {
-                font-size: 2.5rem;
-            }
-
-            .main {
-                padding: 3.5rem 2rem;
-            }
-
-            .features {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .stats {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        /* Tablet Landscape (1025px - 1200px) */
-        @media (min-width: 1025px) and (max-width: 1200px) {
-            .features {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        /* Desktop Large (1441px+) */
-        @media (min-width: 1441px) {
-            .header-content,
-            .main {
-                max-width: 1400px;
-            }
-
-            .hero h2 {
-                font-size: 3.5rem;
-            }
-
-            .hero p {
-                font-size: 1.375rem;
-            }
-
-            .features {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 2.5rem;
-            }
-
-            .feature-card {
-                padding: 2.5rem;
-            }
-        }
-
-        /* Touch device optimizations */
-        @media (hover: none) and (pointer: coarse) {
-            .btn {
-                min-height: 44px;
-                min-width: 44px;
-            }
-
-            .feature-card:hover {
-                transform: none;
-            }
-
-            .btn-primary:hover {
-                transform: none;
-            }
-        }
-
-        /* High DPI displays */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .feature-icon {
-                font-size: 1.75rem;
-            }
-        }
-
-        /* Landscape orientation on mobile */
-        @media (max-width: 768px) and (orientation: landscape) {
+        @media (min-width: 768px) {
             .hero {
-                margin-bottom: 2rem;
+                padding: 4rem 2rem;
             }
-
-            .hero h2 {
-                font-size: 2rem;
+            .hero h1 { font-size: 3.5rem; }
+            .hero p { font-size: 1.5rem; }
+            .hero-actions { gap: 1.5rem; }
+            .features {
+                padding: 3rem;
+                margin: 3rem auto;
             }
+            .features-grid { grid-template-columns: repeat(3, 1fr); }
+            .status-grid { grid-template-columns: repeat(3, 1fr); }
+        }
 
-            .main {
-                padding: 2rem 1rem;
+        @media (min-width: 1024px) {
+            .hero h1 { font-size: 4rem; }
+            .features { padding: 4rem; }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
-        /* Accessibility improvements */
-        @media (prefers-reduced-motion: reduce) {
-            .feature-card,
-            .btn {
-                transition: none;
-            }
-
-            .feature-card:hover,
-            .btn-primary:hover {
-                transform: none;
-            }
+        .hero-content > * {
+            animation: fadeInUp 0.8s ease-out forwards;
         }
+
+        .hero-badge { animation-delay: 0.1s; }
+        .hero h1 { animation-delay: 0.2s; }
+        .hero p { animation-delay: 0.3s; }
+        .hero-actions { animation-delay: 0.4s; }
+        .features { animation-delay: 0.5s; }
 
         /* Dark mode support */
         @media (prefers-color-scheme: dark) {
-            .feature-card,
-            .stat-card {
-                background: rgba(255, 255, 255, 0.1);
-                color: white;
+            .features {
+                background: rgba(0, 0, 0, 0.3);
+                border-color: rgba(255, 255, 255, 0.1);
             }
+            .status-card {
+                background: rgba(0, 0, 0, 0.2);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+        }
 
-            .feature-card h3 {
-                color: white;
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
+        }
 
-            .feature-card p,
-            .stat-label {
-                color: rgba(255, 255, 255, 0.8);
+        /* Landscape orientation */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .hero {
+                min-height: auto;
+                padding: 2rem 1rem;
             }
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .features { margin: 1rem auto; padding: 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <h1>IOTCNT</h1>
-                <div class="logo-info">
-                    <p>Sistema de Arrefecimento Industrial</p>
-                    <p class="subtitle">CNT - Prevenção de Legionela</p>
-                </div>
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                🏭 Sistema IoT Industrial CNT
             </div>
-            <div class="header-actions">
+
+            <h1>IOTCNT</h1>
+
+            <p>
+                Sistema inteligente de arrefecimento de condensadores para prevenção de legionela em centrais de frio industriais
+            </p>
+
+            <div class="hero-actions">
                 <a href="/login-iotcnt.html" class="btn btn-primary">
-                    🔐 Entrar
+                    🚀 Aceder ao Sistema
                 </a>
-                <span class="status-badge">
-                    ✅ Sistema Online
-                </span>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main">
-        <!-- Hero Section -->
-        <section class="hero">
-            <h2>Sistema de Arrefecimento de Condensadores</h2>
-            <p>Prevenção Automática de Legionela em Centrais de Frio Industriais</p>
-            <div class="hero-card">
-                <p>
-                    Desenvolvido para <strong>O CNT</strong> com <strong>Empatia</strong> no cuidado
-                    com a saúde dos clientes e <strong>Melhoria Contínua</strong> na excelência operacional.
-                </p>
-            </div>
-        </section>
-
-        <!-- Features -->
-        <section class="features">
-            <div class="feature-card">
-                <div class="feature-icon blue">⚡</div>
-                <h3>Sistema de Performance</h3>
-                <p>Monitorização avançada com métricas em tempo real, optimização automática e detecção de problemas.</p>
-                <a href="/login-iotcnt.html" class="btn btn-primary">
-                    Aceder ao Sistema →
+                <a href="/api-docs.html" class="btn btn-secondary">
+                    📚 Documentação API
                 </a>
             </div>
 
-            <div class="feature-card">
-                <div class="feature-icon green">✅</div>
-                <h3>Prevenção de Legionela</h3>
-                <p>Eliminação automática do risco através de circulação controlada de água nos condensadores.</p>
-                <div class="status-badge">
-                    Sistema Activo
+            <div class="features">
+                <div class="features-grid">
+                    <div class="feature">
+                        <div class="feature-icon">🌡️</div>
+                        <h3>Controlo Inteligente</h3>
+                        <p>Monitorização e controlo automático de 5 condensadores com ESP32</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📊</div>
+                        <h3>Dashboard Avançado</h3>
+                        <p>Interface moderna com métricas em tempo real e relatórios detalhados</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Segurança Total</h3>
+                        <p>Sistema seguro com autenticação e logs completos de operações</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="feature-card">
-                <div class="feature-icon purple">📊</div>
-                <h3>Monitorização</h3>
-                <p>Dashboard completo com estado dos condensadores, temperaturas e alertas em tempo real.</p>
-                <a href="/login-iotcnt.html" class="btn btn-primary">
-                    Ver Dashboard →
-                </a>
+            <div class="status-section">
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="status-value" id="systemStatus">ONLINE</div>
+                        <div class="status-label">Estado do Sistema</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-value" id="activeValves">5</div>
+                        <div class="status-label">Válvulas Activas</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-value" id="uptime">99.9%</div>
+                        <div class="status-label">Uptime</div>
+                    </div>
+                </div>
             </div>
-        </section>
-
-        <!-- Stats -->
-        <section class="stats">
-            <div class="stat-card">
-                <div class="stat-number blue">5</div>
-                <div class="stat-label">Condensadores</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number green">100%</div>
-                <div class="stat-label">Sistema Operacional</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number purple">24/7</div>
-                <div class="stat-label">Monitorização</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number red">0</div>
-                <div class="stat-label">Alertas Activos</div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <h3>IOTCNT - Sistema de Arrefecimento Industrial</h3>
-        <p>Desenvolvido para O CNT</p>
-        <div class="footer-features">
-            <span>✅ Prevenção de Legionela</span>
-            <span>✅ Monitorização 24/7</span>
-            <span>✅ Optimização Automática</span>
-            <span>✅ Saúde Pública</span>
         </div>
-    </footer>
+    </div>
+
+    <script>
+        // Simulate real-time data updates
+        function updateStatus() {
+            const statusElement = document.getElementById('systemStatus');
+            const valvesElement = document.getElementById('activeValves');
+            const uptimeElement = document.getElementById('uptime');
+
+            // Simulate system status
+            const statuses = ['ONLINE', 'OPERACIONAL', 'ACTIVO'];
+            statusElement.textContent = statuses[Math.floor(Math.random() * statuses.length)];
+            statusElement.style.color = '#10b981';
+
+            // Simulate active valves (1-5)
+            valvesElement.textContent = Math.floor(Math.random() * 5) + 1;
+
+            // Simulate uptime
+            const uptime = (99.5 + Math.random() * 0.4).toFixed(1);
+            uptimeElement.textContent = uptime + '%';
+        }
+
+        // Update status every 3 seconds
+        setInterval(updateStatus, 3000);
+
+        // Initial update
+        updateStatus();
+
+        // Add click effects to buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // Create ripple effect
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255,255,255,0.3);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
+
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Add CSS for ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>

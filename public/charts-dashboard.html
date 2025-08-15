@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficos Avançados - IOTCNT</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        .stats-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Gráficos Avançados</h1>
+            <p>Visualização de Dados em Tempo Real - IOTCNT</p>
+        </div>
+
+        <div class="content">
+            <div class="controls">
+                <button class="btn btn-primary" onclick="refreshCharts()">
+                    🔄 Actualizar Gráficos
+                </button>
+                <button class="btn btn-success" onclick="exportCharts()">
+                    📊 Exportar Gráficos
+                </button>
+                <a href="/dashboard-admin.html" class="btn btn-primary">
+                    ← Voltar ao Dashboard
+                </a>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">🌡️ Temperatura das Válvulas (24h)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="temperatureChart"></canvas>
+                        <div class="stats-overlay">
+                            <div>Média: <span id="temp-avg">18.4°C</span></div>
+                            <div>Máx: <span id="temp-max">22.0°C</span></div>
+                            <div>Mín: <span id="temp-min">16.0°C</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title">📊 Pressão das Válvulas (24h)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="pressureChart"></canvas>
+                        <div class="stats-overlay">
+                            <div>Média: <span id="pressure-avg">2.08 bar</span></div>
+                            <div>Máx: <span id="pressure-max">2.50 bar</span></div>
+                            <div>Mín: <span id="pressure-min">1.80 bar</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title">⚡ Eficiência das Válvulas</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="efficiencyChart"></canvas>
+                        <div class="stats-overlay">
+                            <div>Média: <span id="eff-avg">94.9%</span></div>
+                            <div>Melhor: <span id="eff-max">99.1%</span></div>
+                            <div>Pior: <span id="eff-min">85.1%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title">🔄 Ciclos por Hora</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="cyclesChart"></canvas>
+                        <div class="stats-overlay">
+                            <div>Total: <span id="cycles-total">234</span></div>
+                            <div>Média/h: <span id="cycles-avg">9.8</span></div>
+                            <div>Pico: <span id="cycles-max">12</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title">📈 Tendências Semanais</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="trendsChart"></canvas>
+                        <div class="stats-overlay">
+                            <div>Eficiência: <span id="trend-eff">+2.3%</span></div>
+                            <div>Temperatura: <span id="trend-temp">+0.1°C</span></div>
+                            <div>Pressão: <span id="trend-pressure">-0.05 bar</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title">🚨 Distribuição de Alertas</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="alertsChart"></canvas>
+                        <div class="stats-overlay">
+                            <div>Total: <span id="alerts-total">12</span></div>
+                            <div>Críticos: <span id="alerts-critical">2</span></div>
+                            <div>Avisos: <span id="alerts-warning">7</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 IOTCNT - Sistema de Gráficos Avançados | CNT</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuração global dos gráficos
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        Chart.defaults.color = '#7f8c8d';
+
+        // Dados de exemplo
+        const hours = Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+        const days = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+        // Dados simulados
+        const temperatureData = [18, 17, 19, 20, 18, 17, 19, 18, 20, 19, 18, 17, 19, 20, 18, 19, 17, 18, 20, 19, 18, 17, 19, 18];
+        const pressureData = [2.1, 2.3, 2.0, 1.8, 2.2, 2.1, 2.0, 2.2, 1.9, 2.1, 2.3, 2.0, 1.8, 2.2, 2.1, 2.0, 2.3, 1.9, 2.1, 2.2, 2.0, 1.8, 2.1, 2.2];
+        const efficiencyData = [98.5, 97.8, 94.2, 85.1, 99.1];
+        const cyclesData = [8, 9, 12, 7, 8, 12, 11, 11, 6, 9, 11, 8, 11, 12, 7, 11, 5, 10, 12, 10, 10, 5, 11, 6];
+
+        let charts = {};
+
+        // Inicializar gráficos
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+
+            // Auto-refresh a cada 30 segundos
+            setInterval(() => {
+                updateChartsData();
+            }, 30000);
+        });
+
+        function initializeCharts() {
+            // Gráfico de Temperatura
+            const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+            charts.temperature = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: hours,
+                    datasets: [{
+                        label: 'Temperatura (°C)',
+                        data: temperatureData,
+                        borderColor: '#e17055',
+                        backgroundColor: 'rgba(225, 112, 85, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 15,
+                            max: 25
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Pressão
+            const pressureCtx = document.getElementById('pressureChart').getContext('2d');
+            charts.pressure = new Chart(pressureCtx, {
+                type: 'line',
+                data: {
+                    labels: hours,
+                    datasets: [{
+                        label: 'Pressão (bar)',
+                        data: pressureData,
+                        borderColor: '#74b9ff',
+                        backgroundColor: 'rgba(116, 185, 255, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 1.5,
+                            max: 2.8
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Eficiência (Doughnut)
+            const effCtx = document.getElementById('efficiencyChart').getContext('2d');
+            charts.efficiency = new Chart(effCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Condensador 1', 'Condensador 2', 'Condensador 3', 'Condensador 4', 'Condensador 5'],
+                    datasets: [{
+                        data: efficiencyData,
+                        backgroundColor: [
+                            '#00b894',
+                            '#74b9ff',
+                            '#fdcb6e',
+                            '#e17055',
+                            '#a29bfe'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Ciclos (Bar)
+            const cyclesCtx = document.getElementById('cyclesChart').getContext('2d');
+            charts.cycles = new Chart(cyclesCtx, {
+                type: 'bar',
+                data: {
+                    labels: hours,
+                    datasets: [{
+                        label: 'Ciclos',
+                        data: cyclesData,
+                        backgroundColor: '#00b894',
+                        borderColor: '#00a085',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 15
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Tendências (Multi-line)
+            const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+            charts.trends = new Chart(trendsCtx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [
+                        {
+                            label: 'Eficiência (%)',
+                            data: [94, 95, 96, 97, 96, 95, 97],
+                            borderColor: '#00b894',
+                            backgroundColor: 'rgba(0, 184, 148, 0.1)',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Temperatura (°C)',
+                            data: [18, 19, 18, 20, 19, 18, 19],
+                            borderColor: '#e17055',
+                            backgroundColor: 'rgba(225, 112, 85, 0.1)',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            min: 90,
+                            max: 100
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            min: 15,
+                            max: 25,
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Alertas (Polar Area)
+            const alertsCtx = document.getElementById('alertsChart').getContext('2d');
+            charts.alerts = new Chart(alertsCtx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['Críticos', 'Avisos', 'Informação', 'Resolvidos'],
+                    datasets: [{
+                        data: [2, 7, 3, 15],
+                        backgroundColor: [
+                            '#e17055',
+                            '#fdcb6e',
+                            '#74b9ff',
+                            '#00b894'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Actualizar dados dos gráficos
+        function updateChartsData() {
+            // Simular novos dados
+            const newTempData = temperatureData.map(temp =>
+                Math.max(15, Math.min(25, temp + (Math.random() - 0.5) * 2))
+            );
+
+            const newPressureData = pressureData.map(pressure =>
+                Math.max(1.5, Math.min(2.8, pressure + (Math.random() - 0.5) * 0.2))
+            );
+
+            // Actualizar gráficos
+            charts.temperature.data.datasets[0].data = newTempData;
+            charts.pressure.data.datasets[0].data = newPressureData;
+
+            charts.temperature.update('none');
+            charts.pressure.update('none');
+
+            // Actualizar estatísticas
+            updateStats();
+        }
+
+        // Actualizar estatísticas
+        function updateStats() {
+            const tempAvg = (temperatureData.reduce((a, b) => a + b) / temperatureData.length).toFixed(1);
+            const tempMax = Math.max(...temperatureData).toFixed(1);
+            const tempMin = Math.min(...temperatureData).toFixed(1);
+
+            document.getElementById('temp-avg').textContent = tempAvg + '°C';
+            document.getElementById('temp-max').textContent = tempMax + '°C';
+            document.getElementById('temp-min').textContent = tempMin + '°C';
+
+            const pressureAvg = (pressureData.reduce((a, b) => a + b) / pressureData.length).toFixed(2);
+            const pressureMax = Math.max(...pressureData).toFixed(2);
+            const pressureMin = Math.min(...pressureData).toFixed(2);
+
+            document.getElementById('pressure-avg').textContent = pressureAvg + ' bar';
+            document.getElementById('pressure-max').textContent = pressureMax + ' bar';
+            document.getElementById('pressure-min').textContent = pressureMin + ' bar';
+
+            const effAvg = (efficiencyData.reduce((a, b) => a + b) / efficiencyData.length).toFixed(1);
+            const effMax = Math.max(...efficiencyData).toFixed(1);
+            const effMin = Math.min(...efficiencyData).toFixed(1);
+
+            document.getElementById('eff-avg').textContent = effAvg + '%';
+            document.getElementById('eff-max').textContent = effMax + '%';
+            document.getElementById('eff-min').textContent = effMin + '%';
+
+            const cyclesTotal = cyclesData.reduce((a, b) => a + b);
+            const cyclesAvg = (cyclesTotal / cyclesData.length).toFixed(1);
+            const cyclesMax = Math.max(...cyclesData);
+
+            document.getElementById('cycles-total').textContent = cyclesTotal;
+            document.getElementById('cycles-avg').textContent = cyclesAvg;
+            document.getElementById('cycles-max').textContent = cyclesMax;
+        }
+
+        // Actualizar gráficos
+        function refreshCharts() {
+            showMessage('🔄 A actualizar gráficos...', 'info');
+            updateChartsData();
+            setTimeout(() => {
+                showMessage('✅ Gráficos actualizados com sucesso!', 'success');
+            }, 1000);
+        }
+
+        // Exportar gráficos
+        function exportCharts() {
+            showMessage('📊 A exportar gráficos...', 'info');
+            setTimeout(() => {
+                showMessage('✅ Gráficos exportados com sucesso!', 'success');
+            }, 2000);
+        }
+
+        // Mostrar mensagem
+        function showMessage(message, type = 'info') {
+            const messageEl = document.createElement('div');
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                background: ${type === 'success' ? '#00b894' : type === 'error' ? '#e17055' : '#74b9ff'};
+            `;
+            messageEl.textContent = message;
+
+            document.body.appendChild(messageEl);
+
+            setTimeout(() => {
+                document.body.removeChild(messageEl);
+            }, 3000);
+        }
+
+        // Inicializar estatísticas
+        updateStats();
+    </script>
+</body>
+</html>

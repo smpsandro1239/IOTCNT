@@ -712,6 +712,52 @@
                 closeModal();
             }
         });
+
+        // Sistema de notificações
+        function sendNotification(type, message, valveId = null) {
+            const notificationData = {
+                alert_type: type,
+                valve_id: valveId,
+                message: message
+            };
+
+            fetch('/api-notifications.php?action=alert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(notificationData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Notification sent:', data);
+            })
+            .catch(error => {
+                console.error('Notification error:', error);
+            });
+        }
+
+        // Monitorização automática de alertas
+        function checkSystemAlerts() {
+            valves.forEach(valve => {
+                if (valve.status === 'active') {
+                    // Verificar temperatura alta
+                    if (valve.temperature > 22) {
+                        sendNotification('warning', `Temperatura elevada detectada (${valve.temperature}°C)`, valve.id);
+                        addLog(`AVISO: Temperatura elevada no ${valve.name} (${valve.temperature}°C)`, 'warning');
+                    }
+
+                    // Verificar pressão baixa
+                    if (valve.pressure < 1.8) {
+                        sendNotification('warning', `Pressão baixa detectada (${valve.pressure} bar)`, valve.id);
+                        addLog(`AVISO: Pressão baixa no ${valve.name} (${valve.pressure} bar)`, 'warning');
+                    }
+                }
+            });
+        }
+
+        // Verificar alertas a cada 2 minutos
+        setInterval(checkSystemAlerts, 120000);
     </script>
 </body>
 </html>

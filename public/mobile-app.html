@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>IOTCNT Mobile</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="IOTCNT">
+
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .mobile-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .mobile-header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .mobile-header h1 {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .mobile-header p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .status-bar {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            margin: 15px -15px -15px -15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8em;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00b894;
+        }
+
+        .status-dot.offline {
+            background: #e17055;
+        }
+
+        .mobile-content {
+            padding: 20px 15px;
+            padding-bottom: 80px;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #f0f0f0;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #74b9ff;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .valve-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-left: 5px;
+        }
+
+        .valve-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .valve-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .valve-card.active {
+            border-left: 4px solid #00b894;
+        }
+
+        .valve-card.maintenance {
+            border-left: 4px solid #fdcb6e;
+        }
+
+        .valve-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .valve-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .valve-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d1f2eb;
+            color: #00b894;
+        }
+
+        .status-maintenance {
+            background: #fef9e7;
+            color: #fdcb6e;
+        }
+
+        .valve-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #74b9ff;
+        }
+
+        .metric-label {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            margin-top: 2px;
+        }
+
+        .valve-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #74b9ff;
+            color: white;
+        }
+
+        .btn-success {
+            background: #00b894;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #fdcb6e;
+            color: white;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #7f8c8d;
+            font-size: 0.8em;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #74b9ff;
+        }
+
+        .nav-icon {
+            font-size: 1.5em;
+            margin-bottom: 4px;
+        }
+
+        .alerts-section {
+            margin-bottom: 25px;
+        }
+
+        .alert-item {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #e17055;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .alert-time {
+            font-size: 0.8em;
+            color: #7f8c8d;
+        }
+
+        .refresh-btn {
+            position: fixed;
+            top: 80px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            background: #74b9ff;
+            color: white;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 99;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.9);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .offline-banner {
+            background: #e17055;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .offline-banner.show {
+            display: block;
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .valve-card {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .refresh-btn.spinning {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .mobile-container {
+                max-width: 400px;
+                margin: 0 auto;
+                box-shadow: 0 0 30px rgba(0,0,0,0.2);
+            }
+
+            .quick-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-banner" id="offline-banner">
+        📡 Sem conexão - Dados podem estar desactualizados
+    </div>
+
+    <div class="mobile-container">
+        <div class="mobile-header">
+            <h1>📱 IOTCNT Mobile</h1>
+            <p>Sistema de Condensadores CNT</p>
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <div class="status-dot" id="connection-status"></div>
+                    <span id="connection-text">Online</span>
+                </div>
+                <div id="last-update">Actualizado agora</div>
+            </div>
+        </div>
+
+        <button class="refresh-btn" id="refresh-btn" onclick="refreshData()">
+            🔄
+        </button>
+
+        <div class="mobile-content">
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="active-valves">4</div>
+                    <div class="stat-label">Activas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avg-temp">18.4°C</div>
+                    <div class="stat-label">Temperatura</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avg-pressure">2.1</div>
+                    <div class="stat-label">Pressão (bar)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="efficiency">96%</div>
+                    <div class="stat-label">Eficiência</div>
+                </div>
+            </div>
+
+            <div class="valve-section">
+                <h2 class="section-title">🔧 Condensadores</h2>
+                <div class="valve-grid" id="valve-grid">
+                    <div class="loading">
+                        <p>🔄 A carregar dados...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alerts-section">
+                <h2 class="section-title">🚨 Alertas Recentes</h2>
+                <div id="alerts-list">
+                    <div class="loading">
+                        <p>🔄 A carregar alertas...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mobile-nav">
+            <a href="#" class="nav-item active" onclick="showSection('dashboard')">
+                <div class="nav-icon">🏠</div>
+                <div>Dashboard</div>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('valves')">
+                <div class="nav-icon">🔧</div>
+                <div>Válvulas</div>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('charts')">
+                <div class="nav-icon">📊</div>
+                <div>Gráficos</div>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('settings')">
+                <div class="nav-icon">⚙️</div>
+                <div>Config</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Dados simulados
+        let valvesData = [
+            {
+                id: 1,
+                name: "Condensador 1",
+                status: "active",
+                temperature: 18.0,
+                pressure: 2.10,
+                efficiency: 98.5
+            },
+            {
+                id: 2,
+                name: "Condensador 2",
+                status: "active",
+                temperature: 17.0,
+                pressure: 2.30,
+                efficiency: 97.8
+            },
+            {
+                id: 3,
+                name: "Condensador 3",
+                status: "active",
+                temperature: 19.0,
+                pressure: 2.00,
+                efficiency: 94.2
+            },
+            {
+                id: 4,
+                name: "Condensador 4",
+                status: "maintenance",
+                temperature: 20.0,
+                pressure: 1.80,
+                efficiency: 85.1
+            },
+            {
+                id: 5,
+                name: "Condensador 5",
+                status: "active",
+                temperature: 18.0,
+                pressure: 2.20,
+                efficiency: 99.1
+            }
+        ];
+
+        let alertsData = [
+            {
+                title: "Condensador 4 em Manutenção",
+                time: "2 horas atrás"
+            },
+            {
+                title: "Backup Automático Concluído",
+                time: "4 horas atrás"
+            },
+            {
+                title: "Sistema Online",
+                time: "6 horas atrás"
+            }
+        ];
+
+        // Estado da aplicação
+        let isOnline = navigator.onLine;
+        let lastUpdate = new Date();
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            loadData();
+
+            // Auto-refresh a cada 30 segundos
+            setInterval(refreshData, 30000);
+
+            // Detectar mudanças de conectividade
+            window.addEventListener('online', handleOnline);
+            window.addEventListener('offline', handleOffline);
+        });
+
+        function initializeApp() {
+            // Registar Service Worker para PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registado'))
+                    .catch(error => console.log('Erro no SW:', error));
+            }
+
+            updateConnectionStatus();
+        }
+
+        function loadData() {
+            renderValves();
+            renderAlerts();
+            updateStats();
+            updateLastUpdate();
+        }
+
+        function renderValves() {
+            const container = document.getElementById('valve-grid');
+
+            container.innerHTML = valvesData.map(valve => `
+                <div class="valve-card ${valve.status}">
+                    <div class="valve-header">
+                        <div class="valve-name">${valve.name}</div>
+                        <div class="valve-status status-${valve.status}">
+                            ${valve.status === 'active' ? 'Activa' : 'Manutenção'}
+                        </div>
+                    </div>
+                    <div class="valve-metrics">
+                        <div class="metric">
+                            <div class="metric-value">${valve.temperature}°</div>
+                            <div class="metric-label">Temp</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${valve.pressure}</div>
+                            <div class="metric-label">Pressão</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">${valve.efficiency}%</div>
+                            <div class="metric-label">Eficiência</div>
+                        </div>
+                    </div>
+                    <div class="valve-controls">
+                        <button class="btn btn-primary" onclick="controlValve(${valve.id}, 'status')">
+                            📊 Estado
+                        </button>
+                        <button class="btn btn-success" onclick="controlValve(${valve.id}, 'cycle')">
+                            🔄 Ciclo
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAlerts() {
+            const container = document.getElementById('alerts-list');
+
+            container.innerHTML = alertsData.map(alert => `
+                <div class="alert-item">
+                    <div class="alert-title">${alert.title}</div>
+                    <div class="alert-time">${alert.time}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const activeValves = valvesData.filter(v => v.status === 'active').length;
+            const avgTemp = (valvesData.reduce((sum, v) => sum + v.temperature, 0) / valvesData.length).toFixed(1);
+            const avgPressure = (valvesData.reduce((sum, v) => sum + v.pressure, 0) / valvesData.length).toFixed(1);
+            const avgEfficiency = Math.round(valvesData.reduce((sum, v) => sum + v.efficiency, 0) / valvesData.length);
+
+            document.getElementById('active-valves').textContent = activeValves;
+            document.getElementById('avg-temp').textContent = avgTemp + '°C';
+            document.getElementById('avg-pressure').textContent = avgPressure;
+            document.getElementById('efficiency').textContent = avgEfficiency + '%';
+        }
+
+        function refreshData() {
+            const refreshBtn = document.getElementById('refresh-btn');
+            refreshBtn.classList.add('spinning');
+
+            // Simular actualização de dados
+            setTimeout(() => {
+                // Pequenas variações nos dados
+                valvesData.forEach(valve => {
+                    valve.temperature += (Math.random() - 0.5) * 0.4;
+                    valve.pressure += (Math.random() - 0.5) * 0.1;
+                    valve.efficiency += (Math.random() - 0.5) * 2;
+
+                    // Manter valores dentro de limites realistas
+                    valve.temperature = Math.max(15, Math.min(25, valve.temperature));
+                    valve.pressure = Math.max(1.5, Math.min(3.0, valve.pressure));
+                    valve.efficiency = Math.max(80, Math.min(100, valve.efficiency));
+
+                    // Arredondar valores
+                    valve.temperature = Math.round(valve.temperature * 10) / 10;
+                    valve.pressure = Math.round(valve.pressure * 100) / 100;
+                    valve.efficiency = Math.round(valve.efficiency * 10) / 10;
+                });
+
+                loadData();
+                refreshBtn.classList.remove('spinning');
+
+                // Feedback visual
+                showToast('✅ Dados actualizados');
+            }, 1000);
+        }
+
+        function controlValve(valveId, action) {
+            const valve = valvesData.find(v => v.id === valveId);
+            if (!valve) return;
+
+            if (action === 'status') {
+                showToast(`📊 Estado: ${valve.name} - ${valve.status === 'active' ? 'Activa' : 'Manutenção'}`);
+            } else if (action === 'cycle') {
+                showToast(`🔄 Ciclo iniciado: ${valve.name}`);
+                // Simular mudança de eficiência após ciclo
+                setTimeout(() => {
+                    valve.efficiency = Math.min(100, valve.efficiency + Math.random() * 2);
+                    renderValves();
+                    updateStats();
+                }, 2000);
+            }
+        }
+
+        function showSection(section) {
+            // Actualizar navegação
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+
+            // Mostrar toast de navegação
+            const sectionNames = {
+                'dashboard': 'Dashboard',
+                'valves': 'Válvulas',
+                'charts': 'Gráficos',
+                'settings': 'Configurações'
+            };
+
+            showToast(`📱 ${sectionNames[section]}`);
+        }
+
+        function updateConnectionStatus() {
+            const statusDot = document.getElementById('connection-status');
+            const statusText = document.getElementById('connection-text');
+            const offlineBanner = document.getElementById('offline-banner');
+
+            if (isOnline) {
+                statusDot.classList.remove('offline');
+                statusText.textContent = 'Online';
+                offlineBanner.classList.remove('show');
+            } else {
+                statusDot.classList.add('offline');
+                statusText.textContent = 'Offline';
+                offlineBanner.classList.add('show');
+            }
+        }
+
+        function updateLastUpdate() {
+            const now = new Date();
+            const diff = Math.floor((now - lastUpdate) / 1000);
+
+            let timeText;
+            if (diff < 60) {
+                timeText = 'Agora mesmo';
+            } else if (diff < 3600) {
+                timeText = `${Math.floor(diff / 60)}m atrás`;
+            } else {
+                timeText = `${Math.floor(diff / 3600)}h atrás`;
+            }
+
+            document.getElementById('last-update').textContent = timeText;
+        }
+
+        function handleOnline() {
+            isOnline = true;
+            updateConnectionStatus();
+            showToast('🌐 Conexão restaurada');
+            refreshData();
+        }
+
+        function handleOffline() {
+            isOnline = false;
+            updateConnectionStatus();
+            showToast('📡 Sem conexão');
+        }
+
+        function showToast(message) {
+            // Criar toast temporário
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 25px;
+                font-size: 0.9em;
+                z-index: 1000;
+                animation: fadeIn 0.3s ease;
+            `;
+            toast.textContent = message;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2000);
+        }
+
+        // Actualizar tempo periodicamente
+        setInterval(updateLastUpdate, 60000);
+
+        // Prevenir zoom em iOS
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>

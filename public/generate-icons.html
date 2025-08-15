@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gerador de Ícones IOTCNT</title>
+</head>
+<body>
+    <h1>Gerador de Ícones PWA - IOTCNT</h1>
+    <canvas id="canvas" width="512" height="512" style="border: 1px solid #ccc;"></canvas>
+    <br><br>
+    <button onclick="generateIcons()">Gerar Todos os Ícones</button>
+    <div id="downloads"></div>
+
+    <script>
+        function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Fundo gradiente
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#2c3e50');
+            gradient.addColorStop(1, '#3498db');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Texto IOTCNT
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.15}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('IOT', size / 2, size * 0.4);
+            ctx.fillText('CNT', size / 2, size * 0.6);
+
+            // Ícone de engrenagem
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.02;
+            ctx.beginPath();
+            ctx.arc(size / 2, size * 0.25, size * 0.08, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            return canvas;
+        }
+
+        function generateIcons() {
+            const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+            const downloads = document.getElementById('downloads');
+            downloads.innerHTML = '';
+
+            sizes.forEach(size => {
+                const canvas = generateIcon(size);
+                const link = document.createElement('a');
+                link.download = `icon-${size}x${size}.png`;
+                link.href = canvas.toDataURL();
+                link.textContent = `Download ${size}x${size}`;
+                link.style.display = 'block';
+                link.style.margin = '5px 0';
+                downloads.appendChild(link);
+            });
+
+            // Mostrar preview do maior ícone
+            const previewCanvas = document.getElementById('canvas');
+            const previewCtx = previewCanvas.getContext('2d');
+            const largeIcon = generateIcon(512);
+            previewCtx.drawImage(largeIcon, 0, 0);
+        }
+
+        // Gerar automaticamente ao carregar
+        generateIcons();
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 # 📋 CHECKLIST DE VERIFICAÇÃO COMPLETA - SISTEMA IOTCNT
 
 ## 🎯 Objectivo
+
 Verificar meticulosamente todo o sistema IOTCNT para garantir:
 - ✅ **Responsividade perfeita** em todos os dispositivos
 - ✅ **Funcionalidades 100% operacionais**
@@ -13,6 +14,7 @@ Verificar meticulosamente todo o sistema IOTCNT para garantir:
 ## 📱 **ETAPA 1: VERIFICAÇÃO DE RESPONSIVIDADE**
 
 ### **1.1 Breakpoints de Teste**
+
 - [ ] **Mobile Portrait**: 320px - 480px
 - [ ] **Mobile Landscape**: 481px - 768px
 - [ ] **Tablet Portrait**: 769px - 1024px
@@ -21,6 +23,7 @@ Verificar meticulosamente todo o sistema IOTCNT para garantir:
 - [ ] **Desktop Large**: 1441px+
 
 ### **1.2 Páginas Principais**
+
 - [ ] **index-iotcnt.html** - Página principal
 - [ ] **login-iotcnt.html** - Sistema de login
 - [ ] **dashboard-admin.html** - Dashboard administrador
@@ -347,6 +350,7 @@ Verificar meticulosamente todo o sistema IOTCNT para garantir:
 ## 📝 **TEMPLATE DE VERIFICAÇÃO POR PÁGINA**
 
 ### **Página: [NOME_DA_PÁGINA]**
+
 **Data**: ___________
 **Verificador**: ___________
 
@@ -371,8 +375,9 @@ Verificar meticulosamente todo o sistema IOTCNT para garantir:
 - [ ] Sem erros console ✅❌
 
 #### **Observações**
-_________________________________
-_________________________________
+
+---
+---
 
 ---
 

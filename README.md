@@ -18,20 +18,25 @@
 
 ### 🏠 **Homepage Profissional**
 <div align="center">
-<img src="screenshots/desktop/homepage-desktop.png" alt="Homepage Desktop" width="45%">
-<img src="screenshots/mobile/homepage-mobile.png" alt="Homepage Mobile" width="25%">
+<img src="screenshots/home.png" alt="Homepage IOTCNT" width="70%">
 </div>
 
-### 📊 **Dashboard Administrativo**
+### 📊 **Dashboards Funcionais**
 <div align="center">
-<img src="screenshots/desktop/dashboard-admin-desktop.png" alt="Dashboard Admin" width="45%">
-<img src="screenshots/mobile/dashboard-admin-mobile.png" alt="Dashboard Mobile" width="25%">
+<img src="screenshots/dashboard_Admin.png" alt="Dashboard Admin" width="45%">
+<img src="screenshots/dashboard_User.png" alt="Dashboard User" width="45%">
 </div>
 
-### 🔧 **Sistema de Controlo**
+### 🔧 **Sistema de Controlo e Monitorização**
 <div align="center">
-<img src="screenshots/desktop/valve-control-desktop.png" alt="Controlo Válvulas" width="45%">
-<img src="screenshots/desktop/monitoring-dashboard.png" alt="Monitorização" width="45%">
+<img src="screenshots/Controlo de Válvulas.png" alt="Controlo Válvulas" width="45%">
+<img src="screenshots/Dashboard de Monitorização em Tempo Real.png" alt="Monitorização" width="45%">
+</div>
+
+### 📈 **Gráficos e Relatórios**
+<div align="center">
+<img src="screenshots/Gráficos Avançados.png" alt="Gráficos Avançados" width="45%">
+<img src="screenshots/Relatórios Automáticos.png" alt="Relatórios" width="45%">
 </div>
 
 ---
@@ -91,17 +96,34 @@ O IOTCNT é um sistema IoT industrial que combina hardware ESP32 com uma aplica�
 - **Acessibilidade:** WCAG 2.1 AA compliant
 - **Performance:** Lighthouse Score 95+
 
-### 🧭 **Navegação Unificada**
+### 🧭 **Funcionalidades Avançadas**
 <div align="center">
-<img src="screenshots/features/navbar-responsive.png" alt="Navegação Responsiva" width="70%">
+<img src="screenshots/Sistema de Integração com Hardware ESP32.png" alt="Integração ESP32" width="45%">
+<img src="screenshots/Sistema Automático de Backup.png" alt="Sistema Backup" width="45%">
 </div>
 
-- **Sticky Navigation:** Acesso rápido em qualquer página
-- **Design Consistente:** Gradiente azul CNT em todo o sistema
-- **Touch-Friendly:** Optimizado para dispositivos tácteis
-- **Contextual Links:** Navegação inteligente baseada na página atual
+<div align="center">
+<img src="screenshots/Métricas de Performance.png" alt="Performance" width="45%">
+<img src="screenshots/Sistema de Notificações_Email_Telegram.png" alt="Notificações" width="45%">
+</div>
 
-### 🔧 Hardware ESP32 Industrial
+### 🔧 **Gestão e Administração**
+<div align="center">
+<img src="screenshots/Gestão de Base de Dados.png" alt="Gestão BD" width="45%">
+<img src="screenshots/SistemaDeAgendamento.png" alt="Agendamentos" width="45%">
+</div>
+
+### 🌐 **API e Documentação**
+<div align="center">
+<img src="screenshots/Teste_API_Documentação da API ESP32.png" alt="API Docs" width="70%">
+</div>
+
+### 🧪 **Sistema de Qualidade**
+<div align="center">
+<img src="screenshots/Sistema de Qualidade e Testes.png" alt="Testes" width="70%">
+</div>
+
+### 🔧 **Hardware ESP32 Industrial**
 - **Firmware Optimizado**: Código C++ eficiente para controlo industrial
 - **Comunicação API**: Integração robusta com backend Laravel
 - **Controlo de Relés**: Gestão precisa de bombas e válvulas de arrefecimento

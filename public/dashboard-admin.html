@@ -721,6 +721,91 @@
     </style>
 </head>
 <body>
+    <!-- Script de verificação de autenticação -->
+    <script>
+        // Verificar autenticação ao carregar a página
+        async function checkAuthentication() {
+            try {
+                const response = await fetch('/auth/status');
+                const data = await response.json();
+
+                if (!data.authenticated) {
+                    // Verificar autenticação local (fallback)
+                    const localUser = localStorage.getItem('iotcnt_user');
+                    if (!localUser) {
+                        window.location.href = '/login-iotcnt.html';
+                        return;
+                    }
+
+                    const userData = JSON.parse(localUser);
+                    if (userData.role !== 'admin') {
+                        window.location.href = '/dashboard-user.html';
+                        return;
+                    }
+                } else if (data.user && data.user.role !== 'admin') {
+                    window.location.href = '/dashboard-user.html';
+                    return;
+                }
+
+                // Atualizar informações do utilizador na navbar
+                updateUserInfo(data.user || JSON.parse(localStorage.getItem('iotcnt_user') || '{}'));
+
+            } catch (error) {
+                console.error('Erro ao verificar autenticação:', error);
+                // Fallback para verificação local
+                const localUser = localStorage.getItem('iotcnt_user');
+                if (!localUser) {
+                    window.location.href = '/login-iotcnt.html';
+                    return;
+                }
+
+                const userData = JSON.parse(localUser);
+                if (userData.role !== 'admin') {
+                    window.location.href = '/dashboard-user.html';
+                    return;
+                }
+
+                updateUserInfo(userData);
+            }
+        }
+
+        function updateUserInfo(user) {
+            const userBadge = document.querySelector('.user-badge');
+            if (userBadge && user.email) {
+                userBadge.textContent = `👨‍💼 ${user.email}`;
+            }
+        }
+
+        // Função de logout
+        async function logout() {
+            try {
+                const response = await fetch('/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.removeItem('iotcnt_user');
+                    window.location.href = '/login-iotcnt.html';
+                }
+            } catch (error) {
+                console.error('Erro ao fazer logout:', error);
+                // Fallback - limpar dados locais
+                localStorage.removeItem('iotcnt_user');
+                window.location.href = '/login-iotcnt.html';
+            }
+        }
+
+        // Executar verificação ao carregar
+        checkAuthentication();
+    </script>
+
     <nav class="navbar" role="navigation" aria-label="Main navigation">
         <div class="navbar-content">
             <a href="/index-iotcnt.html" class="navbar-brand">
@@ -736,7 +821,7 @@
                 <a href="/reports-dashboard.html" class="nav-link">Relatórios</a>
                 <div class="user-info">
                     <span class="user-badge">👨‍💼 Admin</span>
-                    <a href="/login-iotcnt.html" class="btn btn-secondary" data-tooltip="Terminar sessão">Sair</a>
+                    <button onclick="logout()" class="btn btn-secondary" data-tooltip="Terminar sessão">Sair</button>
                 </div>
             </div>
         </div>

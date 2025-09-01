@@ -487,26 +487,74 @@
             }
         }
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const messageDiv = document.getElementById('message');
 
-            // Simular autenticação
-            if ((email === 'admin@iotcnt.local' || email === 'user@iotcnt.local') && password === 'password') {
-                messageDiv.innerHTML = '<div class="alert alert-success">✅ Login realizado com sucesso! A redirecionar...</div>';
+            // Mostrar loading
+            messageDiv.innerHTML = '<div class="alert alert-info">🔄 Autenticando...</div>';
 
-                setTimeout(() => {
-                    if (email === 'admin@iotcnt.local') {
-                        window.location.href = '/dashboard-admin.html';
-                    } else {
-                        window.location.href = '/dashboard-user.html';
-                    }
-                }, 1500);
-            } else {
-                messageDiv.innerHTML = '<div class="alert alert-error">❌ Credenciais inválidas. Tente novamente.</div>';
+            try {
+                // Obter CSRF token
+                const csrfResponse = await fetch('/auth/csrf');
+                const csrfData = await csrfResponse.json();
+                const csrfToken = csrfData.token || '';
+
+                // Fazer requisição de autenticação híbrida
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    messageDiv.innerHTML = '<div class="alert alert-success">✅ Login realizado com sucesso! A redirecionar...</div>';
+
+                    // Armazenar dados do utilizador
+                    localStorage.setItem('iotcnt_user', JSON.stringify(data.user));
+
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1500);
+                } else {
+                    messageDiv.innerHTML = '<div class="alert alert-error">❌ ' + (data.message || 'Credenciais inválidas') + '</div>';
+                }
+            } catch (error) {
+                console.error('Erro de autenticação:', error);
+
+                // Fallback para autenticação HTML local
+                if ((email === 'admin@iotcnt.local' || email === 'user@iotcnt.local') && password === 'password') {
+                    messageDiv.innerHTML = '<div class="alert alert-success">✅ Login realizado com sucesso (modo offline)! A redirecionar...</div>';
+
+                    const userData = {
+                        email: email,
+                        role: email === 'admin@iotcnt.local' ? 'admin' : 'user'
+                    };
+                    localStorage.setItem('iotcnt_user', JSON.stringify(userData));
+
+                    setTimeout(() => {
+                        if (email === 'admin@iotcnt.local') {
+                            window.location.href = '/dashboard-admin.html';
+                        } else {
+                            window.location.href = '/dashboard-user.html';
+                        }
+                    }, 1500);
+                } else {
+                    messageDiv.innerHTML = '<div class="alert alert-error">❌ Erro de conexão. Credenciais inválidas.</div>';
+                }
             }
         });
     </script>

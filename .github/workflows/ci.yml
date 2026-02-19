@@ -105,7 +105,7 @@ jobs:
           pip install --upgrade platformio
 
       - name: Copy config example
-        run: cp esp32_irrigation_controller/config.example.h esp32_irrigation_controller/config.h
+        run: cp esp32_irrigation_controller/config.example.h esp32_irrigation_controller/src/config.h
 
       - name: Build ESP32 firmware
         run: |
@@ -128,15 +128,15 @@ jobs:
           cp docker/redis/redis.example.conf docker/redis/redis.conf
 
       - name: Build Docker images
-        run: docker-compose build
+        run: docker compose build
 
       - name: Test Docker containers
         run: |
-          docker-compose up -d
+          docker compose up -d
           sleep 30
-          docker-compose ps
+          docker compose ps
           curl -f http://localhost || exit 1
-          docker-compose down
+          docker compose down
 
   # Security Scan
   security-scan:
@@ -197,4 +197,4 @@ jobs:
           echo "Deployment would happen here"
           # Add your deployment steps
           # Example: SSH to server and run deployment script
-          # ssh user@server 'cd /opt/iotcnt && git pull && docker-compose up -d --build'
+          # ssh user@server 'cd /opt/iotcnt && git pull && docker compose up -d --build'

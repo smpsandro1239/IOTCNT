@@ -22,13 +22,13 @@ class SettingsTest extends TestCase
     parent::setUp();
 
     $this->adminUser = User::factory()->create([
-      'is_admin' => true,
+      'role' => 'admin',
       'name' => 'Admin User',
       'email' => 'admin@test.com'
     ]);
 
     $this->regularUser = User::factory()->create([
-      'is_admin' => false,
+      'role' => 'user',
       'name' => 'Regular User',
       'email' => 'user@test.com'
     ]);

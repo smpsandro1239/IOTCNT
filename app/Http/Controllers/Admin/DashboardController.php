@@ -27,7 +27,7 @@ class DashboardController extends Controller
                 $query->where('is_enabled', true)->orWhere('is_active', true);
             })->count(),
             'total_users' => User::count(),
-            'admin_users' => User::where('is_admin', true)->count(),
+            'admin_users' => User::where('role', 'admin')->count(),
             'telegram_users' => TelegramUser::count(),
             'authorized_telegram_users' => TelegramUser::where('is_authorized', true)->count(),
         ];
@@ -279,7 +279,7 @@ class DashboardController extends Controller
                     ->where('created_at', '>=', Carbon::now()->subDays($days))
                     ->orderBy('created_at', 'desc')
                     ->get(),
-                'users' => User::select('id', 'name', 'email', 'is_admin', 'created_at')->get(),
+                'users' => User::select('id', 'name', 'email', 'role', 'created_at')->get(),
                 'telegram_users' => TelegramUser::all(),
                 'system_stats' => [
                     'total_operations' => OperationLog::count(),

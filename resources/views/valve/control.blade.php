@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="description" content="Controlo de Válvulas para o sistema IOTCNT">
+    <meta name="robots" content="noindex, nofollow">
+    <title>IOTCNT - Controlo de Válvulas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .navbar-brand {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.25rem;
+        }
+
+        .navbar-brand h1 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .navbar-brand span {
+            font-size: 0.875rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .user-badge {
+            background: #dc2626;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .btn:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 10;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+        }
+
+        .btn-warning {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #b45309;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-title {
+            margin-bottom: 2rem;
+        }
+
+        .page-title h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .valve-card {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .valve-card.active {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .valve-card.inactive {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .valve-card.maintenance {
+            border-color: #d97706;
+            background: #fffbeb;
+        }
+
+        .valve-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .valve-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .valve-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .valve-status.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .valve-status.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .valve-status.maintenance {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .valve-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .valve-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .system-controls {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .system-controls h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .system-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .logs-section {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .logs-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .log-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .log-item:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-right: 1rem;
+            min-width: 80px;
+        }
+
+        .log-message {
+            flex: 1;
+            font-size: 0.875rem;
+        }
+
+        .log-type {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .log-type.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .log-type.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .log-type.warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .log-type.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            margin-bottom: 1rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        /* Responsive breakpoints */
+        @media (min-width: 480px) {
+            .navbar-content { padding: 0 1.5rem; }
+            .navbar-brand h1 { font-size: 1.5rem; }
+            .navbar-brand span { font-size: 1rem; }
+            .nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 1rem;
+            }
+            .main { padding: 1.5rem; }
+            .page-title h2 { font-size: 1.75rem; }
+            .page-title p { font-size: 1rem; }
+            .valve-card { padding: 1.25rem; }
+            .valve-info { grid-template-columns: repeat(2, 1fr); }
+            .valve-controls { flex-direction: row; }
+            .system-actions { gap: 0.75rem; }
+        }
+
+        @media (min-width: 768px) {
+            .navbar { padding: 1rem 0; }
+            .navbar-content {
+                padding: 0 2rem;
+                flex-wrap: nowrap;
+            }
+            .navbar-nav { flex-wrap: nowrap; }
+            .main { padding: 2rem; }
+            .page-title h2 { font-size: 2rem; }
+            .controls-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            .valve-card { padding: 1.5rem; }
+            .system-controls { padding: 1.5rem; }
+            .logs-section { padding: 1.5rem; }
+            .user-info { justify-content: flex-end; }
+        }
+
+        @media (min-width: 1024px) {
+            .controls-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+            .valve-card { padding: 1.75rem; }
+        }
+
+        @media (min-width: 1441px) {
+            .navbar-content,
+            .main {
+                max-width: 1400px;
+            }
+            .controls-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 2.5rem;
+            }
+            .valve-card { padding: 2rem; }
+        }
+
+        /* Mobile Portrait */
+        @media (max-width: 480px) {
+            .navbar-content {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+            .navbar-brand h1 { font-size: 1.25rem; }
+            .navbar-brand span { font-size: 0.75rem; }
+            .user-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .user-badge {
+                font-size: 0.625rem;
+                padding: 0.375rem 0.75rem;
+            }
+            .btn {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.875rem;
+            }
+            .main { padding: 1rem; }
+            .page-title h2 { font-size: 1.5rem; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .valve-card { padding: 1rem; }
+            .valve-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .valve-status { align-self: flex-start; }
+            .valve-info { grid-template-columns: 1fr; }
+            .valve-controls { flex-direction: column; }
+            .valve-controls .btn { width: 100%; }
+            .system-actions { flex-direction: column; }
+            .system-actions .btn { width: 100%; }
+            .modal-content {
+                margin: 1rem;
+                padding: 1rem;
+                max-width: calc(100% - 2rem);
+            }
+            .modal-header h3 { font-size: 1rem; }
+        }
+
+        /* Mobile Landscape */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .navbar-content { padding: 0 1.5rem; }
+            .main { padding: 1.5rem; }
+            .page-title h2 { font-size: 1.75rem; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .valve-info { grid-template-columns: repeat(2, 1fr); }
+            .valve-controls { flex-wrap: wrap; }
+            .valve-controls .btn { flex: 1; min-width: 100px; }
+            .system-actions { flex-wrap: wrap; }
+            .system-actions .btn { flex: 1; min-width: 120px; }
+        }
+
+        /* Tablet Portrait */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .navbar-content { padding: 0 2rem; }
+            .main { padding: 2rem; }
+            .controls-grid { grid-template-columns: repeat(2, 1fr); }
+            .modal-content { max-width: 600px; }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            .valve-card:hover,
+            .btn:hover {
+                transform: none;
+            }
+            .btn:hover::after {
+                display: none;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .navbar { padding: 0.5rem 0; }
+            .main { padding: 1rem; }
+            .controls-grid { gap: 1rem; }
+        }
+
+        /* Accessibility & Dark Mode */
+        @media (prefers-reduced-motion: reduce) {
+            .valve-card,
+            .btn,
+            .modal {
+                transition: none;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #111827;
+                color: #f3f4f6;
+            }
+            .navbar-brand span,
+            .page-title h2 {
+                color: #f3f4f6;
+            }
+            .page-title p,
+            .info-label,
+            .log-time,
+            .log-message {
+                color: #d1d5db;
+            }
+            .controls-section,
+            .system-controls,
+            .logs-section,
+            .modal-content {
+                background: #1f2937;
+                border: 1px solid #374151;
+            }
+            .valve-card {
+                background: #1f2937;
+                border: 1px solid #374151;
+            }
+            .valve-name,
+            .info-value,
+            .system-controls h3,
+            .logs-section h3,
+            .modal-header h3 {
+                color: #f3f4f6;
+            }
+            .log-item,
+            .valve-header,
+            .valve-info {
+                border-bottom-color: #374151;
+            }
+            .btn:hover::after {
+                background: #374151;
+            }
+        }
+
+        @media (prefers-contrast: high) {
+            .valve-card,
+            .controls-section,
+            .system-controls,
+            .logs-section,
+            .btn {
+                border: 2px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="navbar-content">
+            <a href="/index-iotcnt.html" class="navbar-brand">
+                <h1>IOTCNT</h1>
+                <span>Controlo de Válvulas</span>
+            </a>
+            <div class="navbar-nav">
+                <a href="/dashboard-admin.html" class="nav-link">Dashboard</a>
+                <a href="/valve-control.html" class="nav-link active" aria-current="page">Válvulas</a>
+                <a href="/scheduling.html" class="nav-link">Agendamentos</a>
+                <a href="/monitoring-dashboard.html" class="nav-link">Monitorização</a>
+                <a href="/system-settings.html" class="nav-link">Configurações</a>
+                <div class="user-info">
+                    <span class="user-badge">👨‍💼 Admin</span>
+                    <a href="/login-iotcnt.html" class="btn btn-secondary" data-tooltip="Terminar sessão">Sair</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="page-title">
+            <h2>Controlo de Válvulas dos Condensadores</h2>
+            <p>Gestão individual e colectiva das válvulas para prevenção de legionela</p>
+        </div>
+
+        <div class="controls-section">
+            <h3>🔧 Controlo Individual das Válvulas</h3>
+            <div class="controls-grid" id="valvesGrid">
+                <!-- Válvulas serão carregadas dinamicamente -->
+            </div>
+        </div>
+
+        <div class="system-controls">
+            <h3>⚙️ Controlos do Sistema</h3>
+            <div class="system-actions">
+                <button type="button" class="btn btn-success" data-tooltip="Iniciar ciclos em todas as válvulas activas" onclick="startAllCycles()">🔄 Iniciar Todos os Ciclos</button>
+                <button type="button" class="btn btn-warning" data-tooltip="Desactivar todas as válvulas" onclick="stopAllValves()">⏹️ Parar Todas as Válvulas</button>
+                <button type="button" class="btn btn-primary" data-tooltip="Agendar manutenção geral" onclick="scheduleMaintenanceAll()">🛠️ Agendar Manutenção Geral</button>
+                <button type="button" class="btn btn-danger" data-tooltip="Parar imediatamente todo o sistema" onclick="emergencyStop()">🚨 Paragem de Emergência</button>
+            </div>
+        </div>
+
+        <div class="logs-section">
+            <h3>📋 Logs de Operação em Tempo Real</h3>
+            <div id="operationLogs">
+                <!-- Logs serão carregados dinamicamente -->
+            </div>
+        </div>
+    </main>
+
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Confirmar Acção</h3>
+            </div>
+            <p id="modalMessage">Tem a certeza que deseja executar esta acção?</p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" data-tooltip="Cancelar acção" onclick="closeModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmButton" data-tooltip="Confirmar acção" onclick="executeAction()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let valves = [
+            {id: 1, name: 'Condensador 1', status: 'active', temperature: 18, lastCycle: '2025-08-14 06:00:00', pressure: 2.1},
+            {id: 2, name: 'Condensador 2', status: 'active', temperature: 17, lastCycle: '2025-08-14 06:00:00', pressure: 2.3},
+            {id: 3, name: 'Condensador 3', status: 'active', temperature: 19, lastCycle: '2025-08-14 06:00:00', pressure: 2.0},
+            {id: 4, name: 'Condensador 4', status: 'maintenance', temperature: 20, lastCycle: '2025-08-14 02:00:00', pressure: 1.8},
+            {id: 5, name: 'Condensador 5', status: 'active', temperature: 18, lastCycle: '2025-08-14 06:00:00', pressure: 2.2}
+        ];
+
+        let logs = [];
+        let currentAction = null;
+
+        function renderValves() {
+            const grid = document.getElementById('valvesGrid');
+            grid.innerHTML = '';
+
+            valves.forEach(valve => {
+                const card = document.createElement('div');
+                card.className = `valve-card ${valve.status}`;
+                card.innerHTML = `
+                    <div class="valve-header">
+                        <div class="valve-name">${valve.name}</div>
+                        <div class="valve-status ${valve.status}">
+                            ${valve.status === 'active' ? 'Activo' :
+                              valve.status === 'inactive' ? 'Inactivo' : 'Manutenção'}
+                        </div>
+                    </div>
+                    <div class="valve-info">
+                        <div class="info-item">
+                            <div class="info-label">Temperatura</div>
+                            <div class="info-value">${valve.temperature}°C</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Pressão</div>
+                            <div class="info-value">${valve.pressure} bar</div>
+                        </div>
+                    </div>
+                    <div class="valve-controls">
+                        ${valve.status !== 'active' ?
+                            `<button type="button" class="btn btn-success" data-tooltip="Activar válvula" onclick="activateValve(${valve.id})">Activar</button>` :
+                            `<button type="button" class="btn btn-danger" data-tooltip="Desactivar válvula" onclick="deactivateValve(${valve.id})">Desactivar</button>`
+                        }
+                        <button type="button" class="btn btn-primary" data-tooltip="Iniciar ciclo de limpeza" onclick="startCycle(${valve.id})">Ciclo Limpeza</button>
+                        <button type="button" class="btn btn-warning" data-tooltip="Agendar manutenção" onclick="scheduleMaintenance(${valve.id})">Manutenção</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderLogs() {
+            const logsContainer = document.getElementById('operationLogs');
+            logsContainer.innerHTML = '';
+
+            const recentLogs = logs.slice(-10).reverse();
+
+            if (recentLogs.length === 0) {
+                logsContainer.innerHTML = '<p style="color: #6b7280; text-align: center;">Nenhum log disponível</p>';
+                return;
+            }
+
+            recentLogs.forEach(log => {
+                const logItem = document.createElement('div');
+                logItem.className = 'log-item';
+                logItem.innerHTML = `
+                    <div class="log-time">${log.time}</div>
+                    <div class="log-message">${log.message}</div>
+                    <div class="log-type ${log.type}">${log.type.toUpperCase()}</div>
+                `;
+                logsContainer.appendChild(logItem);
+            });
+        }
+
+        function addLog(message, type = 'info') {
+            const now = new Date();
+            const time = now.toLocaleTimeString('pt-PT');
+
+            logs.push({
+                time: time,
+                message: message,
+                type: type,
+                timestamp: now
+            });
+
+            renderLogs();
+        }
+
+        function activateValve(id) {
+            showConfirmModal(
+                'Activar Válvula',
+                `Deseja activar a válvula do Condensador ${id}?`,
+                () => {
+                    const valve = valves.find(v => v.id === id);
+                    valve.status = 'active';
+                    renderValves();
+                    addLog(`Válvula ${valve.name} activada`, 'success');
+                    fetch(`/api.php?action=toggle&id=${id}`, {method: 'POST'})
+                        .then(response => response.json())
+                        .then(data => console.log('API Response:', data));
+                }
+            );
+        }
+
+        function deactivateValve(id) {
+            showConfirmModal(
+                'Desactivar Válvula',
+                `Deseja desactivar a válvula do Condensador ${id}?`,
+                () => {
+                    const valve = valves.find(v => v.id === id);
+                    valve.status = 'inactive';
+                    renderValves();
+                    addLog(`Válvula ${valve.name} desactivada`, 'warning');
+                    fetch(`/api.php?action=toggle&id=${id}`, {method: 'POST'})
+                        .then(response => response.json())
+                        .then(data => console.log('API Response:', data));
+                }
+            );
+        }
+
+        function startCycle(id) {
+            showConfirmModal(
+                'Iniciar Ciclo de Limpeza',
+                `Deseja iniciar um ciclo de limpeza para o Condensador ${id}?`,
+                () => {
+                    const valve = valves.find(v => v.id === id);
+                    valve.lastCycle = new Date().toLocaleString('pt-PT');
+                    valve.temperature = Math.floor(Math.random() * 5) + 16;
+                    renderValves();
+                    addLog(`Ciclo de limpeza iniciado para ${valve.name}`, 'info');
+                    fetch(`/api.php?action=cycle&id=${id}`, {method: 'POST'})
+                        .then(response => response.json())
+                        .then(data => console.log('API Response:', data));
+                }
+            );
+        }
+
+        function scheduleMaintenance(id) {
+            showConfirmModal(
+                'Agendar Manutenção',
+                `Deseja colocar o Condensador ${id} em modo de manutenção?`,
+                () => {
+                    const valve = valves.find(v => v.id === id);
+                    valve.status = 'maintenance';
+                    renderValves();
+                    addLog(`${valve.name} colocado em modo de manutenção`, 'warning');
+                }
+            );
+        }
+
+        function startAllCycles() {
+            showConfirmModal(
+                'Iniciar Todos os Ciclos',
+                'Deseja iniciar ciclos de limpeza em todas as válvulas activas?',
+                () => {
+                    valves.forEach(valve => {
+                        if (valve.status === 'active') {
+                            valve.lastCycle = new Date().toLocaleString('pt-PT');
+                            valve.temperature = Math.floor(Math.random() * 5) + 16;
+                        }
+                    });
+                    renderValves();
+                    addLog('Ciclos de limpeza iniciados em todas as válvulas activas', 'success');
+                }
+            );
+        }
+
+        function stopAllValves() {
+            showConfirmModal(
+                'Parar Todas as Válvulas',
+                'Deseja desactivar todas as válvulas do sistema?',
+                () => {
+                    valves.forEach(valve => {
+                        if (valve.status === 'active') {
+                            valve.status = 'inactive';
+                        }
+                    });
+                    renderValves();
+                    addLog('Todas as válvulas foram desactivadas', 'warning');
+                }
+            );
+        }
+
+        function scheduleMaintenanceAll() {
+            showConfirmModal(
+                'Manutenção Geral',
+                'Deseja agendar manutenção para todo o sistema?',
+                () => {
+                    addLog('Manutenção geral agendada para o próximo fim-de-semana', 'info');
+                }
+            );
+        }
+
+        function emergencyStop() {
+            showConfirmModal(
+                'PARAGEM DE EMERGÊNCIA',
+                'ATENÇÃO: Esta acção irá parar imediatamente todo o sistema!',
+                () => {
+                    valves.forEach(valve => {
+                        valve.status = 'inactive';
+                    });
+                    renderValves();
+                    addLog('PARAGEM DE EMERGÊNCIA ACTIVADA - Sistema parado', 'error');
+                },
+                'btn-danger'
+            );
+        }
+
+        function showConfirmModal(title, message, action, buttonClass = 'btn-primary') {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('confirmButton').className = `btn ${buttonClass}`;
+            document.getElementById('confirmModal').classList.add('show');
+            currentAction = action;
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('show');
+            currentAction = null;
+        }
+
+        function executeAction() {
+            if (currentAction) {
+                currentAction();
+                closeModal();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderValves();
+            renderLogs();
+            addLog('Sistema de controlo de válvulas iniciado', 'success');
+            addLog('Todas as válvulas verificadas e operacionais', 'info');
+
+            setInterval(() => {
+                valves.forEach(valve => {
+                    if (valve.status === 'active') {
+                        valve.temperature += (Math.random() - 0.5) * 0.5;
+                        valve.temperature = Math.max(15, Math.min(25, valve.temperature));
+                        valve.temperature = Math.round(valve.temperature * 10) / 10;
+                        valve.pressure += (Math.random() - 0.5) * 0.1;
+                        valve.pressure = Math.max(1.5, Math.min(3.0, valve.pressure));
+                        valve.pressure = Math.round(valve.pressure * 10) / 10;
+                    }
+                });
+                renderValves();
+            }, 10000);
+        });
+
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        function sendNotification(type, message, valveId = null) {
+            const notificationData = {
+                alert_type: type,
+                valve_id: valveId,
+                message: message
+            };
+
+            fetch('/api-notifications.php?action=alert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(notificationData)
+            })
+            .then(response => response.json())
+            .then(data => console.log('Notification sent:', data))
+            .catch(error => console.error('Notification error:', error));
+        }
+
+        function checkSystemAlerts() {
+            valves.forEach(valve => {
+                if (valve.status === 'active') {
+                    if (valve.temperature > 22) {
+                        sendNotification('warning', `Temperatura elevada detectada (${valve.temperature}°C)`, valve.id);
+                        addLog(`AVISO: Temperatura elevada no ${valve.name} (${valve.temperature}°C)`, 'warning');
+                    }
+                    if (valve.pressure < 1.8) {
+                        sendNotification('warning', `Pressão baixa detectada (${valve.pressure} bar)`, valve.id);
+                        addLog(`AVISO: Pressão baixa no ${valve.name} (${valve.pressure} bar)`, 'warning');
+                    }
+                }
+            });
+        }
+
+        setInterval(checkSystemAlerts, 120000);
+    </script>
+</body>
+</html>

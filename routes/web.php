@@ -1,104 +1,84 @@
 <?php
 
-use Illuminateupportacadesoute;
-use AppttpontrollersybridAuthController;
-use AppttpontrollersdminashboardController;
-use AppttpontrollersserDashboardController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HybridAuthController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\UserDashboardController;
 
-// Autor: Sandro Pereira (smpsandro1239)
-// Projeto: IOTCNT – Sistema de Gestão Industrial IoT para Condensadores
-
-// Rota principal - agora aponta para Blade principal
+// Rota principal - redireciona para homepage HTML
 Route::get('/', function () {
-    return view('pages.index');
+  return redirect('/index-iotcnt.html');
 });
 
 // Rotas de autenticação híbrida
 Route::prefix('auth')->group(function () {
-    Route::post('/login', [HybridAuthController::class, 'authenticate'])->name('auth.login');
-    Route::post('/logout', [HybridAuthController::class, 'logout'])->name('auth.logout');
-    Route::get('/status', [HybridAuthController::class, 'status'])->name('auth.status');
-    Route::post('/migrate', [HybridAuthController::class, 'migrateToLaravel'])->name('auth.migrate');
-    Route::get('/csrf', function () {
-        return response()->json(['token' => csrf_token()]);
-    })->name('auth.csrf');
+  Route::post('/login', [HybridAuthController::class, 'authenticate'])->name('auth.login');
+  Route::post('/logout', [HybridAuthController::class, 'logout'])->name('auth.logout');
+  Route::get('/status', [HybridAuthController::class, 'status'])->name('auth.status');
+  Route::post('/migrate', [HybridAuthController::class, 'migrateToLaravel'])->name('auth.migrate');
+  Route::get('/csrf', function () {
+    return response()->json(['token' => csrf_token()]);
+  })->name('auth.csrf');
 });
 
 // Standard Laravel Routes expected by tests
-Route::get('/login', function() { return view('auth.login'); })->name('login');
+Route::get('/login', function() { return response()->file(public_path('login-iotcnt.html')); })->name('login');
 Route::post('/login', [HybridAuthController::class, 'authenticate']);
-Route::get('/register', function() { return view('auth.register'); })->name('register');
+Route::get('/register', function() { return response('Registration Screen', 200); })->name('register');
 Route::post('/register', [HybridAuthController::class, 'authenticate']); // Mock for tests
 Route::post('/logout', [HybridAuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/laravel/dashboard', [UserDashboardController::class, 'index']);
-    Route::get('/laravel/admin', [DashboardController::class, 'index']);
+  Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+  Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+  Route::get('/laravel/dashboard', [UserDashboardController::class, 'index']);
+  Route::get('/laravel/admin', [DashboardController::class, 'index']);
 });
 
-// Rotas dos novos Blade components
-Route::get('/dashboard-user', function() {
-    return view('dashboard.user');
-})->name('dashboard.user');
-
-Route::get('/dashboard-admin', function() {
-    return view('dashboard.admin');
-})->name('dashboard.admin');
-
-Route::get('/esp32-dashboard', function() {
-    return view('esp32.dashboard');
-})->name('esp32.dashboard');
-
-Route::get('/valve-control', function() {
-    return view('valve.control');
-})->name('valve.control');
-
-Route::get('/monitoring-dashboard', function() {
-    return view('monitoring.dashboard');
-})->name('monitoring.dashboard');
-
-Route::get('/scheduling', function() {
-    return view('schedules.dashboard');
-})->name('scheduling');
-
-Route::get('/system-settings', function() {
-    return view('settings.dashboard');
-})->name('system.settings');
-
-// Rota de fallback para Blade components não listados
+// Rota de fallback para páginas HTML estáticas
 Route::fallback(function () {
-    $path = request()->path();
-    
-    // Mapeamento de URLs para Blade components
-    $bladeMap = [
-        'api-docs' => 'components.api-docs',
-        'backup-admin' => 'components.backup-admin',
-        'charts-dashboard' => 'components.charts-dashboard',
-        'database-admin' => 'components.database-admin',
-        'documentation-dashboard' => 'components.documentation-dashboard',
-        'email-dashboard' => 'components.email-dashboard',
-        'mobile-app' => 'components.mobile-app',
-        'notifications' => 'components.notifications',
-        'performance-metrics' => 'components.performance-metrics',
-        'reports-dashboard' => 'components.reports-dashboard',
-        'responsiveness-checker' => 'components.responsiveness-checker',
-        'system-logs' => 'components.system-logs',
-        'test-dashboard' => 'components.test-dashboard',
-        'test-login' => 'components.test-login',
-        'generate-icons' => 'components.generate-icons',
-        'index-working' => 'components.index-working',
-        'login-final' => 'components.login-final',
-        'login-working' => 'components.login-working'
-    ];
-    
-    // Extrair o nome base da URL
-    $baseName = basename($path, '.html');
-    
-    if (array_key_exists($baseName, $bladeMap)) {
-        return view($bladeMap[$baseName]);
-    }
-    
-    return abort(404);
+  $path = request()->path();
+
+  // Lista de páginas HTML válidas
+  $validPages = [
+    'index-iotcnt.html',
+    'login-iotcnt.html',
+    'dashboard-admin.html',
+    'dashboard-user.html',
+    'valve-control.html',
+    'scheduling.html',
+    'system-settings.html',
+    'monitoring-dashboard.html',
+    'charts-dashboard.html',
+    'reports-dashboard.html',
+    'api-docs.html',
+    'notifications.html',
+    'email-dashboard.html',
+    'esp32-dashboard.html',
+    'test-dashboard.html',
+    'documentation-dashboard.html',
+    'system-logs.html',
+    'database-admin.html',
+    'backup-admin.html',
+    'performance-metrics.html',
+    'mobile-app.html'
+  ];
+
+  if (in_array($path, $validPages)) {
+    return response()->file(public_path($path));
+  }
+
+  return abort(404);
 });
+
+// Rotas de Broadcasting para comunicação em tempo real
+Route::post('/broadcast/esp32-data', [BroadcastController::class, 'broadcastESP32Data'])->name('broadcast.esp32.data');
+Route::post('/broadcast/join-channel', [BroadcastController::class, 'joinChannel'])->name('broadcast.join.channel');
+
+// Rota para dashboard em tempo real
+Route::get('/dashboard/real-time', function () {
+    return view('dashboard.real-time');
+})->name('dashboard.real-time');
+
+// Rota para testar comunicação ESP32 em tempo real
+Route::post('/api/esp32/test-data', [BroadcastController::class, 'broadcastESP32Data'])->name('api.esp32.test-data');

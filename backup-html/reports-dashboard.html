@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Relatórios Automáticos - IOTCNT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            font-size: 16px; /* Prevent iOS zoom */
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            border-radius: 8px;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            min-height: 44px; /* Touch target */
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        /* Responsive breakpoints */
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            .navbar {
+                padding: 1rem 0;
+                border-radius: 15px;
+            }
+            .navbar-content {
+                padding: 0 2rem;
+                flex-wrap: nowrap;
+            }
+            .navbar-brand { font-size: 1.5rem; }
+            .navbar-nav { flex-wrap: nowrap; }
+            .nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 1rem;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 15px;
+        }
+
+        .report-types {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        /* Responsive grid */
+        @media (min-width: 480px) {
+            .container { border-radius: 12px; }
+            .header { padding: 20px; }
+            .header h1 { font-size: 1.8rem; }
+            .content { padding: 20px; }
+            .report-types { gap: 18px; }
+        }
+
+        @media (min-width: 768px) {
+            .container { border-radius: 15px; }
+            .header { padding: 25px; }
+            .header h1 { font-size: 2.2rem; }
+            .content { padding: 25px; }
+            .report-types {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .header { padding: 30px; }
+            .header h1 { font-size: 2.5rem; }
+            .content { padding: 30px; }
+            .report-types {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1441px) {
+            .report-types {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+
+        .report-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #74b9ff;
+            transition: transform 0.3s ease;
+        }
+
+        .report-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .report-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .report-card p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px; /* Prevent iOS zoom */
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            min-height: 44px; /* Touch target */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Responsive card styles */
+        @media (min-width: 480px) {
+            .report-card {
+                padding: 18px;
+                border-radius: 10px;
+            }
+            .report-card h3 { font-size: 1.2rem; }
+            .report-card p { font-size: 1rem; }
+        }
+
+        @media (min-width: 768px) {
+            .report-card {
+                padding: 20px;
+            }
+            .report-card h3 { font-size: 1.25rem; }
+        }
+
+        @media (min-width: 1024px) {
+            .report-card {
+                padding: 25px;
+            }
+            .report-card h3 {
+                font-size: 1.3rem;
+                margin-bottom: 15px;
+            }
+            .report-card p {
+                margin-bottom: 20px;
+                line-height: 1.6;
+            }
+            .report-card:hover {
+                transform: translateY(-5px);
+            }
+        }
+
+        .report-content {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .report-content.active {
+            display: block;
+        }
+
+        .report-header {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .report-title {
+            color: #2c3e50;
+            font-size: 1.3rem;
+        }
+
+        .report-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 14px;
+            min-height: 44px; /* Touch target */
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #74b9ff;
+            margin-bottom: 5px;
+        }
+
+        .summary-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive report content */
+        @media (min-width: 480px) {
+            .report-content {
+                padding: 18px;
+                border-radius: 10px;
+                margin-top: 25px;
+            }
+            .report-title { font-size: 1.4rem; }
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 18px;
+            }
+            .btn-small { flex: none; }
+        }
+
+        @media (min-width: 768px) {
+            .report-content { padding: 20px; }
+            .report-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+            }
+            .report-title { font-size: 1.5rem; }
+            .summary-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .report-content {
+                padding: 25px;
+                margin-top: 30px;
+            }
+            .summary-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                margin-bottom: 30px;
+            }
+            .summary-card { padding: 20px; }
+            .summary-value { font-size: 2rem; }
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+
+        .table-header {
+            background: #74b9ff;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .table-row {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .error {
+            background: #ff7675;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .success {
+            background: #00b894;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive table */
+        @media (min-width: 480px) {
+            .data-table {
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            .table-header {
+                padding: 15px;
+                font-size: 1rem;
+            }
+            .table-row {
+                padding: 15px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .table-row {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+            .loading { padding: 40px; }
+        }
+
+        /* Accessibility & Dark Mode */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            }
+            .container {
+                background: #2c3e50;
+                color: #ecf0f1;
+            }
+            .report-card {
+                background: #34495e;
+                border-left-color: #74b9ff;
+            }
+            .report-card h3 { color: #ecf0f1; }
+            .report-card p { color: #bdc3c7; }
+            .report-content {
+                background: #34495e;
+            }
+            .summary-card {
+                background: #2c3e50;
+                border-color: #34495e;
+            }
+            .data-table {
+                background: #34495e;
+            }
+            .table-row:nth-child(even) {
+                background: #2c3e50;
+            }
+        }
+
+        @media (prefers-contrast: high) {
+            .btn {
+                border: 2px solid currentColor;
+            }
+            .report-card {
+                border: 2px solid #74b9ff;
+            }
+        }
+
+        /* Landscape orientation */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .header { padding: 10px; }
+            .header h1 { font-size: 1.3rem; }
+            .content { padding: 10px; }
+            .report-types { gap: 10px; }
+        }
+            background: #00b894;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .recommendations {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .recommendations h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .recommendations ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+            color: #7f8c8d;
+        }
+
+        .recommendations li:before {
+            content: "💡 ";
+            margin-right: 8px;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .report-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .report-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/index-iotcnt.html" class="navbar-brand">IOTCNT</a>
+            <div class="navbar-nav">
+                <a href="/dashboard-admin.html" class="nav-link">Dashboard</a>
+                <a href="/monitoring-dashboard.html" class="nav-link">Monitorização</a>
+                <a href="/charts-dashboard.html" class="nav-link">Gráficos</a>
+                <a href="/reports-dashboard.html" class="nav-link active">Relatórios</a>
+                <a href="/database-admin.html" class="nav-link">Base de Dados</a>
+                <a href="/login-iotcnt.html" class="nav-link">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>📊 Relatórios Automáticos</h1>
+            <p>Sistema de Relatórios Inteligentes - IOTCNT</p>
+        </div>
+
+        <div class="content">
+            <div class="report-types">
+                <div class="report-card">
+                    <h3>📅 Relatório Diário</h3>
+                    <p>Resumo completo das actividades do dia, incluindo performance das válvulas, alertas e estatísticas detalhadas.</p>
+                    <button class="btn btn-primary" onclick="generateReport('daily')">
+                        Gerar Relatório Diário
+                    </button>
+                </div>
+
+                <div class="report-card">
+                    <h3>📊 Relatório Semanal</h3>
+                    <p>Análise semanal com tendências, comparações diárias e identificação de padrões de performance.</p>
+                    <button class="btn btn-success" onclick="generateReport('weekly')">
+                        Gerar Relatório Semanal
+                    </button>
+                </div>
+
+                <div class="report-card">
+                    <h3>📈 Relatório Mensal</h3>
+                    <p>Relatório abrangente mensal com análise de tendências, recomendações e planeamento de manutenção.</p>
+                    <button class="btn btn-warning" onclick="generateReport('monthly')">
+                        Gerar Relatório Mensal
+                    </button>
+                </div>
+            </div>
+
+            <div id="message-area"></div>
+
+            <div id="report-content" class="report-content">
+                <!-- Conteúdo do relatório será carregado aqui -->
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="/dashboard-admin.html" class="btn btn-primary">
+                    ← Voltar ao Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 IOTCNT - Sistema de Relatórios Automáticos | CNT</p>
+        </div>
+    </div>
+
+    <script>
+        // Gerar relatório
+        async function generateReport(type) {
+            showMessage(`🔄 A gerar relatório ${type}...`, 'info');
+
+            try {
+                const response = await fetch(`/reports-manager.php?action=${type}`);
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    displayReport(data.report, type);
+                    showMessage(`✅ Relatório ${type} gerado com sucesso!`, 'success');
+                } else {
+                    showError('Erro ao gerar relatório: ' + data.message);
+                }
+            } catch (error) {
+                showError('Erro ao gerar relatório: ' + error.message);
+            }
+        }
+
+        // Mostrar relatório
+        function displayReport(report, type) {
+            const container = document.getElementById('report-content');
+            let html = '';
+
+            // Cabeçalho do relatório
+            html += `
+                <div class="report-header">
+                    <h2 class="report-title">
+                        ${getReportIcon(type)} Relatório ${getReportTitle(type)}
+                    </h2>
+                    <div class="report-actions">
+                        <button class="btn btn-primary btn-small" onclick="exportReport('${type}')">
+                            📄 Exportar PDF
+                        </button>
+                        <button class="btn btn-success btn-small" onclick="emailReport('${type}')">
+                            📧 Enviar Email
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Resumo
+            if (report.summary) {
+                html += '<div class="summary-grid">';
+
+                Object.entries(report.summary).forEach(([key, value]) => {
+                    html += `
+                        <div class="summary-card">
+                            <div class="summary-value">${value}</div>
+                            <div class="summary-label">${formatLabel(key)}</div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+            }
+
+            // Dados específicos por tipo de relatório
+            if (type === 'daily') {
+                html += displayDailyReport(report);
+            } else if (type === 'weekly') {
+                html += displayWeeklyReport(report);
+            } else if (type === 'monthly') {
+                html += displayMonthlyReport(report);
+            }
+
+            container.innerHTML = html;
+            container.classList.add('active');
+        }
+
+        // Mostrar relatório diário
+        function displayDailyReport(report) {
+            let html = '';
+
+            // Válvulas
+            if (report.valves && report.valves.length > 0) {
+                html += `
+                    <div class="data-table">
+                        <div class="table-header">🔧 Estado das Válvulas</div>
+                        ${report.valves.map(valve => `
+                            <div class="table-row">
+                                <div><strong>${valve.valve_name}</strong></div>
+                                <div>Estado: ${valve.status}</div>
+                                <div>Temp: ${valve.temperature}°C</div>
+                                <div>Pressão: ${valve.pressure} bar</div>
+                                <div>Eficiência: ${valve.efficiency}%</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Performance por hora
+            if (report.performance && report.performance.length > 0) {
+                html += `
+                    <div class="data-table">
+                        <div class="table-header">📊 Performance por Hora</div>
+                        ${report.performance.slice(0, 12).map(perf => `
+                            <div class="table-row">
+                                <div><strong>${perf.hour}</strong></div>
+                                <div>Eficiência: ${perf.efficiency}%</div>
+                                <div>Temp: ${perf.temperature}°C</div>
+                                <div>Pressão: ${perf.pressure} bar</div>
+                                <div>Ciclos: ${perf.cycles}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        // Mostrar relatório semanal
+        function displayWeeklyReport(report) {
+            let html = '';
+
+            // Médias diárias
+            if (report.daily_averages && report.daily_averages.length > 0) {
+                html += `
+                    <div class="data-table">
+                        <div class="table-header">📅 Médias Diárias</div>
+                        ${report.daily_averages.map(day => `
+                            <div class="table-row">
+                                <div><strong>${day.day}</strong></div>
+                                <div>${day.date}</div>
+                                <div>Eficiência: ${day.efficiency}%</div>
+                                <div>Temp: ${day.temperature}°C</div>
+                                <div>Ciclos: ${day.cycles}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Tendências
+            if (report.trends) {
+                html += `
+                    <div class="data-table">
+                        <div class="table-header">📈 Tendências da Semana</div>
+                        ${Object.entries(report.trends).map(([metric, trend]) => `
+                            <div class="table-row">
+                                <div><strong>${formatLabel(metric)}</strong></div>
+                                <div>Direcção: ${getTrendIcon(trend.direction)} ${trend.direction}</div>
+                                <div>Variação: ${trend.change}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        // Mostrar relatório mensal
+        function displayMonthlyReport(report) {
+            let html = '';
+
+            // Breakdown semanal
+            if (report.weekly_breakdown && report.weekly_breakdown.length > 0) {
+                html += `
+                    <div class="data-table">
+                        <div class="table-header">📊 Breakdown Semanal</div>
+                        ${report.weekly_breakdown.map(week => `
+                            <div class="table-row">
+                                <div><strong>Semana ${week.week}</strong></div>
+                                <div>Ciclos: ${week.cycles}</div>
+                                <div>Eficiência: ${week.efficiency}%</div>
+                                <div>Alertas: ${week.alerts}</div>
+                                <div>Manutenção: ${week.maintenance}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Recomendações
+            if (report.recommendations && report.recommendations.length > 0) {
+                html += `
+                    <div class="recommendations">
+                        <h4>💡 Recomendações</h4>
+                        <ul>
+                            ${report.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        // Funções auxiliares
+        function getReportIcon(type) {
+            switch(type) {
+                case 'daily': return '📅';
+                case 'weekly': return '📊';
+                case 'monthly': return '📈';
+                default: return '📋';
+            }
+        }
+
+        function getReportTitle(type) {
+            switch(type) {
+                case 'daily': return 'Diário';
+                case 'weekly': return 'Semanal';
+                case 'monthly': return 'Mensal';
+                default: return 'Geral';
+            }
+        }
+
+        function formatLabel(key) {
+            const labels = {
+                'active_valves': 'Válvulas Activas',
+                'avg_temperature': 'Temperatura Média',
+                'avg_pressure': 'Pressão Média',
+                'avg_efficiency': 'Eficiência Média',
+                'total_cycles': 'Total de Ciclos',
+                'uptime_hours': 'Horas Online',
+                'maintenance_events': 'Eventos de Manutenção',
+                'cost_savings': 'Poupanças',
+                'efficiency': 'Eficiência',
+                'temperature': 'Temperatura',
+                'pressure': 'Pressão',
+                'cycles': 'Ciclos'
+            };
+            return labels[key] || key.replace('_', ' ').toUpperCase();
+        }
+
+        function getTrendIcon(direction) {
+            switch(direction) {
+                case 'up': return '📈';
+                case 'down': return '📉';
+                case 'stable': return '➡️';
+                default: return '➡️';
+            }
+        }
+
+        // Exportar relatório
+        function exportReport(type) {
+            showMessage('📄 A exportar relatório para PDF...', 'info');
+            setTimeout(() => {
+                showMessage('✅ Relatório exportado com sucesso!', 'success');
+            }, 2000);
+        }
+
+        // Enviar por email
+        function emailReport(type) {
+            showMessage('📧 A enviar relatório por email...', 'info');
+            setTimeout(() => {
+                showMessage('✅ Relatório enviado por email!', 'success');
+            }, 2000);
+        }
+
+        // Mostrar mensagem
+        function showMessage(message, type = 'info') {
+            const messageArea = document.getElementById('message-area');
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+
+            messageArea.innerHTML = `<div class="${className}">${message}</div>`;
+
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+
+        // Mostrar erro
+        function showError(message) {
+            showMessage(message, 'error');
+        }
+    </script>
+</body>
+</html>

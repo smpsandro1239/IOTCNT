@@ -141,7 +141,7 @@ services:
       - DB_HOST=database
       - REDIS_HOST=redis
     healthcheck:
-      test: ["CMD", "ps", "aux", "|", "grep", "queue:work"]
+      test: ["CMD", "pgrep", "-f", "queue:work"]
       interval: 60s
       timeout: 10s
       retries: 3

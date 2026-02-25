@@ -21,13 +21,13 @@ class ScheduleTest extends TestCase
     parent::setUp();
 
     $this->user = User::factory()->create([
-      'is_admin' => false,
+      'role' => 'user',
       'name' => 'Test User',
       'email' => 'user@test.com'
     ]);
 
     $this->adminUser = User::factory()->create([
-      'is_admin' => true,
+      'role' => 'admin',
       'name' => 'Admin User',
       'email' => 'admin@test.com'
     ]);

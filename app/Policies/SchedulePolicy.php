@@ -21,7 +21,7 @@ class SchedulePolicy
    */
   public function view(User $user, Schedule $schedule): bool
   {
-    return $user->id === $schedule->user_id || $user->is_admin;
+    return $user->id === $schedule->user_id || $user->isAdmin();
   }
 
   /**
@@ -37,7 +37,7 @@ class SchedulePolicy
    */
   public function update(User $user, Schedule $schedule): bool
   {
-    return $user->id === $schedule->user_id || $user->is_admin;
+    return $user->id === $schedule->user_id || $user->isAdmin();
   }
 
   /**
@@ -45,7 +45,7 @@ class SchedulePolicy
    */
   public function delete(User $user, Schedule $schedule): bool
   {
-    return $user->id === $schedule->user_id || $user->is_admin;
+    return $user->id === $schedule->user_id || $user->isAdmin();
   }
 
   /**
@@ -53,7 +53,7 @@ class SchedulePolicy
    */
   public function restore(User $user, Schedule $schedule): bool
   {
-    return $user->is_admin;
+    return $user->isAdmin();
   }
 
   /**
@@ -61,6 +61,6 @@ class SchedulePolicy
    */
   public function forceDelete(User $user, Schedule $schedule): bool
   {
-    return $user->is_admin;
+    return $user->isAdmin();
   }
 }

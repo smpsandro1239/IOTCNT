@@ -38,6 +38,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Create system user to run Composer and Artisan Commands
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
+RUN git config --global --add safe.directory /var/www
 
 # Copy existing application directory contents with correct ownership
 COPY --chown=www:www . /var/www

@@ -1,105 +1,82 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+// Autor: Sandro Pereira (smpsandro1239)
+// Projeto: IOTCNT – Sistema de Gestão Industrial IoT para Condensadores
+@extends("layouts.auth")
 
-    <title>{{ config('app.name', 'IOTCNT') }} - Iniciar Sessão</title>
+@section("title", "IOTCNT - Login")
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-    <!-- Scripts -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="font-sans text-gray-900 antialiased">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-        <div>
-            <a href="/">
-                <div class="w-20 h-20 fill-current text-gray-500 flex items-center justify-center bg-blue-600 rounded-full text-white text-2xl font-bold">
-                    IOT
-                </div>
-            </a>
+@section("content")
+<div class="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">IOTCNT</h1>
+            <p class="text-gray-600">Sistema IoT de Arrefecimento Industrial</p>
         </div>
-
-        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-            <div class="mb-4 text-center">
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    {{ __('Iniciar Sessão') }}
-                </h2>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                    {{ __('Sistema de Controlo de Irrigação IoT') }}
-                </p>
+        
+        <form action="{{ route(auth.login) }}" method="POST" class="space-y-6">
+            @csrf
+            
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                </label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                    placeholder="seu@empresa.com"
+                >
             </div>
-
-            <!-- Session Status -->
-            @if (session('status'))
-                <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-                    {{ session('status') }}
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
-
-                <!-- Email Address -->
-                <div>
-                    <label for="email" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
-                        {{ __('Email') }}
-                    </label>
-                    <input id="email" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                           type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" />
-                    @error('email')
-                        <div class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <!-- Password -->
-                <div class="mt-4">
-                    <label for="password" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
-                        {{ __('Palavra-passe') }}
-                    </label>
-                    <input id="password" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                           type="password" name="password" required autocomplete="current-password" />
-                    @error('password')
-                        <div class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <!-- Remember Me -->
-                <div class="block mt-4">
-                    <label for="remember_me" class="inline-flex items-center">
-                        <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Lembrar-me') }}</span>
+            
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                    Senha
+                </label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                    placeholder="••••••••"
+                >
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input
+                        id="remember"
+                        name="remember"
+                        type="checkbox"
+                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    >
+                    <label for="remember" class="ml-2 block text-sm text-gray-700">
+                        Lembrar-me
                     </label>
                 </div>
-
-                <div class="flex items-center justify-between mt-4">
-                    @if (Route::has('password.request'))
-                        <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                            {{ __('Esqueceu-se da palavra-passe?') }}
-                        </a>
-                    @endif
-
-                    <button type="submit" class="ml-3 inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 dark:hover:bg-blue-600 focus:bg-blue-700 dark:focus:bg-blue-600 active:bg-blue-900 dark:active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                        {{ __('Entrar') }}
-                    </button>
-                </div>
-
-                @if (Route::has('register'))
-                    <div class="mt-4 text-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">
-                            {{ __('Não tem conta?') }}
-                        </span>
-                        <a href="{{ route('register') }}" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 ml-1">
-                            {{ __('Registar-se') }}
-                        </a>
-                    </div>
-                @endif
-            </form>
+                
+                <a href="#" class="text-sm text-indigo-600 hover:text-indigo-500">
+                    Esqueceu a senha?
+                </a>
+            </div>
+            
+            <button
+                type="submit"
+                class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors font-medium"
+            >
+                Entrar no Sistema
+            </button>
+        </form>
+        
+        <div class="mt-8 text-center text-sm text-gray-600">
+            <p>
+                Ainda não tem acesso? 
+                <a href="#" class="text-indigo-600 hover:text-indigo-500 font-medium">
+                    Solicitar acesso
+                </a>
+            </p>
         </div>
     </div>
-</body>
-</html>
+</div>
+@endsection

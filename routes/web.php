@@ -82,3 +82,10 @@ Route::get('/dashboard/real-time', function () {
 
 // Rota para testar comunicação ESP32 em tempo real
 Route::post('/api/esp32/test-data', [BroadcastController::class, 'broadcastESP32Data'])->name('api.esp32.test-data');
+
+// Rotas de notificações
+Route::prefix('notifications')->group(function () {
+    Route::post('/send-alert', [NotificationController::class, 'sendAlert'])->name('notifications.send-alert');
+    Route::post('/setup-esp32', [NotificationController::class, 'setupESP32Notifications'])->name('notifications.setup-esp32');
+    Route::get('/status', [NotificationController::class, 'getStatus'])->name('notifications.status');
+});

@@ -89,3 +89,8 @@ Route::prefix('notifications')->group(function () {
     Route::post('/setup-esp32', [NotificationController::class, 'setupESP32Notifications'])->name('notifications.setup-esp32');
     Route::get('/status', [NotificationController::class, 'getStatus'])->name('notifications.status');
 });
+
+// Rota para dashboard industrial premium
+Route::get('/dashboard/industrial', function () {
+    return view('dashboard.industrial');
+})->name('dashboard.industrial');

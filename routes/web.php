@@ -94,3 +94,17 @@ Route::prefix('notifications')->group(function () {
 Route::get('/dashboard/industrial', function () {
     return view('dashboard.industrial');
 })->name('dashboard.industrial');
+use App\Http\Controllers\BroadcastController;
+
+// Broadcast endpoints for ESP32 real‑time communication
+Route::post('/broadcast/esp32-data', [BroadcastController::class, 'store'])->name('broadcast.esp32');
+Route::post('/broadcast/join-channel', [BroadcastController::class, 'joinChannel'])->name('broadcast.join');
+Route::post('/broadcast/leave-channel', [BroadcastController::class, 'leaveChannel'])->name('broadcast.leave');
+Route::get('/broadcast/real-time-data', [BroadcastController::class, 'getRealTimeData'])->name('broadcast.realtime');
+Route::get('/broadcast/historical-data', [BroadcastController::class, 'getHistoricalData'])->name('broadcast.historical');
+Route::get('/broadcast/device-statistics', [BroadcastController::class, 'getDeviceStatistics'])->name('broadcast.statistics');
+
+// Dashboard view for predictive analysis real‑time
+Route::get('/dashboard/prediction', function () {
+    return view('dashboard.real-time-prediction');
+})->name('dashboard.prediction');

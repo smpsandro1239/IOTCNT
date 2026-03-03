@@ -269,7 +269,7 @@ void processScheduledIrrigation() {
     }
 
     // Verificar se é hora de iniciar o ciclo agendado
-    if (!scheduledCycleToday && now.dayOfWeek() == SCHEDULE_DAY &&
+    if (!scheduledCycleToday && now.dayOfTheWeek() == SCHEDULE_DAY &&
         now.hour() == SCHEDULE_HOUR && now.minute() == SCHEDULE_MINUTE) {
 
         Serial.println("[SCHED] Iniciando ciclo de irrigacao agendado...");
@@ -325,7 +325,7 @@ void sendStatusToAPI(int valveNumber, bool state) {
     http.addHeader("Content-Type", "application/json");
     http.addHeader("Authorization", "Bearer " + String(API_TOKEN));
 
-    StaticJsonDocument<200> doc;
+    JsonDocument<200> doc;
     doc["valve_id"] = valveNumber;
     doc["state"] = state ? 1 : 0;
     doc["timestamp"] = timeClient.getEpochTime();

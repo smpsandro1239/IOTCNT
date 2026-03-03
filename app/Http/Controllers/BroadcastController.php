@@ -1,48 +1,43 @@
 <?php
 
-namespace Appttpontrollers;
+namespace App\Http\Controllers;
 
-use Illuminatettpequest;
-use Illuminateupportacadesroadcast;
-use ApproadcastingSP32DataChannel;
+use App\Services\Esp32BroadcastService;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Route;
 
 class BroadcastController extends Controller
 {
-    /**
-     * Handle ESP32 data broadcast request
-     */
-    public function broadcastESP32Data(Request $request)
+    public function __construct()
     {
-        $validated = $request->validate([
-            'device_id' => 'required|string|max:255',
-            'temperature' => 'required|numeric',
-            'humidity' => 'required|numeric',
-            'pressure' => 'required|numeric',
-            'valve_status' => 'required|boolean',
-            'timestamp' => 'required|date',
-        ]);
-
-        // Broadcast data to ESP32DataChannel
-        Broadcast::channel('esp32-data', ESP32DataChannel::class)->broadcast($validated);
-
-        return response()->json([
-            'message' => 'Data broadcasted successfully',
-            'data' => $validated
-        ]);
+        $this->middleware('auth:sanctum');
     }
 
-    /**
-     * Handle user presence on ESP32 channel
-     */
-    public function joinChannel(Request $request)
+    public function store(Request $request)
     {
-        $validated = $request->validate([
-            'channel_name' => 'required|string|max:255',
+        $validator = Validator::make($request->all(), [
+            'device_id' => 'required|integer',
+            'metric_type' => 'required|in:temperature,humidity,pressure',
+            'current_value' => 'required|numeric',
+            'threshold_min' => 'nullable|numeric',
+            'threshold_max' => 'nullable|numeric',
         ]);
 
-        return response()->json([
-            'message' => 'Joined channel successfully',
-            'channel' => $validated['channel_name']
-        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        try {
+            $analysis = (new Esp32BroadcastService())->broadcastData(
+                $request->all()
+            );
+            return response()->json($analysis, 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erro ao enviar dados: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
